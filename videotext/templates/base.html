@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Twitter Vision:{% block title %} The Latest{% endblock %}</title>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+        
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/reset.css" type="text/css" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/960.css" type="text/css" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/text.css" type="text/css" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/main.css" type="text/css" charset="utf-8" />
+        
+        <script type="text/javascript" src="{{ STATIC_URL }}js/json2.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/backbone-min.js"></script>
+        
+        {% block head %}{% endblock %}
+    </head>
+    
+    <body>
+        <div id="wrapper" class="container_12">
+            <div id="header" class="grid_12 alpha omega">
+                <h1><a href="/">TwitterVision</a></h1>
+            </div>
+            <div id="pre_main" class="grid_12 alpha omega">
+                {% block pre_main %} {% endblock %}
+            </div>
+            <div id="main" class="grid_12 alpha omega">
+                <div id="content" class="grid_8 alpha">
+                    {% block main_content %}{% endblock %}
+                </div>
+                <div class="grid_4 omega">
+                    <div id="right_rail" >
+                        {% block right_rail_top %}{% endblock %}
+                        {% block right_rail %}{% endblock %}
+                        {% block right_rail_bottom %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+            <div id="footer" class="grid_12 alpha omega">
+                <div class="grid_9 alpha"><p></p></div>
+                <div id="footer_contact" class="grid_3 omega">
+                    <h4>Contact Us</h4>
+                    <p> email: <a href="mailto:info@reporterslab.org">info@reporterslab.org</a></p>
+                    <p> phone: 919.613.7348</p>
+                    <p>  code: <a href="http://www.github.com/ReportersLab">Github</a></p>
+                    <p>tweets: <a href="http://www.twitter.com/ReportersLab">@ReportersLab</a></p> 
+                </div>
+                
+            </div>
+        </div>
+        {% block end_body %}{% endblock %}
+        
+    </body>
+    
+</html>

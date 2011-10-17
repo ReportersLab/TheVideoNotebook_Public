@@ -1,0 +1,2 @@
+#!/bin/sh
+python ./videotext/configs/${DEPLOYMENT_TARGET:="common"}/manage.py $*

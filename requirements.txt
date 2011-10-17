@@ -1,0 +1,6 @@
+fabric
+django
+django-debug-toolbar
+psycopg2
+python-memcached
+south

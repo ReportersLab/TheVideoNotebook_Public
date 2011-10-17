@@ -1,0 +1,36 @@
+<VirtualHost *:80>
+    ServerName videotext.reporterslab.org
+    ServerAlias www.videotext.reporterslab.org
+    
+    SetEnvIf X-Forwarded-For "^163\.192\..*\..*" trib
+    <Location /> # until launch
+          Order Deny,Allow
+          Allow from all
+          # Allow from env=trib
+    </Location>
+    
+    Redirect permanent /favicon.ico http://media.reporterslab.org/videotext/na_media/favicon.ico
+    
+    Alias /robots.txt /home/newsapps/sites/videotext/repository/videotext/assets/robots.txt
+
+    ErrorLog /home/newsapps/logs/videotext.error.log
+    LogLevel warn
+
+    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" is-forwarder
+    LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+    LogFormat "[%h] %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio2
+    CustomLog /home/newsapps/logs/videotext.access.log combinedio env=is-forwarder
+    CustomLog /home/newsapps/logs/videotext.access.log combinedio2 env=!is-forwarder
+
+    ServerSignature Off
+    
+    RewriteEngine on
+    # canonical hostname
+    RewriteCond %{HTTP_HOST} !^videotext.reporterslab.org [NC] 
+    RewriteRule ^/(.*)  http://videotext.reporterslab.org/$1 [L,R]
+    
+    DocumentRoot /home/newsapps/sites/videotext/repository/videotext/assets/
+    
+    RewriteCond %{REQUEST_URI} !/maintenance.html$ 
+    RewriteRule $ /maintenance.html [R=302,L]
+</VirtualHost>

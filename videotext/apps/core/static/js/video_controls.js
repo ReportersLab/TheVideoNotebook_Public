@@ -1,6 +1,6 @@
 
 //time we should seek before a note before playing the video.
-NOTE_SEEK_BEFORE_TIME = 10;
+NOTE_SEEK_BEFORE_TIME = 30;
 
 PLAYER_STATES = {
     '-1':'unstarted',
@@ -170,6 +170,7 @@ $(function(){
             this.app = this.options.app;
             this.notes = this.options.notes;
             this.autoScroll = true;
+            this.autoHighlight = true;
             //then load the notes
             this.notes.bind('add', this.addNote, this);
             this.notes.bind('reset', this.refreshNotes, this);
@@ -222,13 +223,13 @@ $(function(){
        
         selectNote: function(new_note){
             //not sure if in a search situation we should change highlighting if new-note is invisible?
-            if(!$(new_note.view.el).is(":visible"))
+            if((this.autoHighlight == false) || (!$(new_note.view.el).is(":visible")))
                 return;
             
-             if(this.selected_note)
-                this.selected_note.view.removeNoteHighlight();
-             this.selected_note = new_note;
-             this.selected_note.view.highlightNote();
+             if(this.selectedNote)
+                this.selectedNote.view.removeNoteHighlight();
+             this.selectedNote = new_note;
+             this.selectedNote.view.highlightNote();
         },
        
         
@@ -238,19 +239,25 @@ $(function(){
                 return note.get('offset') > time;
             }, this);
             
-            if(this.selected_note == new_note)
+            //if the user has jumped ahead manually, we want to give them time to watch video
+            //before moving, so we set the autoHighlight property to false.
+            if( (new_note.get('offset') < this.selectedNote.get('offset')) && (this.autoHighlight == false) )
+                return;
+            
+            if(this.selectedNote == new_note)
                 return
             else{
+                this.autoHighlight = true;
                 this.selectNote(new_note);
             }
             
             //then get a note a few before, that's where we're going to scroll.
-            //var index = this.notes.indexOf(this.selected_note)-2;
+            //var index = this.notes.indexOf(this.selectedNote)-2;
             //if(index < 0) index = 0;
             //if(index > this.notes.length - 1) index = this.notes.length - 1; //not possible. I think.
             //var top_note = this.notes.at(index);
             //scroll to the note.
-            this.scrollToNote(this.selected_note);
+            this.scrollToNote(this.selectedNote);
             
        }
        
@@ -353,7 +360,9 @@ $(function(){
             //console.log(this.model.get('id'));
             this.container.selectNote(this.model);
             this.container.scrollToNote(this.model);
-            app.videoView.seekToNote(this.model, true);
+            this.container.autoHighlight = false;
+            //this.container.autoScroll = false;
+            app.videoView.seekToNote(this.model, false);
        },
        
        

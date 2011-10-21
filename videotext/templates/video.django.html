@@ -40,7 +40,7 @@
                 </a>
             </div>
         <% } %>
-        <div class="note_text" <% if(icon_link) print('style="width:280px; margin-top:-5px;"'); %>>
+        <div class="note_text" <% if(icon_link) print('style="width:280px; margin:-5px 0 -5px 0;"'); %>>
             <p><%= text %></p>
         </div>
         <div class="user_info">
@@ -63,13 +63,16 @@
         <div id="video" class="grid_7 alpha"></div>
         <div id="right_rail" class="grid_5 omega">
             <div id="notes_container">
-                <div id="notes_search">
+                <div id="note_search">
                     <h5>Search Notes</h5>
                     <div>
                         <input type="text" name="note_search_text" id="note_search_text" placeholder="Search..." />
                         <input type="button" value="Search" id="note_search_button" />
                     </div>
                     <div id="search_results_count"></div>
+                    <div id="note_controls">
+                        <div id="auto_scroll"><span>Disable Auto-Scroll</span></div>
+                    </div>
                 </div>
                 <div id="notes"></div>
             </div>

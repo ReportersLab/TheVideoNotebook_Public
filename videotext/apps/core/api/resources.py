@@ -18,7 +18,7 @@ class NoteResource(ModelResource):
     #video = fields.ForeignKey(VideoResource, 'video')
     
     def dehydrate(self, bundle):
-        bundle.data['offset'] = bundle.obj.gen_offset
+        #bundle.data['offset'] = bundle.obj.gen_offset
         return bundle
     
     
@@ -45,7 +45,7 @@ class NoteResource(ModelResource):
             'time': ['gt', 'gte', 'lt', 'lte',]
         }
         
-        ordering = ['time', 'end_time', 'creation_time']
+        ordering = ['offset', 'time', 'end_time', 'creation_time']
         
         
         

@@ -74,15 +74,23 @@ blockquote
     border-left:1px solid #CCCCCC;
 }
 
-#notes_search
+#auto_scroll{
+    cursor:pointer;
+    color:#6666FF;
+    float:left;
+    font-size:10px;
+    margin:5px 0 0 0;
+}
+
+#note_search
 {
     float:left; clear:both;
     margin:0 0 15px 0;
-    padding:10px 0 10px 0;
+    padding:10px 0 5px 0;
     border-bottom:1px solid #AAAAAA;   
 }
 
-#notes_search h5
+#note_search h5
 {
     margin:0; padding:0;
 }

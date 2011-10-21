@@ -63,6 +63,9 @@ $(function(){
         tagName: 'div',
         className: 'video',
         template: _.template($("#videoTemplate").html()),
+        initialize: function(){
+            this.player = null;  
+        },
         render: function(){
             $(this.el).html(this.template(this.model.toJSON()));
             
@@ -91,8 +94,8 @@ $(function(){
        checkYouTubeStatus: function(){
             this.videoTime = this.player.getCurrentTime(); //seconds into video.
             //update the notes scrolling.
-            console.log("New Video Time: " + this.videoTime);
-            app.notes.showNoteAtTime(this.videoTime);
+            //console.log("New Video Time: " + this.videoTime);
+            app.notesView.showNoteAtTime(this.videoTime);
             
        },
        
@@ -103,6 +106,10 @@ $(function(){
                 seconds = seconds - NOTE_SEEK_BEFORE_TIME;
             
             if(this.model.get('type') == 'youtube'){
+                if(this.player == null){
+                    $.later(500, this, 'seekToNote', [note, exact], false);
+                    return;
+                }
                 if(seconds < 0) seconds = 0; // if pre-event, just go to beginning.
                 if(seconds > this.player.getDuration()) return; //need graceful way to indicate note is after video ends.
                 this.player.seekTo(seconds, true); //time, allow-seek-ahead
@@ -152,21 +159,82 @@ $(function(){
        },
        comparator: function(note){
             return parseInt(note.get('offset'));
-       },
-       
-       selectNote: function(new_note){
-            if(this.selected_note)
-               this.selected_note.view.removeNoteHighlight();
-            this.selected_note = new_note;
-            this.selected_note.view.highlightNote();
-       },
-       
-       showNoteAtTime: function(time){
-            //remove highlight from selected note if it exists.
+       }
+    });
+    
+    
+    
+    
+    window.NotesView = Backbone.View.extend({
+       initialize: function(){
+            this.app = this.options.app;
+            this.notes = this.options.notes;
+            this.autoScroll = true;
+            //then load the notes
+            this.notes.bind('add', this.addNote, this);
+            this.notes.bind('reset', this.refreshNotes, this);
+            this.notes.bind('all', this.render, this);
+            //bootstrap the notes
+            this.notes.reset(NOTES_DATA);
             
-                
+            this.notesSearch = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
+       },
+       
+       events: {
+            'click #auto_scroll': 'toggleAutoScroll'
+       },
+       
+       render: function(){
+            return this;
+       },
+       
+       addNote: function(note){
+            var view = new NoteView({model:note, id:'note_'+ note.id, container:this});
+            $("#notes").append(view.render().el);
+            note.view = view;
+        },
+        
+        refreshNotes: function(){
+            this.notes.each(this.addNote, this);
+        },
+       
+       
+       toggleAutoScroll: function(){
+            //console.log("Scrolling: " + this.autoScroll);
+            if(this.autoScroll){
+                this.autoScroll = false;
+                $("#auto_scroll").html("<span>Enable Auto-Scroll</span>");
+            }else{
+                this.autoScroll = true;
+                $("#auto_scroll").html("<span>Disable Auto-Scroll</span>");
+            }
+       },
+       
+       scrollToTop: function(){
+            $("#notes").scrollTo("0", 200);
+        },
+        
+        scrollToNote: function(note){
+            if((this.autoScroll == false) || (!$(note.view.el).is(":visible")))
+                return;
+            $("#notes").scrollTo($(note.view.el), 200, {offset:{top:-70}});
+        },
+       
+        selectNote: function(new_note){
+            //not sure if in a search situation we should change highlighting if new-note is invisible?
+            if(!$(new_note.view.el).is(":visible"))
+                return;
+            
+             if(this.selected_note)
+                this.selected_note.view.removeNoteHighlight();
+             this.selected_note = new_note;
+             this.selected_note.view.highlightNote();
+        },
+       
+        
+        showNoteAtTime: function(time){
             //first, find the note we're looking for
-            new_note = this.find(function(note){
+            new_note = this.notes.find(function(note){
                 return note.get('offset') > time;
             }, this);
             
@@ -177,12 +245,12 @@ $(function(){
             }
             
             //then get a note a few before, that's where we're going to scroll.
-            var index = this.indexOf(this.selected_note)-2;
-            if(index < 0) index = 0;
-            if(index > this.length - 1) index = this.length - 1; //not possible. I think.
-            var top_note = this.at(index);
+            //var index = this.notes.indexOf(this.selected_note)-2;
+            //if(index < 0) index = 0;
+            //if(index > this.notes.length - 1) index = this.notes.length - 1; //not possible. I think.
+            //var top_note = this.notes.at(index);
             //scroll to the note.
-            top_note.view.scrollToNote();
+            this.scrollToNote(this.selected_note);
             
        }
        
@@ -190,9 +258,12 @@ $(function(){
     
     
     
+    
     window.NoteSearchView = Backbone.View.extend({
         initialize: function(){
             this.app = this.options.app;
+            this.notesView = this.options.notesView;
+            this.notes = this.options.notes;
             this.render();
         },
         events: {
@@ -205,7 +276,7 @@ $(function(){
                 this.resultCount = this.app.notes.length;
             var html = "<span>" + this.resultCount + " results</span>";
             $("#search_results_count").html(html);
-            this.scrollToTop();
+            this.notesView.scrollToTop();
             return this;
         },
         
@@ -223,7 +294,7 @@ $(function(){
         
         search: function(){
             searchText = $("#note_search_text").val();
-            this.notes = app.notes;
+            //this.notes = app.notes;
             //search the notes collection for matches.
             
             toHide = this.notes.select(function(note){
@@ -244,7 +315,6 @@ $(function(){
             });
             
             this.resultCount = toShow.length || 0;
-            console.log(this.resultCount);
             this.render();
         },
         
@@ -254,11 +324,9 @@ $(function(){
             });
             this.resultCount = app.notes.length;
             this.render();
-        },
-        
-        scrollToTop: function(){
-            $("#notes").scrollTo("0", 200);
         }
+        
+        
         
     })
     
@@ -269,6 +337,7 @@ $(function(){
        
        initialize: function(){
             //this.model.set({'time_formatted': this.model.get('time').format("mm/dd/yy h:MM:ss TT")});
+            this.container = this.options.container;
        },
        
        events: {
@@ -282,13 +351,12 @@ $(function(){
        
        onNoteClicked: function(event){
             //console.log(this.model.get('id'));
-            this.model.collection.selectNote(this.model);
+            this.container.selectNote(this.model);
+            this.container.scrollToNote(this.model);
             app.videoView.seekToNote(this.model, true);
        },
        
-       scrollToNote: function(){
-            $("#notes").scrollTo($(this.el), 200);
-       },
+       
        
        highlightNote: function(){
             $(this.el).addClass('highlighted');
@@ -313,35 +381,18 @@ $(function(){
         },
         
         initialize: function(){
-            _.bindAll(this, 'refreshNotes');
             //first bootstrap the video data.
             this.video = new Video(VIDEO_DATA);
             //and add it to the view
             this.videoView = new VideoView({model:this.video});
             $("#video").append(this.videoView.render().el);
             
-            //then load the notes
+            
             this.notes = new Notes();
-            this.notes.bind('add', this.addNote);
-            this.notes.bind('reset', this.refreshNotes);
-            this.notes.bind('all', this.render);
-            //bootstrap the notes
-            this.notes.reset(NOTES_DATA)
             
             //Add search view
-            this.notesSearch = new NoteSearchView({el: $('#notes_search'), app:this});
-        },
-        
-        addNote: function(note){
-            var view = new NoteView({model:note, id:'note_'+ note.id});
-            $("#notes").append(view.render().el);
-            note.view = view;
-        },
-        
-        refreshNotes: function(){
-            this.notes.each(this.addNote);
+            this.notesView = new NotesView({el: $('#notes_container'), app:this, notes:this.notes });
         }
-        
         
     })
     

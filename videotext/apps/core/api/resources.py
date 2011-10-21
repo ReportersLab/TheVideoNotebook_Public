@@ -11,10 +11,30 @@ class VideoResource(ModelResource):
     class Meta:
         queryset = Video.objects.all()
         resource_name = "video"
+        ordering = ['-time',] 
         
 class NoteResource(ModelResource):
     
     #video = fields.ForeignKey(VideoResource, 'video')
+    
+    def dehydrate(self, bundle):
+        bundle.data['offset'] = bundle.obj.gen_offset
+        return bundle
+    
+    
+    #TODO: Searching notes
+    #TODO: Filter by limits?
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(NoteResource, self).build_filters(filters)
+
+        if "q" in filters:
+            pass
+
+        return orm_filters
+    
     
     class Meta:
         queryset = Note.objects.all()
@@ -24,3 +44,10 @@ class NoteResource(ModelResource):
             'video': ALL_WITH_RELATIONS,
             'time': ['gt', 'gte', 'lt', 'lte',]
         }
+        
+        ordering = ['time', 'end_time', 'creation_time']
+        
+        
+        
+        
+        

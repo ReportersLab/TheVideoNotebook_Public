@@ -59,7 +59,7 @@ class VideoAdmin(CommonAdmin):
         ),
         ('The Details',
             {
-                'fields': ('video_url', 'video_file', 'time', 'end_time', 'user_name', 'user_link', 'icon', 'icon_link',)
+                'fields': ('video_url', 'video_file', 'time', 'end_time', 'video_length', 'user_name', 'user_link', 'icon', 'icon_link',)
             }
         ),
     )
@@ -80,7 +80,7 @@ class NoteAdmin(CommonAdmin):
         ),
         ('The Details',
             {
-                'fields': ('time', 'end_time', 'user_name', 'user_link', 'link', 'icon_link', 'icon', 'type', 'source_link', 'source',)
+                'fields': ('time', 'end_time', 'offset', 'user_name', 'user_link', 'link', 'icon_link', 'icon', 'type', 'source_link', 'source',)
             }
         ),
     )

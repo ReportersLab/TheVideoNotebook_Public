@@ -3,6 +3,13 @@
     <head>
         <title>Twitter Vision:{% block title %} The Latest{% endblock %}</title>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+        <!-- wrapper for set-timeout or set-interval. -->
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.later.js"></script>
+        <!-- scrolls a div to an element. Animation options -->
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.scrollTo-min.js"></script>
+        <!-- formats dates -->
+        <script type="text/javascript" src="{{ STATIC_URL }}js/date.format.js"></script>
+        <!-- for embedding the YouTube video -->
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
         
         <link rel="stylesheet" href="{{ STATIC_URL }}css/reset.css" type="text/css" />
@@ -10,9 +17,10 @@
         <link rel="stylesheet" href="{{ STATIC_URL }}css/text.css" type="text/css" />
         <link rel="stylesheet" href="{{ STATIC_URL }}css/main.css" type="text/css" charset="utf-8" />
         
+        <!-- I *believe* json2 is required for Backbone. Underscore is for sure. -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/json2.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/backbone-min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/backbone.js"></script>
         
         {% block head %}{% endblock %}
     </head>
@@ -26,15 +34,8 @@
                 {% block pre_main %} {% endblock %}
             </div>
             <div id="main" class="grid_12 alpha omega">
-                <div id="content" class="grid_8 alpha">
+                <div id="content" class="grid_12 alpha omega">
                     {% block main_content %}{% endblock %}
-                </div>
-                <div class="grid_4 omega">
-                    <div id="right_rail" >
-                        {% block right_rail_top %}{% endblock %}
-                        {% block right_rail %}{% endblock %}
-                        {% block right_rail_bottom %}{% endblock %}
-                    </div>
                 </div>
             </div>
             <div id="footer" class="grid_12 alpha omega">

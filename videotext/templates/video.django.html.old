@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Event: {{ video.title }}{% endblock %}
+
+
+{% block head %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/video_controls.js"></script>    
+{% endblock %}
+
+
+{% block main_content %}
+   <h1> {{video.title}}</h1>
+   
+   
+   
+   
+   {% if video.type == 'youtube' %}
+        <div id="player_container">
+            Flash Player and Javascript required for YouTube Videos.
+        </div>
+        
+        
+        <script type="text/javascript">
+            embed_youtube("{{ video.video_url }}");
+        </script>
+   
+            
+   {% endif %}
+   
+   <div id="video_description">
+        {{ video.description|safe }}
+   </div>
+   
+   <div id="video_meta">
+        <div class="timestamp">Start Time: {{ video.time }}</div>
+        <div class="timestamp end">End Time: {{ video.end_time }}</div>
+        {% include "renderers/tag_cloud.django.html" with object=video %}
+   </div>
+   
+{% endblock %}
+
+{% block right_rail %}
+    <div id="notes">
+    {% for note in video.pre_event_notes %}
+        
+        <div class="note" id="note_{{ note.id }}">        
+            <p>{{ note.text }}</p>
+            <span><a href="javascript:player.seekTo({{ note.offset }}-10, true);">{{ note.time|date:"N d, Y, g:i:s a" }} ({{ note.offset }})</a></span>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

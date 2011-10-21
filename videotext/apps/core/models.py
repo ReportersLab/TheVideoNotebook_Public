@@ -17,8 +17,8 @@ class CommonInfo(models.Model):
     published       = models.BooleanField(default = True)
     tags            = TaggableManager(blank = True, through='CustomTagItem')
     creation_time   = models.DateTimeField() # generated in save, time this object is created
-    update_time     = models.DateTimeField() # generated in save, time this object is updated
-    time            = models.DateTimeField() # UTC time that content applies to.
+    update_time     = models.DateTimeField(blank = True, null = True) # generated in save, time this object is updated
+    time            = models.DateTimeField() # time that content applies to.
     end_time        = models.DateTimeField(null = True, blank = True) #UTC time content ends (if applicable)
     
     
@@ -60,6 +60,7 @@ class Video(CommonInfo):
     teaser          = models.TextField(blank = True)
     user            = models.ForeignKey(to=User, blank = True, null = True) #allow anonymous uploads?
     type            = models.CharField(max_length = 32, blank = True, choices = VIDEO_TYPE_CHOICES, default='mp4')
+    video_length          = models.IntegerField(null = True, default = 0) #Length in seconds.
     #Will want to verify this exists in the future
     video_url       = models.URLField(max_length = 256,  blank = False, verbose_name = "Path to source video", verify_exists = False)
     #do we just take the video url and set it to video file if upload?
@@ -75,6 +76,9 @@ class Video(CommonInfo):
     def save(self, *args, **kwargs):
         if not self.id:
             self.slug = slugify("{0} {1}".format(self.title, self.time.date().isoformat()))
+        
+        if (self.time != None) and (self.end_time != None):
+                self.video_length = (self.end_time - self.time).seconds     
         super(Video, self).save(*args, **kwargs)
     
     
@@ -94,7 +98,11 @@ class Video(CommonInfo):
     @property
     def post_event_notes(self):
         return self.note_set.filter(time__gt = self.end_time)
-        
+    
+    #just a convienience...
+    @property
+    def all_notes(self):
+        return self.note_set.all()
     
     
     
@@ -119,12 +127,24 @@ class Note(CommonInfo):
     type        = models.CharField(max_length = 32, blank = True, null = True)
     source_link = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True)
     source      = models.CharField(max_length = 256, blank = True, null=True)
+    offset      = models.IntegerField(null = True, blank = True) # position within video in seconds.
     
     
+    def save(self, *args, **kwargs):
+        if not self.id:
+            pass
+        if (self.time != None) and (self.video.time != None):  #If we have the times, calculate offset, otherwise assume it's passed in.
+                self.offset = self.gen_offset
+                
+        super(Note, self).save(*args, **kwargs)
     
     @property
-    def offset(self):
+    def gen_offset(self):
+        #I'm sure there's a more concise way to do this, but timedeltas, man.
         delta = self.time - self.video.time
+        if self.time < self.video.time:
+            delta = self.video.time - self.time
+            return delta.seconds * -1 
         return delta.seconds
     
     

@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db.models import Q
 from itertools import chain
 from operator import attrgetter
+from core.api.resources import NoteResource, VideoResource
 
 
 
@@ -20,8 +21,20 @@ def index_view(request):
 
 
 def video_view(request, slug):
+    note_resource = NoteResource()
+    video_resource = VideoResource()
+    
+    video = get_object_or_404(Video, slug = slug)
+    
+    #This could be event_notes, but for now let's load everything.
+    #It's about 300K for 2,300 notes. Can't imagine a single video being many more than this...?
+    #though eventually we may want to build in some sort of 'load 100 notes and Ajax the rest as needed' system.
+    notes = video.all_notes
+    
     data = {
-        'video' : get_object_or_404(Video, slug = slug),
+        'video' : video,
+        'video_json': video_resource.serialize(None, video_resource.full_dehydrate(video), 'application/json'),
+        'notes_json': note_resource.serialize(None, [note_resource.full_dehydrate(note) for note in notes], 'application/json')
     }
     return get_response(template='video.django.html', data=data, request=request)
 

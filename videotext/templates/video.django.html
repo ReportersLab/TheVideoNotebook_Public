@@ -4,49 +4,82 @@
 
 
 {% block head %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/video_controls.js"></script>    
+    <script type="text/javascript" src="{{ STATIC_URL }}js/video_controls.js"></script>
+    {% autoescape off %}
+    <script type="text/javascript">
+        NOTE_API = "{% url api_dispatch_list api_name="v1" resource_name="note" %}";
+        VIDEO_API = "{% url api_dispatch_list api_name="v1" resource_name="video" %}";
+        VIDEO_ID = "{{ video.id }}";
+        NOTES_DATA = {{ notes_json }};
+        VIDEO_DATA = {{ video_json }};
+    </script>
+    {% endautoescape %}
+    
+    <script type="text/html" id="videoTemplate">
+        <h1><%= title %></h1>
+        <div id="player_container">
+            Flash Player and Javascript required for YouTube Videos.
+        </div>
+        <div id="video_description">
+            <%= description %>
+        </div>
+       
+        <div id="video_meta">
+            <div class="timestamp">Start Time: <%= date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
+            <% if (typeof(end_date_time) != "undefined") { %>
+                <div class="timestamp end">End Time: <%= end_date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
+            <% } %>
+        </div>
+    </script>
+    
+    <script type="text/html" id="noteTemplate">
+        <% if(icon_link){ %>
+            <div class="avatar">
+                <a href="<%= link %>">
+                    <img src="<%= icon_link %>" alt="" title="<%= user_name %>" />
+                </a>
+            </div>
+        <% } %>
+        <div class="note_text" <% if(icon_link) print('style="width:280px; margin-top:-5px;"'); %>>
+            <p><%= text %></p>
+        </div>
+        <div class="user_info">
+            <% if(user_name != null){ %>
+                <a href="<% if(user_link != null) print(user_link); else print(link); %>"><%= user_name %></a> | 
+            <% } %>
+            <span>
+                <% if(link) print('<a href="'+ link + '">'); %>
+                <%= date_time.format('mm/dd/yy h:MM:ss TT') %> (<%= offset %>)
+                <% if(link) print('</a>'); %>
+            </span>
+        </div>
+    </script>
+    
 {% endblock %}
 
 
 {% block main_content %}
-   <h1> {{video.title}}</h1>
-   
-   
-   
-   
-   {% if video.type == 'youtube' %}
-        <div id="player_container">
-            Flash Player and Javascript required for YouTube Videos.
+   <div id="app">
+        <div id="video" class="grid_7 alpha"></div>
+        <div id="right_rail" class="grid_5 omega">
+            <div id="notes_container">
+                <div id="notes_search">
+                    <h5>Search Notes</h5>
+                    <div>
+                        <input type="text" name="note_search_text" id="note_search_text" placeholder="Search..." />
+                        <input type="button" value="Search" id="note_search_button" />
+                    </div>
+                    <div id="search_results_count"></div>
+                </div>
+                <div id="notes"></div>
+            </div>
         </div>
-        
-        
-        <script type="text/javascript">
-            embed_youtube("{{ video.video_url }}");
-        </script>
-   
-            
-   {% endif %}
-   
-   <div id="video_description">
-        {{ video.description|safe }}
    </div>
    
-   <div id="video_meta">
-        <div class="timestamp">Start Time: {{ video.time }}</div>
-        <div class="timestamp end">End Time: {{ video.end_time }}</div>
-        {% include "renderers/tag_cloud.django.html" with object=video %}
+   <div>
+        
    </div>
    
 {% endblock %}
 
-{% block right_rail %}
-    <div id="notes">
-    {% for note in video.event_notes %}
-        
-        <div class="note" id="note_{{ note.id }}">        
-            <p>{{ note.text }}</p>
-            <span><a href="javascript:player.seekTo({{ note.offset }}-10, true);">{{ note.time|date:"N d, Y, g:i:s a" }} ({{ note.offset }})</a></span>
-        </div>
-    {% endfor %}
-    </div>
-{% endblock %}
+    

@@ -69,11 +69,94 @@ blockquote
  *Right Rail Styles
  **/
 
+#notes_container{
+    padding:10px;
+    border-left:1px solid #CCCCCC;
+}
+
+#notes_search
+{
+    float:left; clear:both;
+    margin:0 0 15px 0;
+    padding:10px 0 10px 0;
+    border-bottom:1px solid #AAAAAA;   
+}
+
+#notes_search h5
+{
+    margin:0; padding:0;
+}
+
+#note_search_text
+{
+    width:265px;
+    padding:0 5px 0 5px;
+    font-size:14px;
+}
+
+#note_search_button
+{
+    font-size:16px;
+    float:right;
+    margin: -1px 0 0 0;
+}
+
+#search_results_count
+{
+    float:right;
+    text-align:right;
+    font-size:10px;
+    font-weight:bold;
+    clear:both;
+    margin: 5px 0 0 0;
+}
+
 #notes
 {
-    height:600px;
+    height:400px;
     overflow:auto;
-    padding:10px;
+    overflow-x:hidden;
+    clear:both;
+}
+
+.note
+{
+    border-bottom: 1px solid #AAAAAA;
+    margin:0;
+    float:left; clear:both;
+    padding:10px 5px 10px 5px;
+    width:100%;
+}
+
+.note.highlighted
+{
+    background-color:#EEDD82;
+}
+
+.note .avatar
+{
+    float:left;
+    width:48px;
+    margin:0 10px 5px 0;
+}
+
+.note .avatar img
+{
+    width:48px;
+}
+
+.note .note_text
+{
+    float:left;
+    cursor:pointer;
+}
+
+.note .user_info
+{
+    float:left; clear:both;
+    border-top:1px solid #DEDEDE;
+    width:100%;
+    padding: 0 2px 0 2px;
 }
 
 /**

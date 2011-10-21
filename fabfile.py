@@ -164,6 +164,7 @@ def deploy():
     collect_static()
     gzip_assets()
     deploy_to_s3()
+    run_migrations()
     maintenance_down()
     
 def maintenance_up():
@@ -199,6 +200,16 @@ def deploy_to_s3():
     """
     env.gzip_path = '%(path)s/repository/%(project_name)s/gzip/assets/' % env
     run(('s3cmd -P --add-header=Content-encoding:gzip --guess-mime-type --rexclude-from=%(path)s/repository/s3exclude sync %(gzip_path)s s3://%(s3_bucket)s/%(project_name)s/%(site_media_prefix)s/') % env)
+
+def run_migrations():
+    """
+    Run South Migrations pulled in from the repo against the database
+    """
+    with virtualenv():
+        with cd('%(repo_path)s' % env):
+            for app in env.apps:
+                run('./manage migrate %s' % app)
+  
        
 def reboot(): 
     """

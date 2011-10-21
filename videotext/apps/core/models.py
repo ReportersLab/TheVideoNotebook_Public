@@ -18,7 +18,7 @@ class CommonInfo(models.Model):
     tags            = TaggableManager(blank = True, through='CustomTagItem')
     creation_time   = models.DateTimeField() # generated in save, time this object is created
     update_time     = models.DateTimeField(blank = True, null = True) # generated in save, time this object is updated
-    time            = models.DateTimeField() # time that content applies to.
+    time            = models.DateTimeField(null = True, blank = True) # time that content applies to.
     end_time        = models.DateTimeField(null = True, blank = True) #UTC time content ends (if applicable)
     
     

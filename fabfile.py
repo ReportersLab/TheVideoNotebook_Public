@@ -116,7 +116,7 @@ def setup_virtualenv():
     """
     run('virtualenv -p %(python)s --no-site-packages %(env_path)s;' % env)
     with virtualenv():
-        run('source %(sudo easy_install -U setuptools; sudo easy_install pip; sudo easy_install mercurial' % env)
+        run('sudo easy_install -U setuptools; sudo easy_install pip; sudo easy_install mercurial;' % env)
 
 def clone_repo():
     """

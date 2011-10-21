@@ -8,6 +8,7 @@ from contextlib import contextmanager as _contextmanager
 Base configuration
 """
 env.project_name = 'videotext'
+env.apps = ['core',]
 env.database_password = '9MeuHqkNt0'
 env.site_media_prefix = "site_media"
 env.admin_media_prefix = "admin_media"
@@ -17,7 +18,7 @@ env.env_path = '%(path)s/env' % env
 env.repo_path = '%(path)s/repository' % env
 env.apache_config_path = '/home/newsapps/sites/apache/%(project_name)s' % env
 env.python = 'python2.6'
-env.repository_url = "git@github.com:ReportersLab/videotext.git"
+env.repository_url = "https://MrMetlHed@github.com/ReportersLab/TwitterVision.git"
 env.multi_server = False
 env.memcached_server_address = "cache.example.com"
 
@@ -29,7 +30,7 @@ def production():
     Work on production environment
     """
     env.settings = 'production'
-    env.hosts = ['db.reporterslab.org']
+    env.hosts = ['reporterslab.org']
     env.user = 'newsapps'
     env.s3_bucket = 'media.reporterslab.org'
 
@@ -38,9 +39,10 @@ def staging():
     Work on staging environment
     """
     env.settings = 'staging'
-    env.hosts = ['db.beta.reporterslab.org'] 
+    env.hosts = ['beta.reporterslab.org'] 
     env.user = 'newsapps'
-    env.s3_bucket = 'media.beta.reporterslab.org'
+    #env.s3_bucket = 'media.beta.reporterslab.org'
+    env.s3_bucket = 'media.reporterslab.org/beta'
     
 
 

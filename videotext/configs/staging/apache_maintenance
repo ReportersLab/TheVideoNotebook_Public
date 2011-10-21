@@ -1,8 +1,8 @@
 <VirtualHost *:80>
-    ServerName videotext.beta.reporterslab.org
-    ServerAlias www.videotext.beta.reporterslab.org
+    ServerName tv.beta.reporterslab.org
+    ServerAlias www.tv.beta.reporterslab.org
     
-    Redirect permanent /favicon.ico http://media.beta.reporterslab.org/videotext/na_media/favicon.ico
+    Redirect permanent /favicon.ico http://beta.reporterslab.org/videotext/na_media/favicon.ico
     
     Alias /robots.txt /home/newsapps/sites/videotext/repository/videotext/assets/robots.txt
  
@@ -18,7 +18,7 @@
     RewriteEngine on
     # canonical hostname
     RewriteCond %{HTTP_HOST} ^www [NC] 
-    RewriteRule ^/(.*)  http://videotext.beta.reporterslab.org/$1 [L,R]
+    RewriteRule ^/(.*)  http://tv.beta.reporterslab.org/$1 [L,R]
     
     DocumentRoot /home/newsapps/sites/videotext/repository/videotext/assets/
     

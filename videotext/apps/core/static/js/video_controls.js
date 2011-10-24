@@ -291,8 +291,9 @@ $(function(){
             this.render();
         },
         events: {
-            'click #note_search_button': 'searchPress',
-            'keyup #note_search_text': 'searchKeyUp'
+            'click #note_search_button': 'onSearchPress',
+            'keyup #note_search_text': 'onSearchKeyUp',
+            'blur #note_search_text': 'onSearchBlur'
         },
         
         render: function(){
@@ -304,16 +305,25 @@ $(function(){
             return this;
         },
         
-        searchPress: function(){
+        onSearchPress: function(){
             this.search();
         },
         
-        searchKeyUp: function(element){
+        onSearchKeyUp: function(element){
             text = $("#note_search_text").val();
             if(text.length > 2)
                 this.search();
             if(text.length == 0)
                 this.resetNotes();
+        },
+        
+        onSearchBlur: function(){
+            this.app.router.navigate("search/" + searchText);
+        },
+        
+        makeSearch: function(searchText){
+          $("#note_search_text").val(searchText);
+          this.search();
         },
         
         search: function(){
@@ -407,7 +417,8 @@ $(function(){
             'offset/:offset': 'videoOffset',
             'note/:noteId': 'note',
             'takeNotes': 'takeNotes',
-            'notes': 'showNotes'
+            'notes': 'showNotes',
+            'search/:search' : 'search'
         },
         
         videoOffset: function(offset){
@@ -416,6 +427,10 @@ $(function(){
         
         note: function(noteId){
             this.app.notesView.showNoteById(noteId);  
+        },
+        
+        search: function(search){
+            this.app.notesView.notesSearch.makeSearch(search);
         },
         
         takeNotes: function(){

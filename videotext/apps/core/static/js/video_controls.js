@@ -112,9 +112,13 @@ $(function(){
                 }
                 if(seconds < 0) seconds = 0; // if pre-event, just go to beginning.
                 if(seconds > this.player.getDuration()) return; //need graceful way to indicate note is after video ends.
-                this.player.seekTo(seconds, true); //time, allow-seek-ahead
-                this.player.playVideo();
+                this.seekToOffset(seconds);
             }
+       },
+       
+       seekToOffset: function(offset){
+            this.player.seekTo(offset, true);
+            this.player.playVideo();
        }
        
        
@@ -220,6 +224,19 @@ $(function(){
                 return;
             $("#notes").scrollTo($(note.view.el), 200, {offset:{top:-70}});
         },
+        
+        showNote: function(note){
+            this.selectNote(note);
+            this.scrollToNote(note);
+            this.autoHighlight = false;
+            this.app.videoView.seekToNote(note, false);
+        },
+        
+        
+        showNoteById: function(noteId){
+            note = this.notes.get(noteId);
+            this.showNote(note);
+       },
        
         selectNote: function(new_note){
             //not sure if in a search situation we should change highlighting if new-note is invisible?
@@ -241,7 +258,7 @@ $(function(){
             
             //if the user has jumped ahead manually, we want to give them time to watch video
             //before moving, so we set the autoHighlight property to false.
-            if( (new_note.get('offset') < this.selectedNote.get('offset')) && (this.autoHighlight == false) )
+            if( (this.selectedNote != null) && (new_note.get('offset') < this.selectedNote.get('offset')) && (this.autoHighlight == false) )
                 return;
             
             if(this.selectedNote == new_note)
@@ -363,6 +380,8 @@ $(function(){
             this.container.autoHighlight = false;
             //this.container.autoScroll = false;
             app.videoView.seekToNote(this.model, false);
+            //save history
+            app.router.navigate("note/" + this.model.id);
        },
        
        
@@ -377,6 +396,37 @@ $(function(){
        
        
     });
+    
+    window.MainRouter = Backbone.Router.extend({
+        
+        initialize: function(options){
+            this.app = options.app; // um, no options?
+        },
+        
+        routes: {
+            'offset/:offset': 'videoOffset',
+            'note/:noteId': 'note',
+            'takeNotes': 'takeNotes',
+            'notes': 'showNotes'
+        },
+        
+        videoOffset: function(offset){
+            this.app.videoView.seekToOffset(offset);
+        },
+        
+        note: function(noteId){
+            this.app.notesView.showNoteById(noteId);  
+        },
+        
+        takeNotes: function(){
+            //TODO: Show Note Taking Panel.
+        },
+        
+        showNotes: function(){
+            //TODO: Show Note Panel.
+        }
+        
+    })
     
     
     
@@ -401,6 +451,9 @@ $(function(){
             
             //Add search view
             this.notesView = new NotesView({el: $('#notes_container'), app:this, notes:this.notes });
+            
+            this.router = new MainRouter({app:this});
+            Backbone.history.start();
         }
         
     })

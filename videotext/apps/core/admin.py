@@ -59,7 +59,8 @@ class VideoAdmin(CommonAdmin):
         ),
         ('The Details',
             {
-                'fields': ('video_url', 'video_file', 'time', 'end_time', 'video_length', 'user_name', 'user_link', 'icon', 'icon_link',)
+                'fields': ('video_url', 'video_file', 'time', 'end_time', 'video_length', 'user_name',
+                           'user_link', 'icon', 'icon_link', 'private', 'lock_notes',)
             }
         ),
     )
@@ -75,7 +76,7 @@ class NoteAdmin(CommonAdmin):
     fieldsets = (
         ('The Basics',
             {
-                'fields': ('text', 'user', 'video', 'published', 'tags', )
+                'fields': ('text', 'user', 'video', 'published', 'tags', 'private',)
             }
         ),
         ('The Details',

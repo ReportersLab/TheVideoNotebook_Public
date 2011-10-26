@@ -48,6 +48,33 @@ blockquote
     margin-bottom:5px;
 }
 
+#header h4
+{
+    text-align:center;
+    font-size:14px;
+}
+#header h4 a{
+    font-variant:small-caps;
+    font-size:12px;
+}
+
+#header h4 p
+{
+    font-size:12px;
+    display:inline;
+    margin-right:20px;
+}
+
+#header h4 label
+{
+    margin-right:5px;
+}
+
+#header h4 input
+{
+    margin:0; padding:0;
+}
+
 #footer_contact h4
 {
     margin-bottom:2px;

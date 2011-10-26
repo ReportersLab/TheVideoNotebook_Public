@@ -6,6 +6,8 @@ from datetime import datetime
 #tags
 from taggit_autosuggest.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
+from django.db.models.signals import post_save
+
 
 
 class PublishedManager(models.Manager):
@@ -65,12 +67,12 @@ class Video(CommonInfo):
     video_url       = models.URLField(max_length = 256,  blank = False, verbose_name = "Path to source video", verify_exists = False)
     #do we just take the video url and set it to video file if upload?
     video_file      = models.FileField(upload_to='viodeotext/contrib/videos/', null=True, blank=True)
-    
     user_name       = models.CharField(max_length = 64, blank = True) # if not a user in the system, just a name
     user_link       = models.URLField(blank = True, verify_exists = False) # if the user has a link.
     icon            = models.ImageField(upload_to='videotext/contrib/icons/', null=True, blank=True) # image icon if uploaded
     icon_link       = models.URLField(blank = True, verify_exists = False) # image icon if on another server, ie YouTube Screenshot
-    
+    private         = models.BooleanField(default = False) #if for some reason we want to make this accessible only ot "user"
+    lock_notes      = models.BooleanField(default = False) #stops notes from being added -- should only work on uploaded videos.
     
     
     def save(self, *args, **kwargs):
@@ -128,6 +130,7 @@ class Note(CommonInfo):
     source_link = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True)
     source      = models.CharField(max_length = 256, blank = True, null=True)
     offset      = models.IntegerField(null = True, blank = True) # position within video in seconds.
+    private     = models.BooleanField(default = False)
     
     
     def save(self, *args, **kwargs):
@@ -156,6 +159,27 @@ class Note(CommonInfo):
         ordering = ['time', 'end_time', 'creation_time']
     
 
+
+
+
+
+
+
+
+
+#hold extra metadata for user
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    accepted_eula = models.BooleanField(default = False)
+    can_note = models.BooleanField(default = False)
+    role = models.CharField(max_length = 32, blank = True, null = True, default = 'user')
+
+
+#creates profile when User created
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user = instance)
+post_save.connect(create_user_profile, sender = User)
 
 
 

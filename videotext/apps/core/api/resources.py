@@ -1,5 +1,7 @@
 from tastypie import fields
 from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
+from tastypie.authentication import Authentication
+from tastypie.authorization import DjangoAuthorization
 from core.models import *
 
 
@@ -11,7 +13,11 @@ class VideoResource(ModelResource):
     class Meta:
         queryset = Video.objects.all()
         resource_name = "video"
-        ordering = ['-time',] 
+        ordering = ['-time',]
+        list_allowed_methods = ['get',]
+        detail_allowed_methods = ['get',]
+        authentication = Authentication()
+        authorization = DjangoAuthorization()
         
 class NoteResource(ModelResource):
     
@@ -21,6 +27,10 @@ class NoteResource(ModelResource):
         #bundle.data['offset'] = bundle.obj.gen_offset
         return bundle
     
+    #I THINK the way this works is a ModelResource will take care of saving to the actual model.
+    #But I want to make sure some values are there before doing anything.
+    def obj_create(self, bundle, request=None, **kwargs):
+        return super(NoteResource, self).obj_create(bundle, request, **kwargs)
     
     #TODO: Searching notes
     #TODO: Filter by limits?
@@ -39,14 +49,15 @@ class NoteResource(ModelResource):
     class Meta:
         queryset = Note.objects.all()
         resource_name = "note"
-        
         filtering = {
             'video': ALL_WITH_RELATIONS,
             'time': ['gt', 'gte', 'lt', 'lte',]
         }
-        
-        ordering = ['offset', 'time', 'end_time', 'creation_time']
-        
+        ordering = ['offset', 'time', 'end_time', 'creation_time',]
+        list_allowed_methods = ['get', 'post', 'put', 'patch',]
+        detail_allowed_methods = ['get', 'post', 'put', 'patch',]
+        authentication = Authentication()
+        authorization = DjangoAuthorization()
         
         
         

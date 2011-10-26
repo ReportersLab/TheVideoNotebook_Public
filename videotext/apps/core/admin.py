@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
-from models import Video, Note
+from models import Video, Note, UserProfile
 from django.contrib import admin
 
 
@@ -91,8 +91,23 @@ class NoteAdmin(CommonAdmin):
 
 
 
+class UserProfileAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('The Basics',
+            {
+                'fields': ('user', 'role', 'can_note', 'accepted_eula', )
+            }
+        ),
+    )
+    
+    list_display = ('user', 'role', 'can_note',)
+    list_editable= ('can_note',)
+    list_display_links = ('user',)
+
+
 
 
 
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Note, NoteAdmin)
+admin.site.register(UserProfile, UserProfileAdmin)

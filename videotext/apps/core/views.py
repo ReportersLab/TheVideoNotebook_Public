@@ -6,6 +6,10 @@ from django.views.generic.date_based import *
 from django.utils import simplejson as json
 from django.conf import settings
 from django.db.models import Q
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import logout, login, authenticate
+from django.http import HttpResponseRedirect
 from itertools import chain
 from operator import attrgetter
 from core.api.resources import NoteResource, VideoResource
@@ -39,11 +43,35 @@ def video_view(request, slug):
     return get_response(template='video.django.html', data=data, request=request)
 
 
+def login_main_view(request):
+    return render_to_response('', RequestContext(request))
+    
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect('/')
+
+
 
 
 def get_response(template = 'index.html', data = dict(), request = dict(), mime = 'text/html'):
+    auth_form = AuthenticationForm(request.POST)
+    auth_message = None
+    username = request.POST.get('username', None)
+    password = request.POST.get('password', None)
+    if username is not None and password is not None:
+        user = authenticate(username = username, password = password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+            else:
+                auth_message = 'Disabled Account'
+        else:
+            auth_message = "Invalid username or password"
+            
+    
     generic_data = {
-        
+        'auth_form': auth_form,
+        'auth_message': auth_message,
     }
     
     data.update(generic_data) # I think this is right.

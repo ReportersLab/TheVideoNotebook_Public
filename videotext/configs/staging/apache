@@ -3,6 +3,7 @@
     ServerAlias www.tv.beta.reporterslab.org
 
     WSGIScriptAlias / /home/newsapps/sites/videotext/repository/videotext/configs/staging/staging.wsgi
+    WSGIPassAuthorization On
     
     Redirect permanent /favicon.ico http://beta.reporterslab.org/videotext/na_media/favicon.ico
     

@@ -29,6 +29,24 @@
         <div id="wrapper" class="container_12">
             <div id="header" class="grid_12 alpha omega">
                 <h1><a href="/">TwitterVision</a></h1>
+                <h4>
+                    {% if user.is_authenticated %}
+                        Welcome {{ user }} | <a href="/l/logout/">LOG OUT</a>
+                    {% else %}
+                        <form method="post" action="{{ request.path }}">
+                            {% csrf_token %}
+                            <p><label for="id_username">Username:</label>{{ auth_form.username }}</p>
+                            <p><label for="id_password">Password:</label>{{ auth_form.password }}</p>
+                            <input type="submit" value="Log in" />
+                        </form>
+                        
+                        {% if auth_message %}
+                            <p>{{ auth_message }}</p>
+                        {% endif %}
+                        
+                    {% endif %}
+                    
+                </h4>
             </div>
             <div id="pre_main" class="grid_12 alpha omega">
                 {% block pre_main %} {% endblock %}

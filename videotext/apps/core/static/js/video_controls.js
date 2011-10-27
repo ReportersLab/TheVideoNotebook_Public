@@ -424,7 +424,7 @@ $(function(){
        template: _.template($("#noteTemplate").html()),
        
        initialize: function(){
-            this.model.set({'time_formatted': this.model.get('time').format("mm/dd/yy h:MM:ss TT")});
+            //this.model.set({'time_formatted': this.model.get('time').format("mm/dd/yy h:MM:ss TT")});
             this.container = this.options.container;
        },
        
@@ -433,7 +433,7 @@ $(function(){
        },
        
        render: function(){
-            //this.model.set({date_time: new Date(this.model.get('time')) });
+            this.model.set({date_time: new Date(this.model.get('time')) });
             $(this.el).html(this.template(this.model.toJSON()));
             return this;
        },

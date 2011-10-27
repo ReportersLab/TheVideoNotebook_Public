@@ -2,7 +2,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 #users
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime, timedelta
 #tags
 from taggit_autosuggest.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
@@ -127,19 +127,31 @@ class Note(CommonInfo):
     icon        = models.ImageField(upload_to='videotext/contrib/icons/', null=True, blank=True) # image icon if uploaded
     icon_link   = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) # image icon if on another server, ie Twitter User Photo
     type        = models.CharField(max_length = 32, blank = True, null = True)
-    source_link = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True)
+    source_link = models.CharField(max_length = 512, blank = True,  null = True) #could be absolute URL or path.
     source      = models.CharField(max_length = 256, blank = True, null=True)
     offset      = models.IntegerField(null = True, blank = True) # position within video in seconds.
     private     = models.BooleanField(default = False)
     
     
     def save(self, *args, **kwargs):
+        #if we don't have an id, save to get one.
         if not self.id:
-            pass
-        if (self.time != None) and (self.video.time != None):  #If we have the times, calculate offset, otherwise assume it's passed in.
-                self.offset = self.gen_offset
-                
+            super(Note, self).save(*args, **kwargs)
+            
+        
+        
+        if self.video != None:
+            if (self.time != None) and (self.video.time != None):  #If we have the times, calculate offset, otherwise assume it's passed in.
+                    self.offset = self.gen_offset
+            
+            if (self.time == None) and (self.video.time != None) and (self.offset != None):
+                self.time = self.video.time + timedelta(seconds = self.offset)
+        
+            self.link = '{0}#note/{1}'.format(self.video.get_absolute_url(), self.id) 
+        
         super(Note, self).save(*args, **kwargs)
+        
+            
     
     @property
     def gen_offset(self):

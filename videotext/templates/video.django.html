@@ -10,6 +10,8 @@
         NOTE_API = "{% url api_dispatch_list api_name="v1" resource_name="note" %}";
         VIDEO_API = "{% url api_dispatch_list api_name="v1" resource_name="video" %}";
         VIDEO_ID = "{{ video.id }}";
+        PATH = "{{ request.path }}";
+        LOGGED_IN = {{ user.is_authenticated|lower }};
         NOTES_DATA = {{ notes_json }};
         VIDEO_DATA = {{ video_json }};
     </script>
@@ -49,10 +51,16 @@
             <% } %>
             <span>
                 <% if(link) print('<a href="'+ link + '">'); %>
-                <%= date_time.format('mm/dd/yy h:MM:ss TT') %> (<%= offset %>)
+                    <% if(isValidDate(date_time)){ %>    
+                        <%= date_time.format('mm/dd/yy h:MM:ss TT') %> 
+                    <% } %> (<%= offset %>)
                 <% if(link) print('</a>'); %>
             </span>
         </div>
+    </script>
+    
+    <script type="text/html" id="addNoteTemplate">
+        
     </script>
     
 {% endblock %}
@@ -63,6 +71,20 @@
         <div id="video" class="grid_7 alpha"></div>
         <div id="right_rail" class="grid_5 omega">
             <div id="notes_container">
+                <div id="add_note_container">
+                    {% if user.is_authenticated %}
+                        <textarea id="new_note_text" name="new_note_text"></textarea>
+                        <input type="submit" value="Add Note" id="new_note_submit" />
+                        <div>
+                            <label for="new_note_private">Make note Private: </label>
+                            <input type="checkbox" id="new_note_private" name="new_note_private" />
+                        </div>
+                        <p>Hit enter to add the note.</p>
+                        <span class="add_note_link">View notes</span>
+                    {% else %}
+                        <p>Please log in to above to add notes</p>
+                    {% endif %}
+                </div>
                 <div id="note_search">
                     <h5>Search Notes</h5>
                     <div>
@@ -72,6 +94,8 @@
                     <div id="search_results_count"></div>
                     <div id="note_controls">
                         <div id="auto_scroll"><span>Disable Auto-Scroll</span></div>
+                         <div>|</div> 
+                        {% if user.is_authenticated %}<div id="add_note_link" class="add_note_link"><span>Add Notes</span></div>{% endif %}
                     </div>
                 </div>
                 <div id="notes"></div>

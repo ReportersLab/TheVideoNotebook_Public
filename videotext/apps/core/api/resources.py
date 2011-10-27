@@ -3,6 +3,7 @@ from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
 from tastypie.authentication import Authentication
 from tastypie.authorization import DjangoAuthorization
 from core.models import *
+from core.helpers.strip_tags import strip
 
 
 class VideoResource(ModelResource):
@@ -27,10 +28,27 @@ class NoteResource(ModelResource):
         #bundle.data['offset'] = bundle.obj.gen_offset
         return bundle
     
-    #I THINK the way this works is a ModelResource will take care of saving to the actual model.
-    #But I want to make sure some values are there before doing anything.
+    '''
+    So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)
+    So ratehr than dealing with the default bundle saving, I'm just creating a new note and saving it myself.
+    '''
     def obj_create(self, bundle, request=None, **kwargs):
-        return super(NoteResource, self).obj_create(bundle, request, **kwargs)
+        if bundle.data is not None:
+            text = strip(bundle.data['text'])
+            offset = bundle.data['offset']
+            video = Video.objects.get(id = bundle.data['video'])
+            user = request.user
+            user_name = request.user.username
+            private = bundle.data['private_note']
+            source_link = strip(bundle.data['source_link'])
+            note = Note(text = text, offset = offset, video = video, user = user,
+                        user_name = user_name, private = private, type = 'note', source='tv', source_link = source_link)
+            
+            note.save()
+            
+            
+        return note
+        #return super(NoteResource, self).obj_create(bundle, request, **kwargs)
     
     #TODO: Searching notes
     #TODO: Filter by limits?

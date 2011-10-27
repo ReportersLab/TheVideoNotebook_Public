@@ -1,3 +1,30 @@
+//backbone to tastypie override
+var oldSync = Backbone.sync;
+ 
+Backbone.sync = function(method, model, options){
+    success = options['success'];
+    error = options['error'];
+    var newSuccess = function(resp, status, xhr){
+        if(xhr.statusText === "success"){
+            var location = xhr.getResponseHeader('Location');
+            
+            return $.ajax({
+                       url: location,
+                       success: success
+                   });
+        }
+        return success(resp);
+    };
+    return oldSync(method, model, {success: newSuccess, error: error});
+};
+
+//found: http://stackoverflow.com/questions/1353684/detecting-an-invalid-date-date-instance-in-javascript
+function isValidDate(d) {
+  if ( Object.prototype.toString.call(d) !== "[object Date]" )
+    return false;
+  return !isNaN(d.getTime());
+}
+
 
 //time we should seek before a note before playing the video.
 NOTE_SEEK_BEFORE_TIME = 30;
@@ -64,7 +91,8 @@ $(function(){
         className: 'video',
         template: _.template($("#videoTemplate").html()),
         initialize: function(){
-            this.player = null;  
+            this.player = null;
+            this.videoTime = 0;
         },
         render: function(){
             $(this.el).html(this.template(this.model.toJSON()));
@@ -97,6 +125,16 @@ $(function(){
             //console.log("New Video Time: " + this.videoTime);
             app.notesView.showNoteAtTime(this.videoTime);
             
+       },
+       
+       pauseVideo: function(){
+            if(this.player != null)
+                this.player.pauseVideo();
+       },
+       
+       playVideo: function(){
+            if(this.player != null)
+                this.player.playVideo();
        },
        
        seekToNote: function(note, exact){
@@ -135,16 +173,16 @@ $(function(){
           return {
             text: "",
             video: VIDEO_ID,
-            link: "LINK_TO_SELF_GOES_HERE",
-            user: "USER_ID_GOES_HERE",
             type: "note",
-            source:"us",
-            source_link: "LINK_TO_VIDEO_GOES_HERE"
+            source:"tv",
+            source_link: PATH,
+            offset: -1
           }
         },
         
         initialize: function(){
             //make a real JS date out of the date string we got in JSON.
+            //now done in the view, because this fails on newly added notes.
             this.set({date_time: new Date(this.get('time')) });
         },
         
@@ -174,6 +212,7 @@ $(function(){
             this.app = this.options.app;
             this.notes = this.options.notes;
             this.autoScroll = true;
+            this.addingNotes = false;
             this.autoHighlight = true;
             //then load the notes
             this.notes.bind('add', this.addNote, this);
@@ -183,10 +222,12 @@ $(function(){
             this.notes.reset(NOTES_DATA);
             
             this.notesSearch = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
+            this.addNoteView = new AddNoteView({el: $('#add_note_container'), notesView: this, notes: this.notes });
        },
        
        events: {
-            'click #auto_scroll': 'toggleAutoScroll'
+            'click #auto_scroll': 'toggleAutoScroll',
+            'click .add_note_link': 'toggleAddNotes'
        },
        
        render: function(){
@@ -200,6 +241,7 @@ $(function(){
         },
         
         refreshNotes: function(){
+            $("#notes").html('');
             this.notes.each(this.addNote, this);
         },
        
@@ -212,6 +254,19 @@ $(function(){
             }else{
                 this.autoScroll = true;
                 $("#auto_scroll").html("<span>Disable Auto-Scroll</span>");
+            }
+       },
+       
+       toggleAddNotes: function(){
+            if(this.addingNotes){
+                this.addingNotes = false;
+                $("#add_note_link").html("<span>Add Notes</span>");
+                $(this.addNoteView.el).slideUp(1000);
+                this.refreshNotes();
+            }else{
+                this.addingNotes = true;
+                $("#add_note_link").html("<span>View notes</span>");
+                $(this.addNoteView.el).slideDown(1000);
             }
        },
        
@@ -256,6 +311,9 @@ $(function(){
                 return note.get('offset') > time;
             }, this);
             
+            //if no new note, we've reached the end of notes, so just return.
+            if(new_note === undefined)
+                return;
             //if the user has jumped ahead manually, we want to give them time to watch video
             //before moving, so we set the autoHighlight property to false.
             if( (this.selectedNote != null) && (new_note.get('offset') < this.selectedNote.get('offset')) && (this.autoHighlight == false) )
@@ -268,11 +326,6 @@ $(function(){
                 this.selectNote(new_note);
             }
             
-            //then get a note a few before, that's where we're going to scroll.
-            //var index = this.notes.indexOf(this.selectedNote)-2;
-            //if(index < 0) index = 0;
-            //if(index > this.notes.length - 1) index = this.notes.length - 1; //not possible. I think.
-            //var top_note = this.notes.at(index);
             //scroll to the note.
             this.scrollToNote(this.selectedNote);
             
@@ -318,7 +371,8 @@ $(function(){
         },
         
         onSearchBlur: function(){
-            this.app.router.navigate("search/" + searchText);
+            if(this.searchText)
+                this.app.router.navigate("search/" + this.searchText);
         },
         
         makeSearch: function(searchText){
@@ -327,16 +381,16 @@ $(function(){
         },
         
         search: function(){
-            searchText = $("#note_search_text").val();
+            this.searchText = $("#note_search_text").val();
             //this.notes = app.notes;
             //search the notes collection for matches.
             
             toHide = this.notes.select(function(note){
-                return note.get('text').toLowerCase().indexOf(searchText.toLowerCase()) == -1
+                return note.get('text').toLowerCase().indexOf(this.searchText.toLowerCase()) == -1
             }, this);
              
             toShow = this.notes.select(function(note){
-                return note.get('text').toLowerCase().indexOf(searchText.toLowerCase()) != -1
+                return note.get('text').toLowerCase().indexOf(this.searchText.toLowerCase()) != -1
             }, this);
             
             
@@ -379,12 +433,14 @@ $(function(){
        },
        
        render: function(){
+            //this.model.set({date_time: new Date(this.model.get('time')) });
             $(this.el).html(this.template(this.model.toJSON()));
             return this;
        },
        
        onNoteClicked: function(event){
             //console.log(this.model.get('id'));
+            this.container.autoHighlight = true;
             this.container.selectNote(this.model);
             this.container.scrollToNote(this.model);
             this.container.autoHighlight = false;
@@ -406,6 +462,69 @@ $(function(){
        
        
     });
+    
+    
+    
+    window.AddNoteView = Backbone.View.extend({
+       tagName: 'div',
+       className: 'add_note',
+       id:'add_note_container',
+       template: _.template($("#addNoteTemplate").html()),
+       
+       initialize: function(){
+            this.notes = this.options.notes;
+       },
+       
+       events: {
+            'click #new_note_submit': 'onNoteAdd',
+            'keyup #new_note_text': 'onNoteKeyUp'
+       },
+       
+       render: function(){
+            $(this.el).html(this.template(this.model.toJSON()));
+            return this;
+       },
+       
+       onNoteKeyUp: function(event){
+            if($("#new_note_text").val().length > 0){
+                app.videoView.pauseVideo();
+            }else{
+                app.videoView.playVideo();
+            }
+            if(event.keyCode == 13){ //the 'enter' key
+                this.addNote();
+            }
+       },
+       
+       onNoteAdd: function(){
+            this.addNote();
+       },
+       
+       addNote: function(){
+            text = $("#new_note_text").val();
+            private_note = $("#new_note_private").val();
+            if(text.length < 10){
+                //too short? Do nothing. Should we send a warning?
+                return;
+            }
+            
+            this.notes.create({
+                text: text,
+                offset: app.videoView.videoTime,
+                private_note: !private_note
+            });
+            
+            $("#new_note_text").val(''); //empties the note to start over.
+            app.videoView.playVideo();
+       }
+       
+       
+       
+    });
+    
+    
+    
+    
     
     window.MainRouter = Backbone.Router.extend({
         

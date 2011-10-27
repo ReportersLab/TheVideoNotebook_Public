@@ -424,7 +424,7 @@ $(function(){
        template: _.template($("#noteTemplate").html()),
        
        initialize: function(){
-            //this.model.set({'time_formatted': this.model.get('time').format("mm/dd/yy h:MM:ss TT")});
+            this.model.set({'time_formatted': this.model.get('time').format("mm/dd/yy h:MM:ss TT")});
             this.container = this.options.container;
        },
        
@@ -508,11 +508,20 @@ $(function(){
                 return;
             }
             
+            var status = $("#add_note_status");
+            status.html("<span>Saving Note...</span>")
+            status.show();
+            
             this.notes.create({
-                text: text,
-                offset: app.videoView.videoTime,
-                private_note: !private_note
-            });
+                    text: text,
+                    offset: app.videoView.videoTime,
+                    private_note: !private_note
+                }, {
+                    success: function(){
+                        status.html("<span>Note Saved</span>");
+                        status.effect("pulsate", {times:3, mode:"hide"}, 500);
+                    }
+                    });
             
             $("#new_note_text").val(''); //empties the note to start over.
             app.videoView.playVideo();

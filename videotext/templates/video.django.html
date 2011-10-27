@@ -75,11 +75,11 @@
                     {% if user.is_authenticated %}
                         <textarea id="new_note_text" name="new_note_text"></textarea>
                         <input type="submit" value="Add Note" id="new_note_submit" />
-                        <div>
-                            <label for="new_note_private">Make note Private: </label>
+                        <div style="margin:5px 0 5px 5px; font-size:10px;">
+                            <label for="new_note_private">Make note private: </label>
                             <input type="checkbox" id="new_note_private" name="new_note_private" />
+                            <div id="add_note_status"></div>
                         </div>
-                        <p>Hit enter to add the note.</p>
                         <span class="add_note_link">View notes</span>
                     {% else %}
                         <p>Please log in to above to add notes</p>

@@ -94,8 +94,10 @@
                     <div id="search_results_count"></div>
                     <div id="note_controls">
                         <div id="auto_scroll"><span>Disable Auto-Scroll</span></div>
-                         <div>|</div> 
-                        {% if user.is_authenticated %}<div id="add_note_link" class="add_note_link"><span>Add Notes</span></div>{% endif %}
+                        {% if user.is_authenticated %}
+                            <div>|</div>
+                            <div id="add_note_link" class="add_note_link"><span>Add Notes</span></div>
+                        {% endif %}
                     </div>
                 </div>
                 <div id="notes"></div>

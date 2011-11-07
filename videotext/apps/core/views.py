@@ -24,6 +24,12 @@ def index_view(request):
     return get_response(template='index.django.html', data=data, request=request)
 
 
+
+def add_video_view(request, slug):
+    data = {}
+    return get_response(template='add_video.django.html', data=data, request=request)
+
+
 def video_view(request, slug):
     note_resource = NoteResource()
     video_resource = VideoResource()

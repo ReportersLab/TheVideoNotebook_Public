@@ -64,7 +64,7 @@ class Video(CommonInfo):
     type            = models.CharField(max_length = 32, blank = True, choices = VIDEO_TYPE_CHOICES, default='mp4')
     video_length          = models.IntegerField(null = True, default = 0) #Length in seconds.
     #Will want to verify this exists in the future
-    video_url       = models.URLField(max_length = 256,  blank = False, verbose_name = "Path to source video", verify_exists = False)
+    video_url       = models.CharField(max_length = 256,  blank = True, verbose_name = "Path to source video or YouTube ID")
     #do we just take the video url and set it to video file if upload?
     video_file      = models.FileField(upload_to='viodeotext/contrib/videos/', null=True, blank=True)
     user_name       = models.CharField(max_length = 64, blank = True) # if not a user in the system, just a name

@@ -110,7 +110,8 @@ $(function(){
        embedYouTube: function(){
             var params = { allowScriptAccess: "always" };
             var attrs  = { id: "player" };
-            swfobject.embedSWF( this.model.get('video_url') , "player_container", "540", "350", "8", null, null, params, attrs);
+            var url = "http://www.youtube.com/v/" + this.model.get('video_url') + "?version=3&enablejsapi=1&feature=player_embedded"; 
+            swfobject.embedSWF( url, "player_container", "540", "350", "8", null, null, params, attrs);
             //video loaded, onYouTubePlayeReady(id) is called when video loaded,
             //then 'this.player' available and 'addYouTubeVideoEvents' called
        },

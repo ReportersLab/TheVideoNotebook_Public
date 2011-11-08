@@ -25,7 +25,7 @@ def index_view(request):
 
 
 
-def add_video_view(request, slug):
+def add_video_view(request):
     data = {}
     return get_response(template='add_video.django.html', data=data, request=request)
 

@@ -7,11 +7,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/video_controls.js"></script>
     {% autoescape off %}
     <script type="text/javascript">
-        NOTE_API = "{% url api_dispatch_list api_name="v1" resource_name="note" %}";
-        VIDEO_API = "{% url api_dispatch_list api_name="v1" resource_name="video" %}";
         VIDEO_ID = "{{ video.id }}";
-        PATH = "{{ request.path }}";
-        LOGGED_IN = {{ user.is_authenticated|lower }};
         NOTES_DATA = {{ notes_json }};
         VIDEO_DATA = {{ video_json }};
     </script>

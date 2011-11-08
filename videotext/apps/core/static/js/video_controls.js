@@ -1,29 +1,5 @@
-//backbone to tastypie override
-var oldSync = Backbone.sync;
- 
-Backbone.sync = function(method, model, options){
-    success = options['success'];
-    error = options['error'];
-    var newSuccess = function(resp, status, xhr){
-        if(xhr.statusText === "success"){
-            var location = xhr.getResponseHeader('Location');
-            
-            return $.ajax({
-                       url: location,
-                       success: success
-                   });
-        }
-        return success(resp);
-    };
-    return oldSync(method, model, {success: newSuccess, error: error});
-};
 
-//found: http://stackoverflow.com/questions/1353684/detecting-an-invalid-date-date-instance-in-javascript
-function isValidDate(d) {
-  if ( Object.prototype.toString.call(d) !== "[object Date]" )
-    return false;
-  return !isNaN(d.getTime());
-}
+
 
 
 //time we should seek before a note before playing the video.
@@ -75,16 +51,7 @@ function onYouTubeStateChange(newState)
 $(function(){
     
     
-    window.Video = Backbone.Model.extend({
-        url: VIDEO_API + VIDEO_ID + "/",
-        initialize: function(){
-            //make a real JS date out of the date string we got in JSON.
-            this.set({date_time: new Date(this.get('time')) });
-            if(this.get('end_time')){
-                this.set({end_date_time: new Date(this.get('end_time'))});
-            }
-        }
-    })
+    
     
     window.VideoView = Backbone.View.extend({
         tagName: 'div',
@@ -165,48 +132,7 @@ $(function(){
        
     })
     
-    
-    
-    
-    window.Note = Backbone.Model.extend({
-       
-        defaults: function(){
-          return {
-            text: "",
-            video: VIDEO_ID,
-            type: "note",
-            source:"tv",
-            source_link: PATH,
-            offset: -1
-          }
-        },
-        
-        initialize: function(){
-            //make a real JS date out of the date string we got in JSON.
-            //now done in the view, because this fails on newly added notes.
-            this.set({date_time: new Date(this.get('time')) });
-        },
-        
-        url: function(){
-            return this.get('resource_uri') || this.collection.url;
-        }
-        
-    });
-    
-    
-    window.Notes = Backbone.Collection.extend({
-       model: Note,
-       url: NOTE_API,
-       parse: function(data){
-            return data.objects;
-       },
-       comparator: function(note){
-            return parseInt(note.get('offset'));
-       }
-    });
-    
-    
-    
+  
     
     window.NotesView = Backbone.View.extend({
        initialize: function(){

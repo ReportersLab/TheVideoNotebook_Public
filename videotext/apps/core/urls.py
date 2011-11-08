@@ -13,9 +13,10 @@ v1_api.register(NoteResource())
 
 urlpatterns = patterns('',    
     (r'^api/', include(v1_api.urls)),
-    url(r'^l/$', views.login_main_view, name="login_main_view"),
-    (r'^l/login/$', 'django.contrib.auth.views.login'),
-    url(r'^l/logout/$', views.logout_view, name="logout_view"),
+    url(r'^l/?$', views.login_main_view, name="login_main_view"),
+    (r'^l/login/?$', 'django.contrib.auth.views.login'),
+    url(r'^l/logout/?$', views.logout_view, name="logout_view"),
+    url(r'^video/add/?$', views.add_video_view, name='add_video_view'),
     url(r'^video/(?P<slug>[-\w]+)/?$', views.video_view, name='video_view'),
     url(r'^taggit_autosuggest/list/$', views.list_tags, name='taggit_autosuggest-list'),
     url(r'', views.index_view, name='index_view'),

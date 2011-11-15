@@ -45,7 +45,7 @@ class SourceAdmin(CommonAdmin):
     fieldsets = (
         ('The Basics',
             {
-                'fields': ('user', 'video', 'url', 'type',)
+                'fields': ('user', 'video', 'url', 'type', 'scraped', 'content',)
             }
         ),
     )

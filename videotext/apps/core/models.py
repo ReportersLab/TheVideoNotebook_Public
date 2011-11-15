@@ -129,10 +129,14 @@ class Video(CommonInfo):
 Places to pull in content from when creating a video.
 '''
 class Source(CommonInfo):
-    url    = models.URLField(max_length = 512, blank = False, verify_exists = False)
-    type   = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
-    video  = models.ForeignKey(to = "Video", blank = False, null = True)
-    user   = models.ForeignKey(to=User, blank = True, null = True) 
+    url       = models.URLField(max_length = 512, blank = False, verify_exists = False)
+    type      = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
+    video     = models.ForeignKey(to = "Video", blank = False, null = True)
+    user      = models.ForeignKey(to=User, blank = True, null = True)
+    scraped   = models.BooleanField(default = False, verbose_name = 'Data Scraped')
+    # Either we save scraped content here as a zip file or text file or whatever
+    # OR we let people upload a CSV in a specific format to parse for notes.
+    content   = models.FileField(upload_to = 'videotext/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location') 
 
 
 

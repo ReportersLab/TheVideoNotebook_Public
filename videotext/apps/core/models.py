@@ -58,6 +58,7 @@ SOURCE_TYPE_CHOICES = (
     ('storify','Storify'),
     ('coveritlive','Cover It Live'),
     ('scribblelive','ScribbleLive'),
+    ('csv', 'CSV'),
 #    ('Fark.com','fark'),
 )
 
@@ -129,7 +130,7 @@ class Video(CommonInfo):
 Places to pull in content from when creating a video.
 '''
 class Source(CommonInfo):
-    url       = models.URLField(max_length = 512, blank = False, verify_exists = False)
+    url       = models.URLField(max_length = 512, blank = True, verify_exists = False)
     type      = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
     video     = models.ForeignKey(to = "Video", blank = False, null = True)
     user      = models.ForeignKey(to=User, blank = True, null = True)

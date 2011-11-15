@@ -24,8 +24,8 @@ class CommonInfo(models.Model):
     end_time        = models.DateTimeField(null = True, blank = True) #UTC time content ends (if applicable)
     
     
-    objects = PublishedManager()
-    all_objects = models.Manager()
+    objects = models.Manager()
+    published_objects = PublishedManager()
     
     def save(self, *args, **kwargs):
         if not self.id:
@@ -46,10 +46,19 @@ class CommonInfo(models.Model):
 
 
 VIDEO_TYPE_CHOICES = (
-    ('youtube','youtube'),
+    ('youtube','YouTube'),
     ('mp4','mp4'),
     ('flv','flv'),
     ('3gp','3gp'),
+)
+
+
+SOURCE_TYPE_CHOICES = (
+    ('twitter','Twitter'),
+    ('storify','Storify'),
+    ('coveritlive','Cover It Live'),
+    ('scribblelive','ScribbleLive'),
+#    ('Fark.com','fark'),
 )
 
 
@@ -62,7 +71,7 @@ class Video(CommonInfo):
     teaser          = models.TextField(blank = True)
     user            = models.ForeignKey(to=User, blank = True, null = True) #allow anonymous uploads?
     type            = models.CharField(max_length = 32, blank = True, choices = VIDEO_TYPE_CHOICES, default='mp4')
-    video_length          = models.IntegerField(null = True, default = 0) #Length in seconds.
+    video_length    = models.IntegerField(null = True, default = 0) #Length in seconds.
     #Will want to verify this exists in the future
     video_url       = models.CharField(max_length = 256,  blank = True, verbose_name = "Path to source video or YouTube ID")
     #do we just take the video url and set it to video file if upload?
@@ -73,7 +82,6 @@ class Video(CommonInfo):
     icon_link       = models.URLField(blank = True, verify_exists = False) # image icon if on another server, ie YouTube Screenshot
     private         = models.BooleanField(default = False) #if for some reason we want to make this accessible only ot "user"
     lock_notes      = models.BooleanField(default = False) #stops notes from being added -- should only work on uploaded videos.
-    
     
     def save(self, *args, **kwargs):
         if not self.id:
@@ -114,6 +122,17 @@ class Video(CommonInfo):
     
     def __unicode__(self):
         return u'Video: %s' % (self.title)
+
+
+
+'''
+Places to pull in content from when creating a video.
+'''
+class Source(CommonInfo):
+    url    = models.URLField(max_length = 512, blank = False, verify_exists = False)
+    type   = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
+    video  = models.ForeignKey(to = "Video", blank = False, null = True)
+    user   = models.ForeignKey(to=User, blank = True, null = True) 
 
 
 

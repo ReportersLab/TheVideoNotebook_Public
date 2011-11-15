@@ -38,42 +38,37 @@
    </div>
    
    <script type="text/javascript">
-        VIDEO_API = "{% url api_dispatch_list api_name="v1" resource_name="video" %}";
-        
-        $('input[name=videoType]:radio').change(function(){
-            $('.add_box').hide();
-            $('#' + this.id + 'Add').show();
-        });
-        
-        $('#youtube_submit').click(function(){getVideoDetails();});
-        $('#youtube_ID').keydown(function(event){
-            if(event.keyCode == 13){ //the 'enter' key
-                getVideoDetails();
-            }    
-        });
-        
-        function getVideoDetails(){
-            id = $('#youtube_ID').val();
-            $.getJSON('http://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&q='+ id +'&callback=?', function(data) { 
-                try{
-                    var item = data.data.items[0];
-                    var title = item['title'];
-                    var description = item['description'];
-                    var date = item['uploaded'];
-                    var tags = item['tags'].join(',');
-                    var user_name = item['uploader'];
-                    var image = item['thumbnail']['hqDefault'];
-                    var embedable = item['accessControl']['embed'] == 'allowed';
-                    $("#video_title").html(title);
-                    $('#video_description').html(description);
-                    $('#video_date').html(date);
-                }catch (e){
-                    console.log("Error Parsing Data: " + e);    
-                }
+        $(document).ready(function(){
+            var videos = new Videos();
+            
+            $('input[name=videoType]:radio').change(function(){
+                $('.add_box').hide();
+                $('#' + this.id + 'Add').show();
             });
-
-        }
+            
+            $('#youtube_submit').click(function(){getVideoDetails();});
+            $('#youtube_ID').keydown(function(event){
+                if(event.keyCode == 13){ //the 'enter' key
+                    getVideoDetails();
+                }    
+            });
+            
+            function getVideoDetails(){
+                id = $('#youtube_ID').val();
+                videos.getYouTubeVideoDetails(id, function(video){
+                    
+                    if(!video){
+                        $("#video_title").html("That Video was either not found or not embedable, please try another.");
+                        return;
+                    }
+                    console.log(video);
+                    $("#video_title").html(video.get('title'));
+                    $('#video_description').html(video.get('description'));
+                    $('#video_date').html(video.get('date'));
+                });
+            }
         
+        });
         
    </script>
    

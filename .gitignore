@@ -15,3 +15,6 @@ build
 my_servers
 review_lab/assets/static
 .DS_Store
+videotext/configs/common/settings_private.py
+videotext/configs/production/settings_private.py
+videotext/configs/staging/settings_private.py

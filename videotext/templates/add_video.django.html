@@ -4,74 +4,46 @@
 
 
 {% block head %}
-   
+    <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jeditable.mini.js"></script>
+    <script type="text/html" id="createVideoTemplate">
+        <img src="<%= icon_link %>" class='grid_5 alpha omega' /><br />
+        <h4 id="video_title" class="edit" style="clear:both;"><%= title %></h4>
+        <p id="video_description" class="edit"><%= description %></p>
+        <h6 id="video_date" class="edit"> <%= time %></h6>
+    </script>
 {% endblock %}
 
 
 {% block main_content %}
-   <h1>Add a video</h1>
-   <div class="grid_7 alpha">
-        <div id="type_select">
-             <h3>Video Type</h3>
-             <label for="youtube_type">YouTube</label>
-             <input type="radio" id="youtube_type" name="video_type" checked="checked" />
-             <label for="upload_type">Upload (MP4)</label>
-             <input type="radio" id="upload_type" name="video_type" />
+    
+    <div id="app">
+        <h1>Add a video</h1>
+        <div class="grid_7 alpha">
+             <div id="type_select">
+                  <h3>Video Type</h3>
+                  <label for="youtube_type">YouTube</label>
+                  <input type="radio" id="youtube_type" name="video_type" checked="checked" />
+                  <label for="upload_type">Upload (MP4)</label>
+                  <input type="radio" id="upload_type" name="video_type" />
+             </div>
+             
+             <div id="youtube_type_add" class="add_box">
+                  <label for="youtubeId">You Tube ID (ex: dKNNN0NvVrc)</label>
+                  <input type="text" id="youtube_ID" name="youtube_ID" />
+                  <input type="submit" id="youtube_submit" value="Get Video Details" />
+             </div>
+             
+             <div id="upload_type_add" class="add_box" style="display:none;">
+                  <label for="upload">Upload a Video</label>
+                  <h5>TODO: Implement uploading...</h5>
+             </div>   
         </div>
         
-        <div id="youtube_type_dd" class="add_box">
-             <label for="youtubeId">You Tube ID (ex: dKNNN0NvVrc)</label>
-             <input type="text" id="youtube_ID" name="youtube_ID" />
-             <input type="submit" id="youtube_submit" value="Get Video Details" />
+        <div id="right_rail" class="grid_5 omega">
+             <div id="video_details_container"></div>
         </div>
-        
-        <div id="upload_type_add" class="add_box" style="display:none;">
-             <label for="upload">Upload a Video</label>
-             <h5>TODO: Implement uploading...</h5>
-        </div>   
-   </div>
-   
-   <div id="right_rail" class="grid_5 omega">
-        <h3 id="video_title"></h3>
-        <p id="video_description"></p>
-        <h6 id="video_date"></h6>
-   </div>
-   
-   <script type="text/javascript">
-        $(document).ready(function(){
-            var videos = new Videos();
-            
-            $('input[name=videoType]:radio').change(function(){
-                $('.add_box').hide();
-                $('#' + this.id + 'Add').show();
-            });
-            
-            $('#youtube_submit').click(function(){getVideoDetails();});
-            $('#youtube_ID').keydown(function(event){
-                if(event.keyCode == 13){ //the 'enter' key
-                    getVideoDetails();
-                }    
-            });
-            
-            function getVideoDetails(){
-                id = $('#youtube_ID').val();
-                videos.getYouTubeVideoDetails(id, function(video){
-                    
-                    if(!video){
-                        $("#video_title").html("That Video was either not found or not embedable, please try another.");
-                        return;
-                    }
-                    console.log(video);
-                    $("#video_title").html(video.get('title'));
-                    $('#video_description').html(video.get('description'));
-                    $('#video_date').html(video.get('date'));
-                });
-            }
-        
-        });
-        
-   </script>
-   
+    </div>
    
    
 {% endblock %}

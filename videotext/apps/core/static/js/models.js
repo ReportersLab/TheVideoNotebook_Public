@@ -21,7 +21,7 @@ $(function(){
              return data.objects;
          },
          comparator: function(video){
-             return this.get('end_date_time');
+             return video.get('end_date_time');
          },
          
          getYouTubeVideoDetails: function(id, callback){
@@ -38,11 +38,12 @@ $(function(){
                     }
                     var title = item['title'];
                     var description = item['description'];
-                    var date = item['uploaded'];
+                    var time = item['uploaded'];
                     var tags = item['tags'].join(',');
                     var user_name = item['uploader'];
                     var image = item['thumbnail']['hqDefault'];
-                    video.set({title: title, description:description, date:date, tags:tags, user_name: user_name, icon_link:image});
+                    video.set({title: title, description:description, time:time, tags:tags, user_name: user_name,
+                              icon_link:image, type:'youtube', private: false, video_url: id });
                     if(callback != null)
                         callback(video);
                 }catch (e){

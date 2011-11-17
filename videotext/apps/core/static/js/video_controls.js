@@ -503,7 +503,7 @@ $(function(){
     
     window.App = Backbone.View.extend({
         
-        el: $("app"),
+        el: $("#app"),
         
         events: {
             

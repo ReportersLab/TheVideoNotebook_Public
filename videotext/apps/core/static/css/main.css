@@ -246,7 +246,10 @@ blockquote
     color:#993333;
 }
 
-
+.editable_texarea
+{
+    max-height:100px;
+}
 
 /**
  *Index view / list

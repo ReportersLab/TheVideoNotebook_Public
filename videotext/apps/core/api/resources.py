@@ -4,6 +4,7 @@ from tastypie.authentication import Authentication
 from tastypie.authorization import DjangoAuthorization
 from core.models import *
 from core.helpers.strip_tags import strip
+from datetime import datetime, timedelta
 
 
 class VideoResource(ModelResource):
@@ -11,12 +12,47 @@ class VideoResource(ModelResource):
     #neither have to know about the other.
     #notes = fields.ToManyField('core.api.resources.NoteResource', 'note_set')
     
+    def obj_create(self, bundle, request = None, **kwargs):
+        video = None
+        if bundle.data is not None:
+            title = strip(bundle.data['title'])
+            description = strip(bundle.data['description'])
+            time = bundle.data['time']
+            user = request.user
+            user_name = request.user.username
+            private = bundle.data['private']
+            video_url = strip(bundle.data['video_url'])
+            type = strip(bundle.data['type'])
+            
+            #Video File would probably be uploaded separately? I don't really know how to handle that yet.
+            #video_file = strip(bundle.data['video_file'])
+            if type == 'youtube':
+                time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.000Z')
+            
+            video, created = Video.objects.get_or_create(title = title, description = description, time = time, user = user,
+                        user_name = user_name, private = private, type = type, video_url = video_url)
+            
+            video.save()
+            
+            
+        return video
+    
+    def obj_update(self, bundle, request = None, **kwargs):
+        video = None
+        if bundle.data is not None:
+            video = Video.objects.get( id = bundle.data['id'] )
+            if video is not None and video.user == request.user:
+                return super(VideoResource, self).obj_update(bundle, request, **kwargs)
+        return video
+                
+        
+    
     class Meta:
         queryset = Video.objects.all()
         resource_name = "video"
         ordering = ['-time',]
-        list_allowed_methods = ['get',]
-        detail_allowed_methods = ['get',]
+        list_allowed_methods = ['get', 'post', 'put', 'patch',]
+        detail_allowed_methods = ['get', 'post', 'put', 'patch',]
         authentication = Authentication()
         authorization = DjangoAuthorization()
         
@@ -33,6 +69,7 @@ class NoteResource(ModelResource):
     So ratehr than dealing with the default bundle saving, I'm just creating a new note and saving it myself.
     '''
     def obj_create(self, bundle, request=None, **kwargs):
+        note = None
         if bundle.data is not None:
             text = strip(bundle.data['text'])
             offset = bundle.data['offset']
@@ -41,11 +78,8 @@ class NoteResource(ModelResource):
             user_name = request.user.username
             private = bundle.data['private_note']
             source_link = strip(bundle.data['source_link'])
-            note = Note(text = text, offset = offset, video = video, user = user,
+            note = Note.objects.create(text = text, offset = offset, video = video, user = user,
                         user_name = user_name, private = private, type = 'note', source='tv', source_link = source_link)
-            
-            note.save()
-            
             
         return note
         #return super(NoteResource, self).obj_create(bundle, request, **kwargs)

@@ -4,6 +4,6 @@
 
 {% block main_content %}
     {% for v in video_list %}
-        <a href="{{ v.get_absolute_url }}">{{ v.title }}</a>    
+        <h2><a href="{{ v.get_absolute_url }}">{{ v.title }}</a></h2>   
     {% endfor %}
 {% endblock %}

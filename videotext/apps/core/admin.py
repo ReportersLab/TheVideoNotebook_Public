@@ -93,6 +93,20 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 
+admin.site.unregister(User)
+
+class UserProfileInline(admin.TabularInline):
+    model = UserProfile
+
+class UserAdmin(admin.ModelAdmin):
+    inlines = [UserProfileInline]
+
+admin.site.register(User, UserAdmin)
+
+
+
+
+
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Note, NoteAdmin)
 admin.site.register(Source, SourceAdmin)

@@ -129,7 +129,8 @@ def checkout_latest():
     Pull the latest code on the specified branch.
     """
     with cd('%(repo_path)s' % env):
-        run('git checkout %(branch)s; git pull origin %(branch)s' % env)
+        run('git fetch')
+        run('git reset --hard origin/%(branch)s' % env)
     #If you want to use private config files, this will take care of that.
     #First move over the private files.
     put('%(project_name)s/configs/common/settings_private.py' % env, '%(repo_path)s/%(project_name)s/configs/common/settings_private.py' % env)

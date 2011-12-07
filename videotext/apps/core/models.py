@@ -162,7 +162,7 @@ class Note(CommonInfo):
         if not self.id:
             super(Note, self).save(*args, **kwargs)
             
-        
+        print "\n\n============NOTE SAVING=================\n\n"
         
         if self.video != None:
             if (self.time != None) and (self.video.time != None):  #If we have the times, calculate offset, otherwise assume it's passed in.
@@ -172,6 +172,10 @@ class Note(CommonInfo):
                 self.time = self.video.time + timedelta(seconds = self.offset)
         
             self.link = '{0}#note/{1}'.format(self.video.get_absolute_url(), self.id) 
+        
+        print "VIDEO: %s" % self.video
+        print "LINK:  %s" %  self.link
+        print "ID:    %s" % self.id
         
         super(Note, self).save(*args, **kwargs)
         

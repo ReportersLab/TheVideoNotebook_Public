@@ -135,7 +135,7 @@ CACHE_MIDDLEWARE_SECONDS=0 # 90 minutes
 CACHE_BACKEND="dummy:///"
 
 #Grappelli
-GRAPPELLI_ADMIN_TITLE = "Twitter Vision"
+GRAPPELLI_ADMIN_TITLE = "TV"
 
 # Django Storages
 from S3 import CallingFormat

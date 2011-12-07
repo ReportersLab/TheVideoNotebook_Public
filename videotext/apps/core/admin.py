@@ -103,7 +103,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 #
 #admin.site.register(User, UserAdmin)
 
-
+#select setval('contracts_id_seq', (select max(id) + 1 from contracts));
 
 
 

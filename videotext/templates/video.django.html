@@ -43,7 +43,8 @@
         </div>
         <div class="user_info">
             <% if(user_name != null){ %>
-                <a href="<% if(user_link != null) print(user_link); else print(link); %>"><%= user_name %></a> | 
+                <a href="<% if(user_link != null) print(user_link); else print(link); %>"><%= user_name %></a>
+                <span class="slashes">//</span>
             <% } %>
             <span>
                 <% if(link) print('<a href="'+ link + '">'); %>
@@ -64,10 +65,10 @@
 
 {% block main_content %}
    <div id="app">
-        <div id="video" class="grid_7 alpha"></div>
-        <div id="right_rail" class="grid_5 omega">
+        <div id="video"></div>
+        <div id="right_rail">
             <div id="notes_container">
-                <div id="add_note_container">
+                <div id="add_note_container" class="box_shadow">
                     {% if user.is_authenticated %}
                         <textarea id="new_note_text" name="new_note_text"></textarea>
                         <input type="submit" value="Add Note" id="new_note_submit" />
@@ -91,7 +92,7 @@
                     <div id="note_controls">
                         <div id="auto_scroll"><span>Disable Auto-Scroll</span></div>
                         {% if user.is_authenticated %}
-                            <div>|</div>
+                            <span class="slashes">//</span>
                             <div id="add_note_link" class="add_note_link"><span>Add Notes</span></div>
                         {% endif %}
                     </div>

@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Twitter Vision:{% block title %} The Latest{% endblock %}</title>
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+        <title>TV // {% block title %} Latest Videos{% endblock %}</title>
+        <link rel="icon" href="http://media.reporterslab.org/images/icons/lab-favicon.ico" type="image/ico" sizes="16x16" />
+        <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+        <!-- JQuery Tools for overlay: http://flowplayer.org/tools/index.html -->
+        <script src="http://cdn.jquerytools.org/1.2.6/all/jquery.tools.min.js"></script>
         <!-- JQuery UI - This may be overkill, but lets keep it for now -->
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
         <!-- wrapper for set-timeout or set-interval. -->
@@ -14,10 +17,20 @@
         <!-- for embedding the YouTube video -->
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
         
+        <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{{ STATIC_URL }}css/reset.css" type="text/css" />
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/960.css" type="text/css" />
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/text.css" type="text/css" />
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/main.css" type="text/css" charset="utf-8" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/main.css" type="text/css" charset="utf-8" />  
+        
+        <meta property="og:url" content="http://tv.reporterslab.org{{ request.get_full_path }}" />
+        <meta property="og:image" content="http://media.reporterslab.org/images/icons/logo.jpg" />
+        <meta property="og:site_name" content="TV" />
+        <meta property="fb:admins" content="616167736,11805170" />
+        <meta property="og:locale" content="en_US" />
+        {% block meta %}
+            <meta property="og:title" content="TV" />
+            <meta property="og:description" content="Video annotation from Reporters' Lab" />
+            <meta property="og:type" content="website" />
+        {% endblock %}
         
         <!-- I *believe* json2 is required for Backbone. Underscore is for sure. -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/json2.js"></script>
@@ -34,54 +47,126 @@
             LOGGED_IN = {{ user.is_authenticated|lower }};
         </script>
         
+        
+        
+        
         {% block head %}{% endblock %}
     </head>
     
     <body>
-        <div id="wrapper" class="container_12">
-            <div id="header" class="grid_12 alpha omega">
-                <h1><a href="/">TV</a></h1>
-                <h4>
-                    {% if user.is_authenticated %}
-                        Welcome {{ user }} | <a href="/l/logout/">LOG OUT</a>
-                    {% else %}
-                        <form method="post" action="{{ request.path }}">
-                            {% csrf_token %}
-                            <p><label for="id_username">Username:</label>{{ auth_form.username }}</p>
-                            <p><label for="id_password">Password:</label>{{ auth_form.password }}</p>
-                            <input type="submit" value="Log in" />
-                        </form>
-                        
-                        {% if auth_message %}
-                            <p>{{ auth_message }}</p>
-                        {% endif %}
-                        
-                    {% endif %}
-                    
-                </h4>
+        {% comment %} Facebook, Twitter, G+ stuff. {% endcomment %}
+        <div id="fb-root"></div>
+        <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=36309052720";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+        <script type="text/javascript">
+          (function() {
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+          })();
+        </script>
+        
+        <div id="wrapper">
+            
+            
+            <div id="header">
+                <div class="main_content" style="z-index:3">
+                    <a href="/"><img id="logo" src="{{ STATIC_URL }}img/mast.png" /></a>
+                    <div id="small_mast" class="box_shadow">
+                        <a href="http://www.reporterslab.org">
+                            <img src="http://media.reporterslab.org/images/graphics/small_lab_mast.png" />
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div id="pre_main" class="grid_12 alpha omega">
+            
+            <div id="global_nav">
+                <div class="main_content">
+                    <div id="login_box">
+                        {% if user.is_authenticated %}
+                            Welcome {{ user }} <span class="slashes">//</span> <a href="/l/logout/">log out</a>
+                        {% else %}
+                            <form method="post" action="{{ request.path }}">
+                                {% csrf_token %}
+                                <p><label for="id_username">Username:</label>{{ auth_form.username }}</p>
+                                <p><label for="id_password">Password:</label>{{ auth_form.password }}</p>
+                                <input type="submit" value="Log in" />
+                            </form>                        
+                            {% if auth_message %}
+                                <p>{{ auth_message }}</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="black_bar"><span>&nbsp;</span></div>
+            
+            
+            <div id="pre_main" class="main_content">
                 {% block pre_main %} {% endblock %}
             </div>
-            <div id="main" class="grid_12 alpha omega">
-                <div id="content" class="grid_12 alpha omega">
+            
+            
+            <div id="main" class="main_content">
+                <div>
                     {% block main_content %}{% endblock %}
                 </div>
             </div>
-            <div id="footer" class="grid_12 alpha omega">
-                <div class="grid_9 alpha"><p></p></div>
-                <div id="footer_contact" class="grid_3 omega">
-                    <h4>Contact Us</h4>
-                    <p> email: <a href="mailto:info@reporterslab.org">info@reporterslab.org</a></p>
-                    <p> phone: 919.613.7348</p>
-                    <p>  code: <a href="http://www.github.com/ReportersLab">Github</a></p>
-                    <p>tweets: <a href="http://www.twitter.com/ReportersLab">@ReportersLab</a></p> 
+  
+            <div class="main_content" style="clear:both;">
+                <div id="footer">
+                    <div id="footer_social">
+                        <ul>
+                            <li><a href="http://www.facebook.com/reporterslab"><img src="{{ STATIC_URL }}img/footer_facebook.png" /></a></li>
+                            <li><a href="http://www.twitter.com/reporterslab"><img src="{{ STATIC_URL }}img/footer_twitter.png" /></a></li>
+                            <li><a href="http://www.reporterslab.org/rss"><img src="{{ STATIC_URL }}img/footer_rss.png" /></a></li>
+                            <li><a href="https://plus.google.com/116345623067631086540/posts"><img src="{{ STATIC_URL }}img/footer_google_plus.png" /></a></li>
+                            <li><a href="http://www.github.com/reporterslab"><img src="{{ STATIC_URL }}img/footer_github.png" /></a></li>
+                            <li><a href="http://groups.google.com/group/reporters-lab"><img src="{{ STATIC_URL }}img/footer_forum.png" /></a></li>
+                        </ul>
+                    </div>
+                    
+                    <div id="footer_text">
+                        <h3>REPORTERS' LAB</h3>
+                        <p>
+                            A project of Duke University's Dewitt Wallace Center for Media and Democracy<br />
+                            Box 90241 <span class="slashes">//</span> SB 140 <span class="slashes">//</span>201 Science Drive <span class="slashes">//</span>Durham, NC 27708<br />
+                            <a href="mailto:info@reporterslab.org">info@reporterslab.org</a>
+                        </p>
+                        <h3 style="margin-top:25px;">Questions? Comments?</h3>
+                        <p>Email Tyler Dukes at <a href="mailto:tyler@reporterslab.org">tyler@reporterslab.org</a> or call 919-613-7346</p>
+    
+                        <h4>
+                            &copy; 2012 Reporters' Lab. All Rights Reserved.
+                            <span class="slashes">//</span>
+                            Web design by <a href="http://www.rowdesignstudios.com">Row Design Studios</a>
+                        </h4>
+                    </div>
+                    
+                    <fieldset id="footer_more">
+                        <legend align="center">More Information</legend> <!-- align deprecated, but no other solution? -->
+                        <p>
+                            <a href="http://www.reporterslab.org/mission">Our Mission</a><br />
+                            <a href="http://reviews.reporterslab.org">Reviews</a><span class="slashes">//</span>
+                            <a href="http://www.github.com/reporterslab">Source Code</a><br />
+                            <a href="http://www.reporterslab.org/developers">Developers Challenges</a><span class="slashes">//</span>
+                            <a href="http://www.reporterslab.org/researchers">Research Topics</a>
+                        </p>
+                    </fieldset>
+                    <a href="http://www.duke.edu" id="duke_logo">
+                        <img src="{{ STATIC_URL }}img/duke_horizontal_remix.png" id="duke_logo" alt="Duke University" />
+                    </a>
                 </div>
-                
             </div>
         </div>
         {% block end_body %}{% endblock %}
-        
     </body>
-    
 </html>

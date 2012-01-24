@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Event: {{ video.title }}{% endblock %}
+{% block title %}{{ video.title }}{% endblock %}
 
 
 {% block head %}
@@ -14,14 +14,13 @@
     {% endautoescape %}
     
     <script type="text/html" id="videoTemplate">
-        <h1><%= title %></h1>
         <div id="player_container">
             Flash Player and Javascript required for YouTube Videos.
         </div>
+        <h1><%= title %></h1>
         <div id="video_description">
             <%= description %>
         </div>
-       
         <div id="video_meta">
             <div class="timestamp">Start Time: <%= date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
             <% if (typeof(end_date_time) != "undefined") { %>

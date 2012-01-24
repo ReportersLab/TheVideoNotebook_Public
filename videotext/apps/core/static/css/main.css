@@ -386,6 +386,7 @@ fieldset legend
 {
     float:left;
     width:550px;
+    margin: 10px 0 0 0;
 }
 
 #video h1

@@ -29,7 +29,7 @@
         </div>
     </script>
     
-    <script type="text/html" id="noteTemplate">
+    <!--
         <% if(icon_link){ %>
             <div class="avatar">
                 <a href="<%= link %>">
@@ -37,6 +37,10 @@
                 </a>
             </div>
         <% } %>
+    -->
+    
+    <script type="text/html" id="noteTemplate">
+        
         <div class="note_text" <% if(icon_link) print('style="width:280px; margin:-5px 0 -5px 0;"'); %>>
             <p><%= text %></p>
         </div>

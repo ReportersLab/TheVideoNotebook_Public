@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect
 from itertools import chain
 from operator import attrgetter
 from core.api.resources import NoteResource, VideoResource
+from tastypie.bundle import Bundle
 
 
 
@@ -43,8 +44,8 @@ def video_view(request, slug):
     
     data = {
         'video' : video,
-        'video_json': video_resource.serialize(None, video_resource.full_dehydrate(video), 'application/json'),
-        'notes_json': note_resource.serialize(None, [note_resource.full_dehydrate(note) for note in notes], 'application/json')
+        'video_json': video_resource.serialize(None, video_resource.full_dehydrate(Bundle(obj = video)), 'application/json'),
+        'notes_json': note_resource.serialize( None, [note_resource.full_dehydrate(Bundle(obj = note)) for note in notes], 'application/json')
     }
     return get_response(template='video.django.html', data=data, request=request)
 

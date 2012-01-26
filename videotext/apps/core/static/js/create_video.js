@@ -13,7 +13,7 @@ $(document).ready(function(){
             'keydown #youtube_ID' : 'onYouTubeIDKeyDown'
         },
         initialize: function(){
-            this.videos = new Videos();
+            this.video = new Video();
         },
         onRadioChange: function(event){
             $('.add_box').hide();
@@ -21,25 +21,46 @@ $(document).ready(function(){
         },
         onYouTubeIDKeyDown: function(event){
             if(event.keyCode == 13){ //the 'enter' key
+                console.log("enter key pressed");
                 this.getYouTubeDetails();
             }
         },
         onYouTubeSubmit: function(){
+            console.log("submit button pressed");
             this.getYouTubeDetails();
         },
         getYouTubeDetails: function(){
             id = $('#youtube_ID').val();
-            this.videos.getYouTubeVideoDetails(id, _.bind(function(video){
-                console.log(video);
-                if(!video){
-                    $("#video_title").html("That Video was either not found or not embedable, please try another.");
-                    return;
+            console.log("get you tube details");
+            this.video.getVideoByURL(id, function(exists){
+                console.log('video exists' + exists);
+                if(!exists){
+                    this.video.getYouTubeVideoDetails(id, function(success){
+                        this.displayVideo(false, success);
+                    }, this);
+                }else{
+                    this.displayVideo(true, true);
                 }
-                var template =  _.template($("#createVideoTemplate").html());
-                $('#video_details_container').html(template(video.toJSON()));
+                
+            }, this);
+        },
+        
+        displayVideo: function(alreadyExists, canEmbed){
+            if(!alreadyExists && !canEmbed){
+                $("#video_title").html("That Video was either not found or not embedable, please try another.");
+                return;
+            }
+            
+            var template =  _.template($("#createVideoTemplate").html());
+            var self = this;
+            
+            $('#video_details_container').html(template(this.video.toJSON()));
+            //if(!alreadyExists && this.get("user") != LOGGED_IN_USER){
                 $('#video_details_container .edit').editable(function(value, settings){
-                    console.log(value);
-                    console.log(settings);
+                    var data = {};
+                    data[this.id.split('_')[1]] = value;
+                    self.video.set(data);
+                    self.video.save();
                     return value;
                 },
                 {
@@ -51,9 +72,14 @@ $(document).ready(function(){
                     onblur: 'submit'
                 });
                 
-                this.videos.add(video);
-                //video.save();
-            }, this));
+                this.video.save();
+            //}
+        },
+        
+        submitVideo: function(){
+            //get new values.
+            //this.video.set({ title:$("#video_title").html(), description:$("#video_description").html(), time:$("#video_time").html() })
+            //this.video.save();
         }
         
         

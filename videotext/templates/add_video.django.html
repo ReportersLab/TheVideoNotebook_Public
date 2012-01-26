@@ -7,10 +7,10 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jeditable.mini.js"></script>
     <script type="text/html" id="createVideoTemplate">
-        <img src="<%= icon_link %>" class='grid_5 alpha omega' /><br />
-        <h4 id="video_title" class="edit" style="clear:both;"><%= title %></h4>
+        <img src="<%= icon_link %>" /><br />
+        <h4 id="video_title" class="edit"><%= title %></h4>
         <p id="video_description" class="edit"><%= description %></p>
-        <h6 id="video_date" class="edit"> <%= time %></h6>
+        <h6 id="video_time" class="edit"> <%= time %></h6>
     </script>
 {% endblock %}
 
@@ -19,9 +19,9 @@
     
     <div id="app">
         <h1>Add a video</h1>
-        <div class="grid_7 alpha">
+        <div id="video">
              <div id="type_select">
-                  <h3>Video Type</h3>
+                  <h2>Video Type</h2>
                   <label for="youtube_type">YouTube</label>
                   <input type="radio" id="youtube_type" name="video_type" checked="checked" />
                   <label for="upload_type">Upload (MP4)</label>
@@ -40,7 +40,7 @@
              </div>   
         </div>
         
-        <div id="right_rail" class="grid_5 omega">
+        <div id="right_rail">
              <div id="video_details_container"></div>
         </div>
     </div>

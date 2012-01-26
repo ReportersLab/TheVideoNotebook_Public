@@ -1,4 +1,6 @@
-//overrides the basic Backbone.js sync command to work better with TastyPie
+//overrides the basic Backbone.js sync command to work better with TastyPie.
+//Seems that always_return_data fixes the need for this.
+/*
 var oldSync = Backbone.sync;
 Backbone.sync = function(method, model, options){
     success = options['success'];
@@ -16,7 +18,7 @@ Backbone.sync = function(method, model, options){
     };
     return oldSync(method, model, {success: newSuccess, error: error});
 };
-
+*/
 
 
 //found: http://stackoverflow.com/questions/1353684/detecting-an-invalid-date-date-instance-in-javascript

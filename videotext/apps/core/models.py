@@ -73,8 +73,11 @@ class Video(CommonInfo):
     user            = models.ForeignKey(to=User, blank = True, null = True) #allow anonymous uploads?
     type            = models.CharField(max_length = 32, blank = True, choices = VIDEO_TYPE_CHOICES, default='mp4')
     video_length    = models.IntegerField(null = True, default = 0) #Length in seconds.
-    #Will want to verify this exists in the future
-    video_url       = models.CharField(max_length = 256,  blank = True, verbose_name = "Path to source video or YouTube ID")
+    '''
+         Do we want duplicate videos, or do we want to limit the system to handle only one of each youtube id?
+         In the future maybe we want to alert the user that the video is already in the system and give them a choice? This is an annoying problem.
+    '''
+    video_url       = models.CharField(max_length = 256,  blank = True, verbose_name = "Path to source video or YouTube ID", unique = True)
     #do we just take the video url and set it to video file if upload?
     video_file      = models.FileField(upload_to='viodeotext/contrib/videos/', null=True, blank=True)
     user_name       = models.CharField(max_length = 64, blank = True) # if not a user in the system, just a name
@@ -86,7 +89,7 @@ class Video(CommonInfo):
     
     def save(self, *args, **kwargs):
         if not self.id:
-            self.slug = slugify("{0} {1}".format(self.title, self.time.date().isoformat()))
+            self.slug = slugify("{0} {1}".format(self.title, datetime.now().strftime('%m-%d-%Y-%H-%M-%S') ))
         
         if (self.time != None) and (self.end_time != None):
                 self.video_length = (self.end_time - self.time).seconds     

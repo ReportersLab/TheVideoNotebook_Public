@@ -1,10 +1,12 @@
 from tastypie import fields
+from tastypie.bundle import Bundle
 from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
 from tastypie.authentication import Authentication
 from tastypie.authorization import DjangoAuthorization
 from core.models import *
 from core.helpers.strip_tags import strip
 from datetime import datetime, timedelta
+from django.db import connection
 
 
 class VideoResource(ModelResource):
@@ -24,18 +26,29 @@ class VideoResource(ModelResource):
             #Video File would probably be uploaded separately? I don't really know how to handle that yet.
             #video_file = strip(bundle.data['video_file'])
             if bundle.data['type'] == 'youtube':
-                kwargs['time'] = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.000Z')
-                
-            return super(VideoResource, self).obj_create(bundle, request, **kwargs)
+                kwargs['time'] = datetime.strptime(bundle.data['time'], '%Y-%m-%dT%H:%M:%S.000Z')
+              
+            
+            try:
+                saved_object = self.obj_get(request, video_url = bundle.data['video_url'])
+                saved_object = Bundle(obj = saved_object)
+            except:
+                saved_object = super(VideoResource, self).obj_create(bundle, request, **kwargs)
+            return saved_object
+
             
     
     def obj_update(self, bundle, request = None, **kwargs):
         video = None
+        #I somehow got the entire DB wiped, think it was because an id passed here was blank. YIKES.
+        if bundle.data['id'] is None:
+            return bundle
+        
         if bundle.data is not None:
             video = Video.objects.get( id = bundle.data['id'] )
             if video is not None and video.user == request.user:
                 return super(VideoResource, self).obj_update(bundle, request, **kwargs)
-        return video
+        return Bundle(obj = video)
                 
         
     
@@ -43,10 +56,16 @@ class VideoResource(ModelResource):
         queryset = Video.objects.all()
         resource_name = "video"
         ordering = ['-time',]
+        always_return_data = True
         list_allowed_methods = ['get', 'post', 'put', 'patch',]
         detail_allowed_methods = ['get', 'post', 'put', 'patch',]
         authentication = Authentication()
         authorization = DjangoAuthorization()
+        filtering = {
+            "slug": ('exact', 'startswith',),
+            "title": ALL,
+            "video_url": ('exact',),
+        }
         
 class NoteResource(ModelResource):
     

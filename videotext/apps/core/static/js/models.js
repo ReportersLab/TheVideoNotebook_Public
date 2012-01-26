@@ -1,5 +1,6 @@
 $(function(){
     window.Video = Backbone.Model.extend({
+         
          initialize: function(){
              //make a real JS date out of the date string we got in JSON.
              this.set({date_time: new Date(this.get('time')) });
@@ -10,6 +11,57 @@ $(function(){
          
         url: function(){
             return this.get('resource_uri') || this.collection.url;     
+        },
+        
+        getVideoByURL: function(url, callback, object){
+            this.clear();
+            this.set({video_url: url, resource_uri: VIDEO_API + "?video_url=" + url});
+            var self = this;
+            this.fetch({
+                success: function(model, response){
+                    if(response.objects && response.objects.length == 1){
+                        self.set(response.objects[0]);
+                        if(callback)
+                            callback.call(object, true);
+                        return;
+                    }
+                    if(callback)
+                        callback.call(object, false);
+                },
+                failure: function(model, response){
+                    if(callback)
+                        callback.call(object, false);
+                }
+            });
+        
+        },
+        
+        getYouTubeVideoDetails: function(id, callback, object){
+            
+            $.getJSON('http://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&q='+ id +'&callback=?', _.bind(function(data) { 
+                try{
+                    var item = data.data.items[0];
+                    var embedable = item['accessControl']['embed'] == 'allowed';
+                    //if we can't embed the video, there's really no point in going any further.
+                    if(!embedable){
+                        if(callback)
+                            callback.call(object, false);
+                    }
+                    var title = item['title'];
+                    var description = item['description'];
+                    var time = item['uploaded'];
+                    var tags = item['tags'].join(',');
+                    var user_name = item['uploader'];
+                    var image = item['thumbnail']['hqDefault'];
+                    this.set({title: title, description:description, time:time, tags:tags, user_name: user_name,
+                              icon_link:image, type:'youtube', private: false, video_url: id, embedable: embedable, resource_uri: VIDEO_API });
+                    if(callback)
+                        callback.call(object, true);
+                }catch (e){
+                    if(callback)
+                        callback.call(object, false);
+                }
+            }, this));
         }
         
     });
@@ -22,37 +74,7 @@ $(function(){
          },
          comparator: function(video){
              return video.get('end_date_time');
-         },
-         
-         getYouTubeVideoDetails: function(id, callback){
-            $.getJSON('http://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&q='+ id +'&callback=?', function(data) { 
-                try{
-                    var video = new Video();
-                    var item = data.data.items[0];
-                    var embedable = item['accessControl']['embed'] == 'allowed';
-                    //if we can't embed the video, there's really no point in going any further.
-                    if(!embedable){
-                        if(callback != null)
-                            callback.call(false);
-                        return;
-                    }
-                    var title = item['title'];
-                    var description = item['description'];
-                    var time = item['uploaded'];
-                    var tags = item['tags'].join(',');
-                    var user_name = item['uploader'];
-                    var image = item['thumbnail']['hqDefault'];
-                    video.set({title: title, description:description, time:time, tags:tags, user_name: user_name,
-                              icon_link:image, type:'youtube', private: false, video_url: id });
-                    if(callback != null)
-                        callback(video);
-                }catch (e){
-                    if(callback != null)
-                            callback.call(false);
-                        return;    
-                }
-            });
-        }
+         }
     });
      
     window.Note = Backbone.Model.extend({

@@ -21,19 +21,15 @@ $(document).ready(function(){
         },
         onYouTubeIDKeyDown: function(event){
             if(event.keyCode == 13){ //the 'enter' key
-                console.log("enter key pressed");
                 this.getYouTubeDetails();
             }
         },
         onYouTubeSubmit: function(){
-            console.log("submit button pressed");
             this.getYouTubeDetails();
         },
         getYouTubeDetails: function(){
             id = $('#youtube_ID').val();
-            console.log("get you tube details");
             this.video.getVideoByURL(id, function(exists){
-                console.log('video exists' + exists);
                 if(!exists){
                     this.video.getYouTubeVideoDetails(id, function(success){
                         this.displayVideo(false, success);

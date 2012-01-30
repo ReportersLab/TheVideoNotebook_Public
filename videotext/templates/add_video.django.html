@@ -7,8 +7,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jeditable.mini.js"></script>
     <script type="text/html" id="createVideoTemplate">
-        <img src="<%= icon_link %>" /><br />
-        <h4 id="video_title" class="edit"><%= title %></h4>
+        <h1 id="video_title" class="edit"><%= title %></h1>
         <p id="video_description" class="edit"><%= description %></p>
         <h6 id="video_time" class="edit"> <%= time %></h6>
     </script>
@@ -18,8 +17,9 @@
 {% block main_content %}
     
     <div id="app">
-        <h1>Add a video</h1>
-        <div id="video">
+        <h1 style="margin-left:5px;">Add a video</h1>
+        <div id="add_video">
+             <!--
              <div id="type_select">
                   <h2>Video Type</h2>
                   <label for="youtube_type">YouTube</label>
@@ -27,21 +27,24 @@
                   <label for="upload_type">Upload (MP4)</label>
                   <input type="radio" id="upload_type" name="video_type" />
              </div>
+              -->
              
              <div id="youtube_type_add" class="add_box">
-                  <label for="youtubeId">You Tube ID (ex: dKNNN0NvVrc)</label>
-                  <input type="text" id="youtube_ID" name="youtube_ID" />
-                  <input type="submit" id="youtube_submit" value="Get Video Details" />
+                  <input id="youtube_submit" type="image" src="{{ STATIC_URL }}img/search_arrow.png" name="searchButton"  value="" />
+                  <input type="text" id="youtube_ID" name="youtube_ID" placeholder="You Tube ID (ex: dKNNN0NvVrc)" class="search_field" />
              </div>
-             
+             <!--
              <div id="upload_type_add" class="add_box" style="display:none;">
                   <label for="upload">Upload a Video</label>
                   <h5>TODO: Implement uploading...</h5>
-             </div>   
+             </div>
+             -->
+             <div id="thumb_container"><!-- img via js --></div>
         </div>
         
-        <div id="right_rail">
-             <div id="video_details_container"></div>
+        <div id="add_right_rail">
+             <div id="video_details_container" class="box_shadow"><!-- data via js --></div>
+             <div class="black_bar"></div>
         </div>
     </div>
    

@@ -56,7 +56,9 @@ $(document).ready(function(){
             var self = this;
             
             $('#video_details_container').html(template(this.video.toJSON()));
-            
+            $('#add_right_rail').slideDown('slow');
+            $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />');
+            $('#thumb_container').slideDown('slow');
             if(!alreadyExists){
                 $('#video_details_container .edit').editable(function(value, settings){
                     var data = {};

@@ -35,6 +35,14 @@ h6
    font: 12px/1.5 Arial,'Liberation Sans',FreeSans,sans-serif; 
 }
 
+
+h1
+{
+    font: 16px Arial,'Liberation Sans',FreeSans,sans-serif;
+    text-transform:none;
+    font-weight:bold;
+}
+
 h2
 {
     font-size:18px;
@@ -389,13 +397,6 @@ fieldset legend
     margin: 10px 0 0 0;
 }
 
-#video h1
-{
-    font: 16px Arial,'Liberation Sans',FreeSans,sans-serif;
-    text-transform:none;
-}
-
-
 
 /**
  *Right Rail Styles
@@ -677,6 +678,67 @@ fieldset legend
 /**
  *Index view / list
  **/ 
+
+
+
+/**
+ * ADD VIDEO STYLES
+ **/
+
+#add_video
+{
+    float:left;
+    width:460px;
+}
+
+#add_video #thumb_container img
+{
+    width:450px;
+    margin-top:10px;
+}
+
+#add_right_rail
+{
+    float:right;
+    width:400px;
+    margin:0 10px 0 0;
+    display:none;
+}
+
+#video_details_container
+{
+    margin:10px 0 10px 0;
+    padding:18px;
+}
+
+.search_field
+{
+    z-index:10;
+    padding:2px 0 2px 16px;
+    width:400px;
+    border:2px solid #DFDFDF;
+    background:#FFFFFF;
+    color:#000000;
+    font:16px 'LeagueGothicRegular',Arial,'Liberation Sans',FreeSans,sans-serif;
+    text-transform:uppercase;
+    float:left;
+    position:relative;
+    letter-spacing:1px;
+    margin:10px 0 10px -10px;
+}
+
+#youtube_submit{
+    z-index:11;
+    float:left;
+    position:relative;
+    margin:10px 0 10px 0;
+}
+
+
+
+
+
+
 
 
 

@@ -33,6 +33,7 @@ $(document).ready(function(){
         },
         
         getYouTubeDetails: function(){
+            this.video = new Video();
             id = $('#youtube_ID').val();
             this.video.getVideoByURL(id, function(exists){
                 if(!exists){
@@ -48,23 +49,24 @@ $(document).ready(function(){
         
         displayVideo: function(alreadyExists, canEmbed){
             if(!alreadyExists && !canEmbed){
-                $("#video_title").html("That Video was either not found or not embedable, please try another.");
+                //$("#video_title").html("That Video was either not found or not embedable, please try another.");
+                this.updateStatus("That video was either not found, or not embedable. Please try another.", true);
                 return;
             }
             
             var template =  _.template($("#createVideoTemplate").html());
             var self = this;
             
-            $('#video_details_container').html(template(this.video.toJSON()));
-            $('#add_right_rail').slideDown('slow');
-            $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />');
-            $('#thumb_container').slideDown('slow');
+            $('#add_video_details').html(template(this.video.toJSON()))
+            $('#add_video_details_container').slideDown('slow');
+            $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
             if(!alreadyExists){
-                $('#video_details_container .edit').editable(function(value, settings){
+                $('#add_video_details .edit').editable(function(value, settings){
                     var data = {};
                     data[this.id.split('_')[1]] = value;
                     self.video.set(data);
                     self.video.save();
+                    self.updateStatus("Video details updated!");
                     return value;
                 },
                 {
@@ -77,7 +79,23 @@ $(document).ready(function(){
                 });
                 
                 this.video.save();
+                this.updateStatus("Video Added! Click on details to edit.");
+            }else{
+                this.updateStatus("This video already exists!")
             }
+        },
+        
+        updateStatus: function(message, noLink)
+        {
+            if(noLink){
+                message = '<h4 id="status_message">' + message + '</h4>';
+            }else{
+                message = '<h4 id="status_message">' + message + ' <a href="/video/' + this.video.get('slug') + '">See the video now</a></h4>'
+            }
+            
+            $("#add_status").html(message).slideDown('slow', function(){
+                                    $('#status_message').effect("pulsate", {times:2, mode:"show"}, 500);
+                                });
         },
         
         submitVideo: function(){

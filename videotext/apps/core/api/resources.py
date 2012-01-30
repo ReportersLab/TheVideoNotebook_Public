@@ -44,9 +44,8 @@ class VideoResource(ModelResource):
     
     def obj_update(self, bundle, request = None, **kwargs):
         video = None
-        #I somehow got the entire DB wiped, think it was because an id passed here was blank. YIKES.
         if bundle.data['id'] is None:
-            return bundle
+            return Bundle()
         
         if bundle.data is not None:
             video = Video.objects.get( id = bundle.data['id'] )
@@ -65,6 +64,20 @@ class VideoResource(ModelResource):
     def save_related(self, bundle):
         pass
 
+    
+    '''
+    This is called by put_list, here: https://github.com/toastdriven/django-tastypie/blob/master/tastypie/resources.py#L1070
+    
+    I've run into an issue where all of the videos get deleted from the DB. this happens when Backbone "PUT"s a JSON request to the server
+    without specifying an ID for the object. Basically, it's a bug on my part where Backbone thinks I'm updating but it's actually creating. BUT,
+    it seems crazy that the entire video collection could be deleted so easily, and I don't want that to happen accidentally by anyone using the API.
+    It also seems strange that this can be called even though 'delete' methods are specifically not allowed in the Meta.
+    
+    For now I'm going to not allow deleting an entire list to hopefully prevent this. Long-term would be to error-check in put_list as well as ensure
+    Backbone doesn't put when I mean post (I have a fix for the Backbone part already). Also need to add user ownership verification.
+    '''
+    def obj_delete_list(self, request=None, **kwargs):
+        pass
     
     
     

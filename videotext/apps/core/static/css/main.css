@@ -135,6 +135,16 @@ fieldset legend
     -ms-filter:"progid:DXImageTransform.Microsoft.Blur(pixelradius=5)";
 }
 
+.box_shadow.padded
+{
+    padding:18px;
+}
+
+.box_shadow.margined
+{
+    margin: 10px 0 10px 0;
+}
+
 
 .slashes
 {
@@ -702,20 +712,13 @@ fieldset legend
     float:right;
     width:400px;
     margin:0 10px 0 0;
-    display:none;
-}
-
-#video_details_container
-{
-    margin:10px 0 10px 0;
-    padding:18px;
 }
 
 .search_field
 {
     z-index:10;
     padding:2px 0 2px 16px;
-    width:400px;
+    width:416px;
     border:2px solid #DFDFDF;
     background:#FFFFFF;
     color:#000000;
@@ -732,6 +735,16 @@ fieldset legend
     float:left;
     position:relative;
     margin:10px 0 10px 0;
+}
+
+#status_message
+{
+    text-align:center;
+}
+
+#status_message a
+{
+    color:#778E1E;
 }
 
 

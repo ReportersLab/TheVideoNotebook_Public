@@ -16,7 +16,7 @@ class VideoResource(ModelResource):
     #I guess it should be expected that the user first grabs the video, gets the id, and then grabs the notes.
     #neither have to know about the other.
     #notes = fields.ToManyField('core.api.resources.NoteResource', 'note_set')
-    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True)
+    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
     
     def obj_create(self, bundle, request = None, **kwargs):
         if bundle.data is not None:
@@ -105,7 +105,7 @@ class NoteResource(ModelResource):
     
     #video = fields.ForeignKey(VideoResource, 'video')
     
-    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True)
+    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
     
     def dehydrate(self, bundle):
         #bundle.data['offset'] = bundle.obj.gen_offset
@@ -141,6 +141,8 @@ class NoteResource(ModelResource):
     
     
     def save_related(self, bundle):
+        pass
+    def obj_delete_list(self, request=None, **kwargs):
         pass
     
     class Meta:

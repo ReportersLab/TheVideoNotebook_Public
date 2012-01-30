@@ -37,6 +37,7 @@ $(document).ready(function(){
             id = $('#youtube_ID').val();
             this.video.getVideoByURL(id, function(exists){
                 if(!exists){
+                    this.updateStatus("Getting data from YouTube...");
                     this.video.getYouTubeVideoDetails(id, function(success){
                         this.displayVideo(false, success);
                     }, this);
@@ -65,8 +66,7 @@ $(document).ready(function(){
                     var data = {};
                     data[this.id.split('_')[1]] = value;
                     self.video.set(data);
-                    self.video.save();
-                    self.updateStatus("Video details updated!");
+                    self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
                     return value;
                 },
                 {
@@ -78,8 +78,7 @@ $(document).ready(function(){
                     onblur: 'submit'
                 });
                 
-                this.video.save();
-                this.updateStatus("Video Added! Click on details to edit.");
+                this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Click on details to edit.")}});
             }else{
                 this.updateStatus("This video already exists!")
             }

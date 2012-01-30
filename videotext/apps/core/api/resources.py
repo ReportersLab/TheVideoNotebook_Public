@@ -7,7 +7,9 @@ from core.models import *
 from core.helpers.strip_tags import strip
 from datetime import datetime, timedelta
 from django.db import connection
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
+
+         
 
 
 class VideoResource(ModelResource):
@@ -20,8 +22,8 @@ class VideoResource(ModelResource):
         if bundle.data is not None:
             bundle.data['title'] = strip(bundle.data['title'])
             bundle.data['description'] = strip(bundle.data['description'])
-            kwargs['user'] = request.user
-            kwargs['user_name'] = request.user.username
+            bundle.data['user'] = request.user
+            bundle.data['user_name'] = request.user.username
             bundle.data['video_url'] = strip(bundle.data['video_url'])
             bundle.data['type'] = strip(bundle.data['type'])
             
@@ -52,7 +54,19 @@ class VideoResource(ModelResource):
                 return super(VideoResource, self).obj_update(bundle, request, **kwargs)
         return Bundle(obj = video)
                 
-        
+    
+    '''
+    The original save_related function is here: https://github.com/toastdriven/django-tastypie/blob/master/tastypie/resources.py#L1893
+    
+    My problem is that I'm whitelisting some user fields so I can get a picture of that. Unfortunately, the original save_related just blindly
+    saves the related models without checking for that. SO, you end up with a mostly blank model instance (things like Password are gone).
+    This is sort of a hack to just ignore saving of related models until something better can be done.
+    '''
+    def save_related(self, bundle):
+        pass
+
+    
+    
     
     class Meta:
         queryset = Video.objects.all()
@@ -77,6 +91,8 @@ class VideoResource(ModelResource):
 class NoteResource(ModelResource):
     
     #video = fields.ForeignKey(VideoResource, 'video')
+    
+    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True)
     
     def dehydrate(self, bundle):
         #bundle.data['offset'] = bundle.obj.gen_offset
@@ -111,6 +127,9 @@ class NoteResource(ModelResource):
         return orm_filters
     
     
+    def save_related(self, bundle):
+        pass
+    
     class Meta:
         queryset = Note.objects.all()
         resource_name = "note"
@@ -128,7 +147,30 @@ class NoteResource(ModelResource):
         
         
 class UserResource(ModelResource):
-    video = fields.ToManyField(VideoResource, 'video_set')
+    
+    
+    # Would like to find a way to only include these if loading a User directly.
+    # Annoying that they come back on a request for every note / video.
+    
+    #videos = fields.ToManyField(VideoResource, 'video_set')
+    #notes  = fields.ToManyField(NoteResource, 'note_set')
+    
+    def obj_update(self, bundle, request = None, **kwargs):
+        '''
+        I somehow got an entire user wiped, because an update on a video had mostly blank user content (whitelisted fields).
+        This is weird because I'm only allowing 'get' here. It's clearly being populated from a save from the video. Ugh.
+        
+        I don't want anything to change.
+        
+        '''
+        
+        if bundle.data['id'] is None:
+            return bundle
+        
+        user = User.objects.get(id = bundle.data['id'])
+        bundle.data = user
+        
+        return bundle
     
     class Meta:
         queryset = User.objects.all()

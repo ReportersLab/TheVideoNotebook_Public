@@ -12,21 +12,26 @@ $(document).ready(function(){
             'click #youtube_submit': 'onYouTubeSubmit',
             'keydown #youtube_ID' : 'onYouTubeIDKeyDown'
         },
+        
         initialize: function(){
             this.video = new Video();
         },
+        
         onRadioChange: function(event){
             $('.add_box').hide();
             $('#' + event.target.id + '_add').show();
         },
+        
         onYouTubeIDKeyDown: function(event){
             if(event.keyCode == 13){ //the 'enter' key
                 this.getYouTubeDetails();
             }
         },
+        
         onYouTubeSubmit: function(){
             this.getYouTubeDetails();
         },
+        
         getYouTubeDetails: function(){
             id = $('#youtube_ID').val();
             this.video.getVideoByURL(id, function(exists){
@@ -51,7 +56,8 @@ $(document).ready(function(){
             var self = this;
             
             $('#video_details_container').html(template(this.video.toJSON()));
-            //if(!alreadyExists && this.get("user") != LOGGED_IN_USER){
+            
+            if(!alreadyExists){
                 $('#video_details_container .edit').editable(function(value, settings){
                     var data = {};
                     data[this.id.split('_')[1]] = value;
@@ -69,7 +75,7 @@ $(document).ready(function(){
                 });
                 
                 this.video.save();
-            //}
+            }
         },
         
         submitVideo: function(){

@@ -7,12 +7,14 @@ from core.models import *
 from core.helpers.strip_tags import strip
 from datetime import datetime, timedelta
 from django.db import connection
+from django.contrib.auth.models import User 
 
 
 class VideoResource(ModelResource):
     #I guess it should be expected that the user first grabs the video, gets the id, and then grabs the notes.
     #neither have to know about the other.
     #notes = fields.ToManyField('core.api.resources.NoteResource', 'note_set')
+    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True)
     
     def obj_create(self, bundle, request = None, **kwargs):
         if bundle.data is not None:
@@ -66,7 +68,12 @@ class VideoResource(ModelResource):
             "title": ALL,
             "video_url": ('exact',),
         }
-        
+
+
+
+
+
+     
 class NoteResource(ModelResource):
     
     #video = fields.ForeignKey(VideoResource, 'video')
@@ -120,4 +127,19 @@ class NoteResource(ModelResource):
         
         
         
+class UserResource(ModelResource):
+    video = fields.ToManyField(VideoResource, 'video_set')
+    
+    class Meta:
+        queryset = User.objects.all()
+        list_allowed_methods = ['get',]
+        detail_allowed_methods = ['get',]
+        always_return_data = True
+        authentication = Authentication()
+        authorization = DjangoAuthorization()
+        include_resource_uri = False
+        #important. Let's just whitelist what we need.
+        fields = ['id', 'username', 'first_name', 'last_name',]
         
+        
+    

@@ -86,7 +86,7 @@ class VideoResource(ModelResource):
         resource_name = "video"
         ordering = ['-time',]
         always_return_data = True
-        list_allowed_methods = ['get', 'post', 'put', 'patch',]
+        list_allowed_methods = ['get', 'post',]
         detail_allowed_methods = ['get', 'post', 'put', 'patch',]
         authentication = Authentication()
         authorization = DjangoAuthorization()
@@ -151,7 +151,7 @@ class NoteResource(ModelResource):
             'time': ['gt', 'gte', 'lt', 'lte',]
         }
         ordering = ['offset', 'time', 'end_time', 'creation_time',]
-        list_allowed_methods = ['get', 'post', 'put', 'patch',]
+        list_allowed_methods = ['get', 'post', ]
         detail_allowed_methods = ['get', 'post', 'put', 'patch',]
         always_return_data = True
         authentication = Authentication()

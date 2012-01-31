@@ -23,7 +23,7 @@
         </div>
         <div id="video_meta">
             <div class="timestamp">Start Time: <%= date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
-            <% if (typeof(end_date_time) != "undefined") { %>
+            <% if (obj.end_date_time) { %>
                 <div class="timestamp end">End Time: <%= end_date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
             <% } %>
         </div>
@@ -41,20 +41,20 @@
     
     <script type="text/html" id="noteTemplate">
         
-        <div class="note_text" <% if(icon_link) print('style="width:280px; margin:-5px 0 -5px 0;"'); %>>
+        <div class="note_text">
             <p><%= text %></p>
         </div>
         <div class="user_info">
-            <% if(user_name != null){ %>
-                <a href="<% if(user_link != null) print(user_link); else print(link); %>"><%= user_name %></a>
+            <% if(obj.user_name){ %>
+                <a href="<% if(obj.user_link != null) print(user_link); else print(link); %>"><%= user_name %></a>
                 <span class="slashes">//</span>
             <% } %>
             <span>
-                <% if(link) print('<a href="'+ link + '">'); %>
+                <% if(obj.link) print('<a href="'+ link + '">'); %>
                     <% if(isValidDate(date_time)){ %>    
                         <%= date_time.format('mm/dd/yy h:MM:ss TT') %> 
                     <% } %> (<%= offset %>)
-                <% if(link) print('</a>'); %>
+                <% if(obj.link) print('</a>'); %>
             </span>
         </div>
     </script>

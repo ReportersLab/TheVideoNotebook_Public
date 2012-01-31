@@ -107,9 +107,7 @@ class NoteResource(ModelResource):
     
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
     
-    def dehydrate(self, bundle):
-        #bundle.data['offset'] = bundle.obj.gen_offset
-        return bundle
+    
     
     '''
     So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)

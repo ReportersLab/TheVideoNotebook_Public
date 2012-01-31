@@ -9,7 +9,6 @@ from taggit.models import GenericTaggedItemBase, TagBase
 from django.db.models.signals import post_save
 
 
-
 class PublishedManager(models.Manager):
     def get_query_set(self):
         return super(PublishedManager, self).get_query_set().filter(published = True)
@@ -59,7 +58,7 @@ SOURCE_TYPE_CHOICES = (
     ('coveritlive','Cover It Live'),
     ('scribblelive','ScribbleLive'),
     ('csv', 'CSV'),
-#    ('Fark.com','fark'),
+#    ('fark','Fark.com'),
 )
 
 
@@ -144,7 +143,38 @@ class Source(CommonInfo):
     
     
     def save(self, *args, **kwargs):
+        
+        from parsers.scribblelive import parse_scribbling
+        from parsers.storify import parse_storify
+        from parsers.fark import parse_fark
+        #save first so we at least have an id?
+        if not self.id:
+            super(Source, self).save(*args, **kwargs)
+        
+        if self.video and self.url and not self.scraped:
+            print "================\n\n Attempting Parse"
+            #try:
+            if self.type == "twitter":
+                pass
+            elif self.type == "storify":
+                parse_storify(self.url, self.video)
+            elif self.type == "coveritlive":
+                pass
+            elif self.type == "scribblelive":
+                parse_scribbling(self.url, self.video)
+            elif self.type == "csv":
+                pass
+            elif self.type == "fark":
+                parse_fark(self.url, self.video)
+            self.scraped = True
+            #except Exception:
+                #print "=================\n\n Parse Failed"
+                #self.scraped = False
+            
+        
         super(Source, self).save(*args, **kwargs)
+
+
 
 
 
@@ -169,7 +199,6 @@ class Note(CommonInfo):
         if not self.id:
             super(Note, self).save(*args, **kwargs)
             
-        #print "\n\n============NOTE SAVING=================\n\n"
         
         if self.video != None:
             if (self.time != None) and (self.video.time != None):  #If we have the times, calculate offset, otherwise assume it's passed in.
@@ -180,10 +209,8 @@ class Note(CommonInfo):
         
             self.link = '{0}#note/{1}'.format(self.video.get_absolute_url(), self.id) 
         
-        #print "VIDEO: %s" % self.video
-        #print "LINK:  %s" %  self.link
-        #print "ID:    %s" % self.id
-        
+        #Get or create sets force_insert = True. Which causes this to bomb on parser inputs. Lets stop that.
+        kwargs['force_insert'] = False
         super(Note, self).save(*args, **kwargs)
         
             

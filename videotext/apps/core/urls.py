@@ -4,12 +4,13 @@ from core import views
 from django.views.decorators.cache import cache_page
 
 from tastypie.api import Api
-from api.resources import VideoResource, NoteResource, UserResource
+from api.resources import VideoResource, NoteResource, UserResource, SourceResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(VideoResource())
 v1_api.register(NoteResource())
 v1_api.register(UserResource())
+v1_api.register(SourceResource())
 
 
 urlpatterns = patterns('',    

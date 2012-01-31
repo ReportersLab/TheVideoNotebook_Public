@@ -11,8 +11,24 @@
         <p id="video_description" class="edit"><%= description %></p>
         <h6 id="video_time" class="edit"> <%= time %></h6>
     </script>
+    
+    <script type="text/html" id="sourceTemplate">
+        <input type="text" class="source_url" placeholder="Source URL" />
+        <div style="float:right; clear:both;">
+            <span class="status"></span>
+            <label>Source:</label>
+            <select class="source_type">
+                <option value="" selected="selected">Select Type</option>
+                <option value="twitter">Twitter</option>
+                <option value="storify">Storify</option>
+                <option value="coveritlive">Cover It Live</option>
+                <option value="scribblelive">ScribbleLive</option>
+                <option value="csv">CSV</option>
+            </select>
+            <input type="button" class="source_save" value="Save" />
+        </div>
+    </script>
 {% endblock %}
-
 
 {% block main_content %}
     
@@ -48,6 +64,14 @@
                 <div class="black_bar"></div>
              </div>
              <div id="add_status" class="box_shadow padded margined" style="display:none;"></div>
+             <div id="add_source_container" style="display:none;">
+                <div class="black_bar"></div>
+                <div id="sources"  class="box_shadow padded margined">
+                    <h4 style="text-align:center;">Add a data source</h4>
+                    <!-- data via js -->
+                </div>
+                <span id="add_source_link">Add Another Source...</span>
+             </div>
         </div>
     </div>
    

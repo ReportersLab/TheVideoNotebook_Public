@@ -157,6 +157,56 @@ class NoteResource(ModelResource):
         authentication = Authentication()
         authorization = DjangoAuthorization()
         
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+class SourceResource(ModelResource):
+    
+    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
+    video = fields.ToOneField('core.api.resources.VideoResource', 'video', null = True, blank = True)
+    
+    
+    '''
+    So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)
+    So ratehr than dealing with the default bundle saving, I'm just creating a new note and saving it myself.
+    '''
+    def obj_create(self, bundle, request=None, **kwargs):
+        if bundle.data is not None:
+            bundle.data['url'] = strip(bundle.data['url'])
+            bundle.data['type'] = strip(bundle.data['type'])
+            kwargs['video'] = Video.objects.get(id = bundle.data['video_id'])
+            kwargs['user'] = request.user
+            kwargs['user_name'] = request.user.username
+            
+        return super(SourceResource, self).obj_create(bundle, request, **kwargs)
+    
+    
+    def save_related(self, bundle):
+        pass
+    def obj_delete_list(self, request=None, **kwargs):
+        pass
+    
+    class Meta:
+        queryset = Source.objects.all()
+        resource_name = "source"
+        filtering = {
+            'video': ALL_WITH_RELATIONS,
+            'time': ['gt', 'gte', 'lt', 'lte',]
+        }
+        ordering = ['update_time',]
+        list_allowed_methods = ['get', 'post', ]
+        detail_allowed_methods = ['get', 'post', 'put', 'patch',]
+        always_return_data = True
+        authentication = Authentication()
+        authorization = DjangoAuthorization()
+ 
+ 
+ 
+ 
         
         
 class UserResource(ModelResource):

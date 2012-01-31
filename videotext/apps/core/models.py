@@ -140,7 +140,11 @@ class Source(CommonInfo):
     scraped   = models.BooleanField(default = False, verbose_name = 'Data Scraped')
     # Either we save scraped content here as a zip file or text file or whatever
     # OR we let people upload a CSV in a specific format to parse for notes.
-    content   = models.FileField(upload_to = 'videotext/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location') 
+    content   = models.FileField(upload_to = 'videotext/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location')
+    
+    
+    def save(self, *args, **kwargs):
+        super(Source, self).save(*args, **kwargs)
 
 
 
@@ -165,7 +169,7 @@ class Note(CommonInfo):
         if not self.id:
             super(Note, self).save(*args, **kwargs)
             
-        print "\n\n============NOTE SAVING=================\n\n"
+        #print "\n\n============NOTE SAVING=================\n\n"
         
         if self.video != None:
             if (self.time != None) and (self.video.time != None):  #If we have the times, calculate offset, otherwise assume it's passed in.
@@ -176,9 +180,9 @@ class Note(CommonInfo):
         
             self.link = '{0}#note/{1}'.format(self.video.get_absolute_url(), self.id) 
         
-        print "VIDEO: %s" % self.video
-        print "LINK:  %s" %  self.link
-        print "ID:    %s" % self.id
+        #print "VIDEO: %s" % self.video
+        #print "LINK:  %s" %  self.link
+        #print "ID:    %s" % self.id
         
         super(Note, self).save(*args, **kwargs)
         

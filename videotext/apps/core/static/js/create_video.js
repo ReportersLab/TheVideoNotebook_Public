@@ -1,9 +1,77 @@
+
 $(document).ready(function(){
     
     
-    window.AddNoteView = Backbone.View.extend({
+    window.AddSourceView = Backbone.View.extend({
+        el: $('#add_source_container'),
+        events: {
+            'click #add_source_link' : 'onAddSourceClick'
+        },
+        initialize: function(){
+            this.sources = new Sources();
+            this.addSource();
+            $(this.el).slideDown('slow');
+        },
+        onAddSourceClick: function(event){
+            this.addSource();
+        },
+        addSource: function(){
+            source = new Source();
+            var view = new SourceView({model:source, container:this});
+            $("#sources").append(view.render().el);
+            source.view = view;
+            this.sources.add(source);
+        }
         
     });
+    
+    window.SourceView = Backbone.View.extend({
+       tagName: 'div',
+       className: 'add_source',
+       template: _.template($("#sourceTemplate").html()),
+       events: {
+            'click .source_save': 'onSaveClick'
+       },
+       
+       initialize: function(){
+            this.container = this.options.container;
+       },
+       
+       render: function(){
+            $(this.el).html(this.template(this.model.toJSON()));
+            $(this.el).fadeIn('slow');
+            return this;
+       },
+       
+       onSaveClick: function(event){
+            status = $(this.el).find('.status');
+            status.html("Saving source").show();
+            var url = $(this.el).find('.source_url').val();
+            var type = $(this.el).find('.source_type').val();
+            if( (type == "") || (url == "") ){
+                status.html("Please fill out everything.").effect("pulsate", {times:3, mode:"show"}, 500);
+                return;
+            }
+            this.model.save(
+            {
+                url: url,
+                type: type,
+                video: app.video.get('resource_uri'),
+                video_id : parseInt(app.video.get('id'))
+            },
+            {
+                success: function(){
+                    status.html("Source Saved");
+                    status.effect("pulsate", {times:3, mode:"show"}, 500);
+                }
+            });
+       }
+       
+    });
+    
+    
+    
+    
     
     window.App = Backbone.View.extend({
         el: $("#app"),
@@ -35,6 +103,7 @@ $(document).ready(function(){
         getYouTubeDetails: function(){
             this.video = new Video();
             id = $('#youtube_ID').val();
+            this.updateStatus("Checking if video exists...");
             this.video.getVideoByURL(id, function(exists){
                 if(!exists){
                     this.updateStatus("Getting data from YouTube...");
@@ -79,6 +148,8 @@ $(document).ready(function(){
                 });
                 
                 this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Click on details to edit.")}});
+                //and allow the adding of sources...
+                this.addSourceView = new AddSourceView();
             }else{
                 this.updateStatus("This video already exists!")
             }
@@ -93,7 +164,7 @@ $(document).ready(function(){
             }
             
             $("#add_status").html(message).slideDown('slow', function(){
-                                    $('#status_message').effect("pulsate", {times:2, mode:"show"}, 500);
+                                    $('#status_message').effect("pulsate", {times:1, mode:"show"}, 500);
                                 });
         },
         

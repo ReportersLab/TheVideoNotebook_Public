@@ -614,7 +614,7 @@ fieldset legend
     margin:0;
     float:left; clear:both;
     padding:10px 5px 10px 5px;
-    width:100%;
+    width:95%;
 }
 
 .note.highlighted
@@ -747,7 +747,61 @@ fieldset legend
     color:#778E1E;
 }
 
+#add_source_link
+{
+    cursor:pointer;
+    color:#778E1E;
+    font-size:12px;
+    margin:5px 0 0 0;
+    float:right;
+    clear:both;
+}
 
+#sources
+{
+    float:left;
+    clear:both;
+    width:365px
+}
+
+.add_source {
+    clear: both;
+    float: left;
+    margin: 0 0 10px;
+    padding: 0 0 10px;
+    width: 100%;
+    display:none;
+}
+
+.add_source .status
+{
+    color:#FFCC00;
+    font-size:10px;
+    padding:0 5px 0 5px;
+    font-weight:bold;
+}
+
+.add_source .source_url
+{
+    width:95%;
+    padding:2px 0 2px 16px;
+    border:2px solid #DFDFDF;
+    background:#FFFFFF;
+    color:#000000;
+    font:14px 'LeagueGothicRegular',Arial,'Liberation Sans',FreeSans,sans-serif;
+    text-transform:uppercase;
+    margin:0 0 5px 0;
+}
+
+.add_source .source_type
+{
+    
+}
+
+.add_source .source_save
+{
+    
+}
 
 
 

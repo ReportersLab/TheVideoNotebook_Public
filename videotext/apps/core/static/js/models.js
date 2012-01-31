@@ -76,7 +76,35 @@ $(function(){
              return video.get('end_date_time');
          }
     });
+    
+    
+    window.Source = Backbone.Model.extend({
+        defaults: function(){
+            return{
+              type: "twitter",
+              scraped: false,
+              url: 'http://'
+            };
+        },
+        url: function(){
+            return this.get('resource_uri') || this.collection.url || SOURCE_API;
+        }
+    });
      
+     
+    window.Sources = Backbone.Collection.extend({
+       model: Source,
+       url: SOURCE_API,
+       parse: function(data){
+            return data.objects;
+       },
+       comparator: function(source){
+            source.get('update_time');
+       }
+        
+    });
+    
+    
     window.Note = Backbone.Model.extend({
         
          defaults: function(){

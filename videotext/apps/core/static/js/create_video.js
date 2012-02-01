@@ -147,6 +147,32 @@ $(document).ready(function(){
                     onblur: 'submit'
                 });
                 
+                $('#add_video_details .timepicker').editable(function(value, settings){
+                    var stamp = $('#video_date_component').html() + 'T' + value + '.000Z';
+                    self.video.set({time: stamp});
+                    self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
+                    return value;
+                },
+                {
+                    type: 'timepicker',
+                    submit: 'Submit',
+                    tooltip: 'Click to edit...'
+                });
+                
+                $('#add_video_details .datepicker').editable(function(value, settings){
+                    var vp = value.split('/');
+                    value = vp[2] + '-' + vp[1] + '-' + vp[0];
+                    var stamp = value + 'T' + $('#video_time_component').html() + '.000Z';
+                    self.video.set({time: stamp});
+                    self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
+                    return value;
+                },
+                {
+                    type: 'datepicker',
+                    submit: 'Submit',
+                    tooltip: 'Click to edit...'
+                });
+                
                 this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Click on details to edit.")}});
                 //and allow the adding of sources...
                 this.addSourceView = new AddSourceView();
@@ -184,5 +210,186 @@ $(document).ready(function(){
     function getVideoDetails(){
         
     }
+    
 
+});
+
+
+
+
+
+/* jQuery timepicker
+ * replaces a single text input with a set of pulldowns to select hour, minute, and am/pm
+ *
+ * Copyright (c) 2007 Jason Huck/Core Five Creative (http://www.corefive.com/)
+ * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) 
+ * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ *
+ * Version 1.0
+ */
+
+(function($){
+	jQuery.fn.timepicker = function(){
+		this.each(function(){
+			// get the ID and value of the current element
+			var i = this.id;
+			var v = $(this).val();
+	
+			// the options we need to generate
+			var hrs = new Array('00', '01','02','03','04','05','06','07','08','09','10','11','12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23');
+			var mins = new Array('00','01','02','03','04','05','06','07','08','09','10','11','12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59');
+			
+			// default to the current time
+			var d = new Date;
+			var h = d.getHours();
+			var m = d.getMinutes();
+			var s = d.getSeconds();
+			
+			// override with current values if applicable
+			if(v.length == 8){
+				h = parseInt(v.substr(0,2));
+				m = parseInt(v.substr(3,2));
+				s = parseInt(v.substr(6,2));
+			}
+		    
+			// build the new DOM objects
+			var output = '';
+			
+			output += '<select id="h_' + i + '" class="h timepicker">';				
+			for(hr in hrs){
+				output += '<option value="' + hrs[hr] + '"';
+				if(parseInt(hrs[hr], 10) == h) output += ' selected';
+				output += '>' + hrs[hr] + '</option>';
+			}
+			output += '</select>';
+	
+			output += '<select id="m_' + i + '" class="m timepicker">';				
+			for(mn in mins){
+				output += '<option value="' + mins[mn] + '"';
+				if(parseInt(mins[mn], 10) == m) output += ' selected';
+				output += '>' + mins[mn] + '</option>';
+			}
+			output += '</select>';				
+            
+            output += '<select id="s_' + i + '" class="s timepicker">';				
+			for(mn in mins){
+				output += '<option value="' + mins[mn] + '"';
+				if(parseInt(mins[mn], 10) == s) output += ' selected';
+				output += '>' + mins[mn] + '</option>';
+			}
+			output += '</select>';			
+            
+			// hide original input and append new replacement inputs
+			//$(this).attr('type','hidden').after(output);
+            // Fix IE crash (tuupola@appelsiini.net)
+			$(this).hide().after(output);
+			
+		});
+		
+		
+		$('select.timepicker').change(function(){
+			var i = this.id.substr(2);
+			var h = $('#h_' + i).val();
+			var m = $('#m_' + i).val();
+            var s = $('#s_' + i).val();
+			var v = h + ':' + m + ":" + s ;
+			$('#' + i).val(v);
+		});
+		
+		return this;
+	};
+})(jQuery);
+
+
+
+
+/*
+ * Timepicker for Jeditable
+ *
+ * Copyright (c) 2007-2009 Mika Tuupola
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ * Depends on Timepicker jQuery plugin by Jason Huck:
+ *   http://jquery.com/plugins/project/timepicker
+ *
+ * Project home:
+ *   http://www.appelsiini.net/projects/jeditable
+ *
+ * Revision: $Id$
+ *
+ */
+var timepickerFormId = 0
+$.editable.addInputType('timepicker', {
+    /* This uses default hidden input field. No need for element() function. */
+
+    /* Call before submit hook. */
+    submit: function (settings, original) {
+        /* Collect hour, minute and am/pm from pulldowns. Create a string from */
+        /* them. Set value of hidden input field to this string.               */
+        //2012-01-31T10:58:06.000Z
+        var value = $('.h.timepicker').val() + ':' + $('.m.timepicker').val() + ":" + $('.s.timepicker').val();
+        $('input', this).val(value);
+    },
+    /* Attach Timepicker plugin to the default hidden input element. */
+    plugin:  function(settings, original) {
+        $('input', this).filter(':hidden')
+          .attr("id", "jquery_timepicker_"+(++timepickerFormId))
+          .filter(':hidden').timepicker();
+    }
+});
+
+
+
+
+/*
+ * Datepicker for Jeditable (currently buggy, not for production)
+ *
+ * Copyright (c) 2007-2008 Mika Tuupola
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ * Depends on Datepicker jQuery plugin by Kelvin Luck:
+ *   http://kelvinluck.com/assets/jquery/datePicker/v2/demo/
+ *
+ * Project home:
+ *   http://www.appelsiini.net/projects/jeditable
+ *
+ * Revision: $Id$
+ *
+ */
+ 
+$.editable.addInputType('datepicker', {
+    /* create input element */
+    element : function(settings, original) {
+        var input = $('<input>');
+        $(this).append(input);
+        //$(input).css('opacity', 0.01);
+        return(input);
+    },
+
+    /* attach 3rd party plugin to input element */
+    plugin : function(settings, original) {
+        /* Workaround for missing parentNode in IE */
+        var form = this;
+        settings.onblur = 'cancel';
+        $("input", this)
+        .datePicker({createButton:false})
+        .bind('click', function() {
+            //$(this).blur();
+            $(this).dpDisplay();
+            return false;
+        })
+        .bind('dateSelected', function(e, selectedDate, $td) {
+            $(form).submit();
+        })
+        .bind('dpClosed', function(e, selected) {
+            /* TODO: unneseccary calls reset() */
+            //$(this).blur();
+        })
+        .trigger('change')
+        .click();
+    }
 });

@@ -3,7 +3,10 @@ $(function(){
          
          initialize: function(){
              //make a real JS date out of the date string we got in JSON.
-             this.set({date_time: new Date(this.get('time')) });
+             if(this.get('time')){
+                 this.set({date_time: new Date(this.get('time')) });
+                 this.set({time_component:this.get('time').split('T')[1].replace('.000Z', ''), date_component:this.get('time').split('T')[0]})   
+             }
              if(this.get('end_time')){
                  this.set({end_date_time: new Date(this.get('end_time'))});
              }
@@ -21,6 +24,8 @@ $(function(){
                 success: function(model, response){
                     if(response.objects && response.objects.length == 1){
                         self.set(response.objects[0]);
+                        if(self.get('time'))
+                           self.set({time_component:self.get('time').split('T')[1].replace('.000Z', ''), date_component:self.get('time').split('T')[0]})
                         if(callback)
                             callback.call(object, true);
                         return;
@@ -50,11 +55,15 @@ $(function(){
                     var title = item['title'];
                     var description = item['description'];
                     var time = item['uploaded'];
+                    //split time into date & time for editing purposes.
+                    var time_component = time.split('T')[1].replace('.000Z', '');
+                    var date_component = time.split('T')[0];
                     var tags = item['tags'].join(',');
                     var user_name = item['uploader'];
                     var image = item['thumbnail']['hqDefault'];
                     this.set({title: title, description:description, time:time, tags:tags, user_name: user_name,
-                              icon_link:image, type:'youtube', private: false, video_url: id, embedable: embedable, resource_uri: VIDEO_API });
+                              icon_link:image, type:'youtube', private: false, video_url: id, embedable: embedable, resource_uri: VIDEO_API,
+                              time_component:time_component, date_component:date_component});
                     if(callback)
                         callback.call(object, true);
                 }catch (e){

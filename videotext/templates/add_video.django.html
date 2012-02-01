@@ -4,12 +4,14 @@
 
 
 {% block head %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jeditable.mini.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.datePicker.js"></script>
     <script type="text/html" id="createVideoTemplate">
         <h1 id="video_title" class="edit"><%= title %></h1>
         <p id="video_description" class="edit"><%= description %></p>
-        <h6 id="video_time" class="edit"> <%= time %></h6>
+        <strong>Date: </strong><h6 id="video_date_component" class="datepicker"><%= date_component %></h6><br />
+        <strong>Time: </strong><h6 id="video_time_component" class="timepicker"><%= time_component %></h6>
     </script>
     
     <script type="text/html" id="sourceTemplate">

@@ -152,24 +152,22 @@ class Source(CommonInfo):
             super(Source, self).save(*args, **kwargs)
         
         if self.video and self.url and not self.scraped:
-            print "================\n\n Attempting Parse"
-            #try:
-            if self.type == "twitter":
-                pass
-            elif self.type == "storify":
-                parse_storify(self.url, self.video)
-            elif self.type == "coveritlive":
-                pass
-            elif self.type == "scribblelive":
-                parse_scribbling(self.url, self.video)
-            elif self.type == "csv":
-                pass
-            elif self.type == "fark":
-                parse_fark(self.url, self.video)
-            self.scraped = True
-            #except Exception:
-                #print "=================\n\n Parse Failed"
-                #self.scraped = False
+            try:
+                if self.type == "twitter":
+                    pass
+                elif self.type == "storify":
+                    parse_storify(self.url, self.video)
+                elif self.type == "coveritlive":
+                    pass
+                elif self.type == "scribblelive":
+                    parse_scribbling(self.url, self.video)
+                elif self.type == "csv":
+                    pass
+                elif self.type == "fark":
+                    parse_fark(self.url, self.video)
+                self.scraped = True
+            except Exception:
+                self.scraped = False
             
         
         super(Source, self).save(*args, **kwargs)

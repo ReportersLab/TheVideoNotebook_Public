@@ -127,10 +127,11 @@ $(document).ready(function(){
             var template =  _.template($("#createVideoTemplate").html());
             var self = this;
             
-            $('#add_video_details').html(template(this.video.toJSON()))
+            $('#add_video_details').append(template(this.video.toJSON()))
             $('#add_video_details_container').slideDown('slow');
             $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
             if(!alreadyExists){
+                $("#add_edit_message").show();
                 $('#add_video_details .edit').editable(function(value, settings){
                     var data = {};
                     data[this.id.split('_')[1]] = value;

@@ -4,6 +4,9 @@
         <title>The Video Notebook // {% block title %} Latest Videos{% endblock %}</title>
         <link rel="icon" href="http://media.reporterslab.org/images/icons/lab-favicon.ico" type="image/ico" sizes="16x16" />
         <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+        <!--[if lt IE 9]>
+            <script src="http://media.reporterslab.org/scripts/html5.js" type="text/javascript"></script>
+        <![endif]-->
         <!-- JQuery Tools for overlay: http://flowplayer.org/tools/index.html -->
         <script src="http://cdn.jquerytools.org/1.2.6/all/jquery.tools.min.js"></script>
         <!-- JQuery UI - This may be overkill, but lets keep it for now -->
@@ -120,6 +123,8 @@
                     <div id="login_box">
                         {% if user.is_authenticated %}
                             Welcome {{ user }} <span class="slashes">//</span> <a href="/l/logout/">log out</a>
+                            <span class="slashes">//</span>
+                            <a href="/video/add/">Add a video</a>
                         {% else %}
                             <form method="post" action="{{ request.path }}">
                                 {% csrf_token %}

@@ -3,7 +3,37 @@
 
 
 {% block main_content %}
+    <div id="video_list">
     {% for v in video_list %}
-        <h2><a href="{{ v.get_absolute_url }}">{{ v.title }}</a></h2>   
+        <article class="video_list_item">
+            {% if v.icon_link %}
+            <figure>
+                <img src="{{ v.icon_link}}" />
+            </figure>
+            {% endif %}
+           <header>
+                <h2><a href="{{ v.get_absolute_url }}">{{ v.title }}</a></h2>
+                <div class="entry_meta">
+                    <span>{{ v.user.first_name }} {{ v.user.last_name }}</span>
+                    <span class="slashes">//</span>
+                    <span class="timestamp">{{ v.update_time|date:"DATETIME_FORMAT" }}</span>
+                </div>
+           </header>
+           <div class="teaser">
+                {{ v.description|safe }}
+           </div>
+           <a class="more_link">View Video</a>
+        </article>
     {% endfor %}
+    </div>
+    
+    <div id="right_rail">
+        <aside>
+            <h3>Welcome to The Video Notebook</h3>
+            <p>The Video Notebook is an attempt to provide a way for journalists to sync notes to video. The hope is to create a way for reporters to easily import various data feeds from places like Storify or Twitter and sync them up with a recorded event.</p>
+            <p>In its alpha stage The Video Notebook provides a way to import videos from YouTube and notes from a few sources, as well as a way to add notes through our video interface.</p>
+            <p>In the future more ways to import data will be added. We also plan on adding more ways to add video and audio. We would also like to provide more ways of analyzing the notes' content -- things like entity extraction and visualizations.</p>
+            <p>You can request access to help us test the site and provide input how you would like to see it work at <b><a href="mailto:info@reporterslab.org">info@reporterslab.org</a></b></p>
+        </aside>
+    </div>
 {% endblock %}

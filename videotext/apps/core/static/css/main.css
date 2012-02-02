@@ -483,6 +483,44 @@ fieldset legend
     color:#FFCC00;
 }
 
+#video_list
+{
+    margin:15px 0 15px 0;
+    float:left;
+    clear:both;
+    width:540px;
+}
+
+#video_list article
+{
+    margin:0 0 18px 0;
+    padding:0 0 10px 0;
+    border-bottom: 3px solid #C9D6A6;
+    position: inherit;
+    float:left;
+    clear:both;
+    width:500px;
+}
+
+#video_list figure{
+    float:left;
+    margin:0 10px 10px 0;
+}
+
+#video_list figure img
+{
+    width:150px;
+}
+
+article .teaser
+{
+    margin:15px 0 10px 0;
+}
+
+#right_rail aside p
+{
+    margin:18px 0 0 0;
+}
 
 /**
  *PAGINATION

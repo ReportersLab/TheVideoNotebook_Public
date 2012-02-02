@@ -133,7 +133,7 @@ $(function(){
          initialize: function(){
              //make a real JS date out of the date string we got in JSON.
              //now done in the view, because this fails on newly added notes.
-             this.set({date_time: new Date(Date.UTC(this.get('time'))) });
+             this.set({date_time: new Date(this.get('time')) });
          },
          
          url: function(){

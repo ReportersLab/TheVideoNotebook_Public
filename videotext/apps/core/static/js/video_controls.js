@@ -62,6 +62,7 @@ $(function(){
         },
         initialize: function(){
             this.player = null;
+            this.syncingNotes = false;
             this.videoTime = 0;
         },
         render: function(){
@@ -109,6 +110,8 @@ $(function(){
        },
        
        seekToNote: function(note, exact){
+            if(this.syncingNotes)
+                return;
             var seconds = note.get('offset');
             //subtract some time so that we're slightly before the note
             if(!exact)
@@ -138,14 +141,19 @@ $(function(){
             //first get the note's time
             var noteTime = note.get("date_time");
             //and how many seconds earlier the start of the video is
-            var offset = this.videoTime;
+            var offset = this.player.getCurrentTime(); //this works for YouTube. If we use an MP4 player in future, must add this method somewhere.
             //and create a new date based on that.
             var newTime = new Date(noteTime - offset * 1000);
-            console.log(noteTime, newTime);
             this.model.set({time: newTime, sync_notes:true});
+            var video = this.model;
             this.model.save(null, {
                 success: function(model, response){
+                    video.set({date_time: new Date(newTime)});
+                    app.notes.syncToVideo(video);
                     app.endSyncNotes();     
+                },
+                error: function(model, response){
+                    app.endSyncNotes('There was an error syncing your notes')
                 }
             });
        }
@@ -221,30 +229,30 @@ $(function(){
        
        scrollToTop: function(){
             $("#notes").scrollTo("0", 200);
-        },
+       },
         
-        scrollToNote: function(note){
+       scrollToNote: function(note){
             if(note == undefined)
                 return;
             if((this.autoScroll == false) || (!$(note.view.el).is(":visible")))
                 return;
             $("#notes").scrollTo($(note.view.el), 200, {offset:{top:-70}});
-        },
+       },
         
-        showNote: function(note){
+       showNote: function(note){
             this.selectNote(note);
             this.scrollToNote(note);
             this.autoHighlight = false;
             this.app.videoView.seekToNote(note, false);
-        },
+       },
         
         
-        showNoteById: function(noteId){
+       showNoteById: function(noteId){
             note = this.notes.get(noteId);
             this.showNote(note);
-       },
+      },
        
-        selectNote: function(new_note){
+       selectNote: function(new_note){
             //if we're in the "note sync" mode, just tell the app to do the syncing.
             if(this.syncNotes){
                 this.app.syncNotes(new_note);
@@ -259,10 +267,10 @@ $(function(){
                 this.selectedNote.view.removeNoteHighlight();
              this.selectedNote = new_note;
              this.selectedNote.view.highlightNote();
-        },
+       },
        
         
-        showNoteAtTime: function(time){
+       showNoteAtTime: function(time){
             //first, find the note we're looking for
             new_note = this.notes.find(function(note){
                 return note.get('offset') > time;
@@ -286,7 +294,7 @@ $(function(){
             //scroll to the note.
             this.scrollToNote(this.selectedNote);
             
-       }
+      }
        
     });
     
@@ -557,18 +565,26 @@ $(function(){
         },
         
         startSyncNotes: function(){
-            this.notesView.syncNotes = true;
+            this.notesView.syncNotes = this.videoView.syncingNotes = true;
+            this.oldAutoScroll = this.notesView.autoScroll;
+            this.notesView.autoScroll = false;
             this.showMessage("<h4>Click on a note to sync the video with imported notes.</h4>");
         },
         
         syncNotes: function(note){
-            this.showMessage('<h4>Syncing Notes...</h4>');
+            this.showMessage('<h4>Syncing Notes... (this may take some time if there are a lot of notes)</h4>');
             this.videoView.syncNotes(note);
         },
         
-        endSyncNotes: function(){
-            this.notesView.syncNotes = false;
-            this.showMessage('<h4>Notes Synced.</h4>');
+        endSyncNotes: function(message){
+            this.notesView.syncNotes = this.videoView.syncingNotes = false;
+            this.notesView.autoScroll = this.oldAutoScroll;
+            this.videoView.playVideo();
+            if(!message){
+                this.showMessage('<h4>Notes Synced.</h4>');                
+            }else{
+                this.showMessage('<h4>' + message + '</h4>');
+            }
         },
         
         showMessage: function(message){

@@ -151,6 +151,19 @@ $(function(){
         },
         comparator: function(note){
              return parseInt(note.get('offset'));
+        },
+        //takes a video and adjusts all of the times / offsets of individual notes to match.
+        //used on the video page after a video time is updated.
+        syncToVideo: function(video){
+            this.each(function(note){
+                //miliseconds difference
+                var diff = note.get('date_time') - video.get('date_time');
+                diff = Math.round(diff / 1000);
+                note.set({offset: diff});
+                if(note.view){
+                    note.view.render();
+                }
+            });            
         }
     });
      

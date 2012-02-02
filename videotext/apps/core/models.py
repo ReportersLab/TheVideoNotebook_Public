@@ -90,8 +90,9 @@ class Video(CommonInfo):
         if not self.id:
             self.slug = slugify("{0} {1}".format(self.title, datetime.now().strftime('%m-%d-%Y-%H-%M-%S') ))
         
-        if (self.time != None) and (self.end_time != None):
-                self.video_length = (self.end_time - self.time).seconds     
+        #getting an error: can't subtract offset-naive and offset-aware datetimes -- may not be worth it to solve.
+        #if (self.time != None) and (self.end_time != None):
+                #self.video_length = (self.end_time - self.time).seconds     
         super(Video, self).save(*args, **kwargs)
     
     

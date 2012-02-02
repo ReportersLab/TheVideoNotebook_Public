@@ -37,7 +37,7 @@ DATABASES = {
 # DATABASE_NAME = 'videotext'
 
 # Local time
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/New_York'
 
 # Local language
 LANGUAGE_CODE = 'en-us'

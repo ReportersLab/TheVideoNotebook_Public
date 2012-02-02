@@ -17,15 +17,26 @@
         <div id="player_container">
             Flash Player and Javascript required for YouTube Videos.
         </div>
-        <h1><%= title %></h1>
-        <div id="video_description">
-            <%= description %>
-        </div>
-        <div id="video_meta">
-            <div class="timestamp">Start Time: <%= date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
-            <% if (obj.end_date_time) { %>
-                <div class="timestamp end">End Time: <%= end_date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
+        <div class="box_shadow margined padded">
+            <h1><%= title %></h1>
+            <div id="video_description">
+                <%= description %>
+            </div>
+            <div id="video_meta">
+                <div class="timestamp">Start Time: <%= date_time.format('dddd, mmmm dd, yyyy h:MM:ss TT') %></div>
+                <% if (obj.end_date_time) { %>
+                    <div class="timestamp end">End Time: <%= end_date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
+                <% } %>
+            </div>
+            <% if (obj.user.id == LOGGED_IN_USER.toString()){ %>
+            <div id="video_owner_controls">
+                <strong>Notes not matching the video? </strong><span id="sync_notes_link" class="link">Sync Notes</span>
+            </div>
             <% } %>
+        </div>
+        <div id="message_container" style="display:none;">
+            <div class="black_bar"></div>
+            <div id="message" class="box_shadow margined padded"></div>
         </div>
     </script>
     
@@ -93,7 +104,7 @@
                     </div>
                     <div id="search_results_count"></div>
                     <div id="note_controls">
-                        <div id="auto_scroll"><span>Disable Auto-Scroll</span></div>
+                        <div id="auto_scroll" class="link"><span>Disable Auto-Scroll</span></div>
                         {% if user.is_authenticated %}
                             <span class="slashes">//</span>
                             <div id="add_note_link" class="add_note_link"><span>Add Notes</span></div>

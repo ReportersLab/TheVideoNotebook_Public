@@ -174,7 +174,7 @@ $(document).ready(function(){
                     tooltip: 'Click to edit...'
                 });
                 
-                this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Click on details to edit.")}});
+                this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Add sources or view the video to sync and add notes.")}});
                 //and allow the adding of sources...
                 this.addSourceView = new AddSourceView();
             }else{

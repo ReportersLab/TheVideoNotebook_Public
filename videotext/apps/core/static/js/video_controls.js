@@ -57,6 +57,9 @@ $(function(){
         tagName: 'div',
         className: 'video',
         template: _.template($("#videoTemplate").html()),
+        events: {
+            'click #sync_notes_link': 'onSyncNotesClick'
+        },
         initialize: function(){
             this.player = null;
             this.videoTime = 0;
@@ -78,7 +81,7 @@ $(function(){
             var params = { allowScriptAccess: "always" };
             var attrs  = { id: "player" };
             var url = "http://www.youtube.com/v/" + this.model.get('video_url') + "?version=3&enablejsapi=1&feature=player_embedded"; 
-            swfobject.embedSWF( url, "player_container", "540", "350", "8", null, null, params, attrs);
+            swfobject.embedSWF( url, "player_container", "550", "350", "8", null, null, params, attrs);
             //video loaded, onYouTubePlayeReady(id) is called when video loaded,
             //then 'this.player' available and 'addYouTubeVideoEvents' called
        },
@@ -125,9 +128,27 @@ $(function(){
        seekToOffset: function(offset){
             this.player.seekTo(offset, true);
             this.player.playVideo();
+       },
+       
+       onSyncNotesClick: function(event){
+            app.startSyncNotes();
+       },
+       
+       syncNotes: function(note){
+            //first get the note's time
+            var noteTime = note.get("date_time");
+            //and how many seconds earlier the start of the video is
+            var offset = this.videoTime;
+            //and create a new date based on that.
+            var newTime = new Date(noteTime - offset * 1000);
+            console.log(noteTime, newTime);
+            this.model.set({time: newTime, sync_notes:true});
+            this.model.save(null, {
+                success: function(model, response){
+                    app.endSyncNotes();     
+                }
+            });
        }
-       
-       
        
        
     })
@@ -141,6 +162,7 @@ $(function(){
             this.autoScroll = true;
             this.addingNotes = false;
             this.autoHighlight = true;
+            this.syncNotes = false;
             //then load the notes
             this.notes.bind('add', this.addNote, this);
             this.notes.bind('reset', this.refreshNotes, this);
@@ -202,6 +224,8 @@ $(function(){
         },
         
         scrollToNote: function(note){
+            if(note == undefined)
+                return;
             if((this.autoScroll == false) || (!$(note.view.el).is(":visible")))
                 return;
             $("#notes").scrollTo($(note.view.el), 200, {offset:{top:-70}});
@@ -221,6 +245,12 @@ $(function(){
        },
        
         selectNote: function(new_note){
+            //if we're in the "note sync" mode, just tell the app to do the syncing.
+            if(this.syncNotes){
+                this.app.syncNotes(new_note);
+                return;
+            }
+            
             //not sure if in a search situation we should change highlighting if new-note is invisible?
             if((this.autoHighlight == false) || (!$(new_note.view.el).is(":visible")))
                 return;
@@ -524,6 +554,28 @@ $(function(){
             
             this.router = new MainRouter({app:this});
             Backbone.history.start();
+        },
+        
+        startSyncNotes: function(){
+            this.notesView.syncNotes = true;
+            this.showMessage("<h4>Click on a note to sync the video with imported notes.</h4>");
+        },
+        
+        syncNotes: function(note){
+            this.showMessage('<h4>Syncing Notes...</h4>');
+            this.videoView.syncNotes(note);
+        },
+        
+        endSyncNotes: function(){
+            this.notesView.syncNotes = false;
+            this.showMessage('<h4>Notes Synced.</h4>');
+        },
+        
+        showMessage: function(message){
+            $("#message_container").slideDown('slow', function(){
+                $('#message').html(message).effect("pulsate", {times:1, mode:"show"}, 500);
+            })
+            
         }
         
     })

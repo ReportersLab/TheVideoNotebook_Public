@@ -44,13 +44,18 @@ class VideoResource(ModelResource):
     
     def obj_update(self, bundle, request = None, **kwargs):
         video = None
-        if bundle.data['id'] is None:
-            return Bundle()
         
         if bundle.data is not None:
             video = Video.objects.get( id = bundle.data['id'] )
             if video is not None and video.user == request.user:
-                return super(VideoResource, self).obj_update(bundle, request, **kwargs)
+                return_val = super(VideoResource, self).obj_update(bundle, request, **kwargs)
+                #if we're doing a sync, re-save all notes on this video.
+                if bundle.data['sync_notes'] is True:
+                    for note in video.note_set.all():
+                        #saving updates offset.
+                        note.save()
+                return return_val
+            
         return Bundle(obj = video)
                 
     

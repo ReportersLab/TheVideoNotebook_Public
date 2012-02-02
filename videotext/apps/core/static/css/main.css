@@ -110,6 +110,16 @@ fieldset legend
     font-style:italic;
 }
 
+.link
+{
+    cursor:pointer !important;
+    color:#778E1E !important;
+}
+
+.link:hover
+{
+    color:#FFCC00 !important;
+}
 
 .main_content
 {
@@ -534,11 +544,24 @@ fieldset legend
 
 
 /**
+ *VIDEO STYLE
+ **/
+
+#video_owner_controls
+{
+    margin:10px 0 10px 0;
+    padding:5px;
+    border-top:3px solid #C9D6A6;
+}
+
+/**
  *Notes Style
  **/
 
 #notes_container{
 }
+
+
 
 #note_controls{
     cursor:pointer;
@@ -620,6 +643,11 @@ fieldset legend
 .note.highlighted
 {
     background-color:#FFCC00;
+}
+
+.note:hover
+{
+    background-color:#D6E9E1;
 }
 
 .note .avatar
@@ -742,12 +770,12 @@ fieldset legend
     margin:10px 0 10px 0;
 }
 
-#status_message
+#status_message, #message
 {
     text-align:center;
 }
 
-#status_message a
+#status_message a, #message a
 {
     color:#778E1E;
 }

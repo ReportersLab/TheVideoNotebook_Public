@@ -4,8 +4,11 @@ $(function(){
          initialize: function(){
              //make a real JS date out of the date string we got in JSON.
              if(this.get('time')){
-                 this.set({date_time: new Date(this.get('time')) });
-                 this.set({time_component:this.get('time').split('T')[1].replace('.000Z', ''), date_component:this.get('time').split('T')[0]})   
+                 var dt = new Date(this.get('time'));
+                 var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
+                 var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
+                 this.set({date_time: dt});
+                 this.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + dt.getMonth() + '/' + dt.getDate()})   
              }
              if(this.get('end_time')){
                  this.set({end_date_time: new Date(this.get('end_time'))});
@@ -130,7 +133,7 @@ $(function(){
          initialize: function(){
              //make a real JS date out of the date string we got in JSON.
              //now done in the view, because this fails on newly added notes.
-             this.set({date_time: new Date(this.get('time')) });
+             this.set({date_time: new Date(Date.UTC(this.get('time'))) });
          },
          
          url: function(){

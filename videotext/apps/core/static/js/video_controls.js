@@ -3,7 +3,8 @@
 
 
 //time we should seek before a note before playing the video.
-NOTE_SEEK_BEFORE_TIME = 30;
+//this is probably a matter of personal preference, so maybe we want to make it user adjustable.
+NOTE_SEEK_BEFORE_TIME = 7;
 
 PLAYER_STATES = {
     '-1':'unstarted',

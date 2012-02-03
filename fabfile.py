@@ -18,7 +18,7 @@ env.env_path = '%(path)s/env' % env
 env.repo_path = '%(path)s/repository' % env
 env.apache_config_path = '/home/newsapps/sites/apache/%(project_name)s' % env
 env.python = 'python2.6'
-env.repository_url = "https://MrMetlHed@github.com/ReportersLab/TwitterVision.git"
+env.repository_url = "https://MrMetlHed@github.com/ReportersLab/VideoNotebook.git"
 env.multi_server = False
 env.memcached_server_address = "cache.example.com"
 

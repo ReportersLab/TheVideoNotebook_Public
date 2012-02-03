@@ -416,13 +416,34 @@ $(function(){
        },
        
        events: {
-            'click .note_text': 'onNoteClicked'
+            'click .note_text': 'onNoteClicked',
+            'mouseenter': 'onNoteEnter',
+            'mouseleave': 'onNoteLeave'
        },
        
        render: function(){
             this.model.set({date_time: new Date(this.model.get('time')) });
             $(this.el).html(this.template(this.model.toJSON()));
             return this;
+       },
+       
+       onNoteEnter: function(event){
+            var details = $(this.el).find('.details');
+            $(this.el).animate({
+                height: '+=' + details.height() + 'px'
+            }, 100, function() {
+                details.fadeIn(100);
+            });
+       },
+       
+       onNoteLeave: function(event){
+            var details = $(this.el).find('.details');
+            var el = this.el;
+            details.fadeOut(100, function(){
+                $(el).animate({
+                    height: '-=' + details.height() + 'px'
+                }, 100)    
+            });
        },
        
        onNoteClicked: function(event){

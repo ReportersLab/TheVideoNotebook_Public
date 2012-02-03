@@ -676,6 +676,7 @@ article .teaser
     float:left; clear:both;
     padding:10px 5px 10px 5px;
     width:95%;
+    overflow:hidden;
 }
 
 .note.highlighted
@@ -711,7 +712,15 @@ article .teaser
     float:left; clear:both;
     border-top:1px solid #FFFFFF;
     width:100%;
-    padding: 0 2px 0 2px;
+    padding: 2px;
+}
+
+.note .details
+{
+    display:none;
+    clear:both;
+    padding:5px;
+    border-top:2px solid #FFFFFF;
 }
 
 #add_note_container{

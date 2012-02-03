@@ -50,7 +50,7 @@ class VideoResource(ModelResource):
             if video is not None and video.user == request.user:
                 return_val = super(VideoResource, self).obj_update(bundle, request, **kwargs)
                 #if we're doing a sync, re-save all notes on this video.
-                if bundle.data['sync_notes'] is True:
+                if hasattr(bundle.data, 'sync_notes') and bundle.data['sync_notes'] is True:
                     for note in video.note_set.all():
                         #saving updates offset.
                         note.save()

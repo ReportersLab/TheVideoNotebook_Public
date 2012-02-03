@@ -76,6 +76,27 @@ $(function(){
                 //NOTE: Didn't know about _.defer or _.delay
                 $.later(100, this, 'embedYouTube', [], false);
             }
+            //if the logged in user is the owner of this video, let them edit the content.
+            if (this.model.get("user") && parseInt(this.model.get('user').id, 10) == LOGGED_IN_USER){
+                var self = this;
+                $(this.el).find('.edit').editable(function(value, settings){
+                    var data = {};
+                    data[this.id.split('_')[1]] = value;
+                    self.model.set(data);
+                    app.showMessage("<h4>Updating Video Details</h4>");
+                    self.model.save(null, {wait:true, success:function(model, response){app.showMessage("<h4>Video Details Updated!</h4>")}});
+                    return value;
+                },
+                {
+                    type: 'textarea',
+                    cancel: 'Cancel',
+                    submit: 'Submit',
+                    select: true,
+                    tooltip: 'Click to edit...',
+                    onblur: 'submit'
+                });
+            }
+            
             return this;
        },
        

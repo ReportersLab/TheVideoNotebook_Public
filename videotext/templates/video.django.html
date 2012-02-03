@@ -17,9 +17,9 @@
         <div id="player_container">
             Flash Player and Javascript required for YouTube Videos.
         </div>
-        <div class="box_shadow margined padded">
-            <h1><%= title %></h1>
-            <div id="video_description">
+        <div id="video_details_container" class="box_shadow margined padded">
+            <h1 id="video_title" class="edit"><%= title %></h1>
+            <div id="video_description" class="edit">
                 <%= description %>
             </div>
             <div id="video_meta">
@@ -30,6 +30,7 @@
             </div>
             <% if (obj.user.id == LOGGED_IN_USER.toString()){ %>
             <div id="video_owner_controls">
+                <strong>Change video details by clicking on them</strong><br />
                 <strong>Notes not matching the video? </strong><span id="sync_notes_link" class="link">Sync Notes</span>
             </div>
             <% } %>

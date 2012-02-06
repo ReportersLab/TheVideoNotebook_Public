@@ -38,15 +38,6 @@
         </div>
     </script>
     
-    <!--
-        <% if(icon_link){ %>
-            <div class="avatar">
-                <a href="<%= link %>">
-                    <img src="<%= icon_link %>" alt="" title="<%= user_name %>" />
-                </a>
-            </div>
-        <% } %>
-    -->
     
     <script type="text/html" id="noteTemplate">
         
@@ -71,10 +62,6 @@
         </div>
     </script>
     
-    <script type="text/html" id="addNoteTemplate">
-        
-    </script>
-    
     <script type="text/html" id="noteDetailsTemplate">
         <div class="margin_bottom">
             <% if(obj.icon_link){ %>
@@ -96,20 +83,20 @@
             </div>
         </div>
         <div class="black_bar"></div>
-        <h2><%= text %></h2>
+        <h2 id="note_detail_text" class="edit"><%= text %></h2>
         <div class="black_bar"></div>
-        <div class="margined">
+        <div id="note_detail_details" class="margined">
             <div>
                 <b>Type: </b>
-                <span><%= type %></span>    
+                <span id="note_detail_type" class="edit"><%= type %></span>    
             </div>
             <div>
                 <b>Source: </b>
-                <span><%= source %></span>    
+                <span id="note_detail_source" class="edit"><%= source %></span>    
             </div>
             <div>
                 <b>Link: </b>
-                <span><%= link %></span>    
+                <span id="note_detail_link"><%= link %></span>    
             </div>
         </div>
         <div class="black_bar"></div>

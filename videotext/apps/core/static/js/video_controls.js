@@ -502,6 +502,32 @@ $(function(){
         render: function(){
             $(this.el).html(this.template(this.note.toJSON()));
             $(this.el).slideDown('slow');
+            
+            //if the logged in user is the owner of this note, let them edit the content.
+            //if there is no user for this note (as in, it was imported), the video owner can edit.
+            if(    (this.note.get("user") && (this.note.get("user").id == LOGGED_IN_USER.toString()) )  ||
+                   ( !this.note.get("user") && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
+              ){
+                
+                var self = this;
+                $(this.el).find('.edit').editable(function(value, settings){
+                    var data = {};
+                    //pattern is note_detail_VAR
+                    data[this.id.split('_')[2]] = value;
+                    self.note.set(data);
+                    app.showMessage("<h4>Updating Note Details</h4>");
+                    self.note.save(null, {wait:true, success:function(model, response){app.showMessage("<h4>Note Details Updated!</h4>")}});
+                    return value;
+                },
+                {
+                    type: 'textarea',
+                    cancel: 'Cancel',
+                    submit: 'Submit',
+                    select: true,
+                    tooltip: 'Click to edit...',
+                    onblur: 'submit'
+                });
+            }
             return this;
         },
         

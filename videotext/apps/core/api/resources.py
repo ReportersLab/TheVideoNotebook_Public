@@ -129,6 +129,20 @@ class NoteResource(ModelResource):
             kwargs['source'] = 'tv'
         return super(NoteResource, self).obj_create(bundle, request, **kwargs)
     
+    
+    
+    def obj_update(self, bundle, request = None, **kwargs):
+        note = None
+        
+        if bundle.data is not None:
+            note = Note.objects.get( id = bundle.data['id'] )
+            if note is not None:
+                if note.user == request.user or note.video.user == request.user:
+                    return_val = super(NoteResource, self).obj_update(bundle, request, **kwargs)
+                    return return_val
+            
+        return Bundle(obj = note)
+    
     #TODO: Searching notes
     #TODO: Filter by limits?
     def build_filters(self, filters=None):

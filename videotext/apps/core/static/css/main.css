@@ -787,6 +787,11 @@ article .teaser
     font-size:14px;
 }
 
+#note_detail_details span
+{
+    min-widtH:200px;
+}
+
 
 /**
  *Index view / list

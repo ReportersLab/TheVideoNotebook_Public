@@ -8,8 +8,9 @@ from core.helpers.strip_tags import strip
 from datetime import datetime, timedelta
 from django.db import connection
 from django.contrib.auth.models import User
-from tastypie.exceptions import NotFound
+from tastypie.exceptions import NotFound, ImmediateHttpResponse
 from django.core.exceptions import PermissionDenied
+from tastypie import http
 
          
 
@@ -58,7 +59,8 @@ class VideoResource(ModelResource):
                         note.save()
                 return return_val
             else:
-                raise PermissionDenied("User Doesn't have permission to edit this video.")
+                raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+                #raise PermissionDenied("User Doesn't have permission to edit this video.")
                 
         return Bundle(obj = video)
                 
@@ -145,7 +147,8 @@ class NoteResource(ModelResource):
                     return_val = super(NoteResource, self).obj_update(bundle, request, **kwargs)
                     return return_val
                 else:
-                    raise PermissionDenied("User Doesn't have permission to edit this note.")
+                    raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+                    #raise PermissionDenied("User Doesn't have permission to edit this note.")
             
         return Bundle(obj = note)
     
@@ -164,7 +167,8 @@ class NoteResource(ModelResource):
             if obj.user == request.user or obj.video.user == request.user:
                 return_val = super(NoteResource, self).obj_delete(request, **kwargs)
             else:
-                raise PermissionDenied("User Doesn't have permission to delete this note.")
+                raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+                #raise PermissionDenied("User Doesn't have permission to delete this note.")
         
     
     #TODO: Searching notes

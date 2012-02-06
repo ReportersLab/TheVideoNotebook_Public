@@ -8,6 +8,8 @@ from core.helpers.strip_tags import strip
 from datetime import datetime, timedelta
 from django.db import connection
 from django.contrib.auth.models import User
+from tastypie.exceptions import NotFound
+from django.core.exceptions import ValidationError
 
          
 
@@ -143,6 +145,24 @@ class NoteResource(ModelResource):
             
         return Bundle(obj = note)
     
+    
+    def obj_delete(self, request=None, **kwargs):
+        
+        obj = kwargs.pop('_obj', None)
+
+        if not hasattr(obj, 'delete'):
+            try:
+                obj = self.obj_get(request, **kwargs)
+            except ObjectDoesNotExist:
+                raise NotFound("A model instance matching the provided arguments could not be found.")
+        
+        if obj is not None:
+            if obj.user == request.user or obj.video.user == request.user:
+                return_val = super(NoteResource, self).obj_delete(request, **kwargs)
+            else:
+                raise ValidationError("User Doesn't have permission to delete this object.")
+        
+    
     #TODO: Searching notes
     #TODO: Filter by limits?
     def build_filters(self, filters=None):
@@ -171,7 +191,7 @@ class NoteResource(ModelResource):
         }
         ordering = ['offset', 'time', 'end_time', 'creation_time',]
         list_allowed_methods = ['get', 'post', ]
-        detail_allowed_methods = ['get', 'post', 'put', 'patch',]
+        detail_allowed_methods = ['get', 'post', 'put', 'patch', 'delete']
         always_return_data = True
         authentication = Authentication()
         authorization = DjangoAuthorization()

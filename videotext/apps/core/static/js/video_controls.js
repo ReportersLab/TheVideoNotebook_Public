@@ -207,6 +207,7 @@ $(function(){
             
             this.notesSearch = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
             this.addNoteView = new AddNoteView({el: $('#add_note_container'), notesView: this, notes: this.notes });
+            this.noteDetailsView = new NoteDetailsView({el:$('#note_details_container'), notesView: this});  
        },
        
        events: {
@@ -252,6 +253,11 @@ $(function(){
                 $("#add_note_link").html("<span>View notes</span>");
                 $(this.addNoteView.el).slideDown(1000);
             }
+       },
+       
+       showNoteDetails: function(note){
+          this.noteDetailsView.note = note;
+          this.noteDetailsView.render();
        },
        
        scrollToTop: function(){
@@ -321,11 +327,9 @@ $(function(){
             //scroll to the note.
             this.scrollToNote(this.selectedNote);
             
-      },
-      
-      showNoteDetails: function(note){
-          this.noteDetailsView = new NoteDetailsView({el:$('#note_details_container'), notesView: this, note:note});  
       }
+      
+      
       
     });
     
@@ -491,12 +495,12 @@ $(function(){
         initialize: function(){
             this.note = this.options.note;
             this.notesView = this.options.notesView;
-            this.render();
         },
         
         events: {
             'click .closeLink': 'onCloseClick',
-            'click .sync_note_link': 'onSyncNoteClick'
+            'click .sync_note_link': 'onSyncNoteClick',
+            'click .delete_note_link': 'onDeleteClick'
         },
         
         render: function(){
@@ -533,6 +537,7 @@ $(function(){
         
         onCloseClick: function(event){
             $(this.el).slideUp('slow');
+            
         },
         
         onSyncNoteClick: function(event){
@@ -548,6 +553,15 @@ $(function(){
                     app.showMessage("<h4>There was an error saving</h4>");
                 }
             });
+        },
+        
+        onDeleteClick: function(event){
+            if(confirm("Are you sure you wish to delete this note?")){
+                this.notesView.notes.remove(this.note);
+                this.note.destroy();
+                this.notesView.notes.sort();
+                this.onCloseClick();
+            }
         }
         
     });
@@ -597,16 +611,20 @@ $(function(){
             status.html("<span>Saving Note...</span>")
             status.show();
             
-            this.notes.create({
+            var newNote = this.notes.create({
                     text: text,
                     offset: app.videoView.videoTime,
                     private_note: !private_note
                 }, {
-                    success: function(){
+                    success: function(model, response){
+                        var newNoteTemplate = _.template($("#addNoteTemplate").html());
+                        $("#add_note_display").append(newNoteTemplate(model.toJSON()));
                         status.html("<span>Note Saved</span>");
                         status.effect("pulsate", {times:3, mode:"hide"}, 500);
+                        $("#add_note_display").animate({ scrollTop: $("#add_note_display").prop("scrollHeight") }, 1000);
                     }
                     });
+            
             
             $("#new_note_text").val(''); //empties the note to start over.
             app.videoView.playVideo();

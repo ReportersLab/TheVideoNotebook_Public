@@ -437,7 +437,7 @@ fieldset legend
     width:350px;
     height:100%;
     margin:0 ;
-    padding:20px 10px 20px 10px;
+    padding:0 10px 20px 10px;
     background: #EDF5F2;
     position:relative;
 }
@@ -671,7 +671,8 @@ article .teaser
 
 #notes
 {
-    height:350px;
+    height:390px;
+    margin: 0 0 10px 0;
     overflow:auto;
     overflow-x:hidden;
     clear:both;
@@ -735,7 +736,7 @@ article .teaser
 
 #add_note_container, #note_details_container{
     width: 330px;
-    height: 430px;
+    height: 460px;
     position:absolute;
     top:0;
     left:0;

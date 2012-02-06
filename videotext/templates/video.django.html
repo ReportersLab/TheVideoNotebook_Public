@@ -107,7 +107,7 @@
             </div>
             <div>
                 <b>Link: </b>
-                <span id="note_detail_link"><%= link %></span>    
+                <a id="note_detail_link" href="<%= link %>">Link to this note</a>    
             </div>
         </div>
         <div class="black_bar"></div>
@@ -134,7 +134,7 @@
                 <div id="add_note_container" class="box_shadow">
                     {% if user.is_authenticated %}
                         <div id="add_note_display"><!-- content from JS --></div>
-                        <textarea id="new_note_text" name="new_note_text"></textarea>
+                        <textarea id="new_note_text" name="new_note_text" placeholder="Type here to add a note. Hit enter or click 'add note' to save. Notes must be at least 10 characters."></textarea>
                         <input type="submit" value="Add Note" id="new_note_submit" />
                         <div style="margin:5px 0 5px 5px; font-size:10px;">
                             <label for="new_note_private">Make note private: </label>

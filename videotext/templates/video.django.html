@@ -24,9 +24,6 @@
             </div>
             <div id="video_meta">
                 <div class="timestamp">Start Time: <%= date_time.format('dddd, mmmm dd, yyyy h:MM:ss TT') %></div>
-                <% if (obj.end_date_time) { %>
-                    <div class="timestamp end">End Time: <%= end_date_time.format('dddd, mmmm mm, yyyy h:MM:ss TT') %></div>
-                <% } %>
             </div>
             <% if (obj.user.id == LOGGED_IN_USER.toString()){ %>
             <div id="video_owner_controls">

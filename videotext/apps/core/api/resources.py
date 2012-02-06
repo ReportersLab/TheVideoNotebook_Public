@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from django.db import connection
 from django.contrib.auth.models import User
 from tastypie.exceptions import NotFound
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 
          
 
@@ -57,7 +57,9 @@ class VideoResource(ModelResource):
                         #saving updates offset.
                         note.save()
                 return return_val
-            
+            else:
+                raise PermissionDenied("User Doesn't have permission to edit this video.")
+                
         return Bundle(obj = video)
                 
     
@@ -142,6 +144,8 @@ class NoteResource(ModelResource):
                 if note.user == request.user or note.video.user == request.user:
                     return_val = super(NoteResource, self).obj_update(bundle, request, **kwargs)
                     return return_val
+                else:
+                    raise PermissionDenied("User Doesn't have permission to edit this note.")
             
         return Bundle(obj = note)
     
@@ -160,7 +164,7 @@ class NoteResource(ModelResource):
             if obj.user == request.user or obj.video.user == request.user:
                 return_val = super(NoteResource, self).obj_delete(request, **kwargs)
             else:
-                raise ValidationError("User Doesn't have permission to delete this object.")
+                raise PermissionDenied("User Doesn't have permission to delete this note.")
         
     
     #TODO: Searching notes

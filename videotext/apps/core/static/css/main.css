@@ -671,7 +671,7 @@ article .teaser
 
 #notes
 {
-    height:400px;
+    height:350px;
     overflow:auto;
     overflow-x:hidden;
     clear:both;
@@ -734,8 +734,8 @@ article .teaser
 }
 
 #add_note_container, #note_details_container{
-    width: 345px;
-    height: 490px;
+    width: 330px;
+    height: 430px;
     position:absolute;
     top:0;
     left:0;

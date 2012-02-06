@@ -32,10 +32,6 @@
             </div>
             <% } %>
         </div>
-        <div id="message_container" style="display:none;">
-            <div class="black_bar"></div>
-            <div id="message" class="box_shadow margined padded"></div>
-        </div>
     </script>
     
     <script type="text/html" id="addNoteTemplate">
@@ -116,10 +112,10 @@
         </div>
         <div class="black_bar"></div>
         <div class="margin_top">
-            <span class="sync_note_link link"><b>Click to sync this note to the current video time.</b></span>
             <% if(    (obj.user && (obj.user.id == LOGGED_IN_USER.toString()) )  ||
                    ( !obj.user && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
               ){ %>
+                <span class="sync_note_link link"><b>Click to sync this note to the current video time.</b></span>
                 <br /><span class="delete_note_link link" style="color:#FF3333 !important;"><b>Delete this note</b></span>
             <% } %>
         </div>
@@ -166,6 +162,13 @@
                     </div>
                 </div>
                 <div id="notes"></div>
+                        
+                <div id="message_container">
+                    <div class="black_bar"></div>
+                    <div id="message" class="box_shadow margined padded">
+                        <h4>{% if user.is_authenticated %}Add some notes!{% else %}Log in to add notes!{% endif %}</h4>
+                    </div>
+                </div>
             </div>
         </div>
    </div>

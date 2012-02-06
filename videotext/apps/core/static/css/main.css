@@ -145,12 +145,12 @@ fieldset legend
     -ms-filter:"progid:DXImageTransform.Microsoft.Blur(pixelradius=5)";
 }
 
-.box_shadow.padded
+.padded
 {
     padding:18px;
 }
 
-.box_shadow.margined
+.margined
 {
     margin: 10px 0 10px 0;
 }
@@ -175,6 +175,15 @@ fieldset legend
     height:8px;
 }
 
+.margin_bottom
+{
+    margin:0 0 5px 0;
+}
+
+.margin_top
+{
+    margin:5px 0 0 0;
+}
 
 
 #wrapper
@@ -689,14 +698,14 @@ article .teaser
     background-color:#D6E9E1;
 }
 
-.note .avatar
+.avatar
 {
     float:left;
     width:48px;
     margin:0 10px 5px 0;
 }
 
-.note .avatar img
+.avatar img
 {
     width:48px;
 }
@@ -715,6 +724,7 @@ article .teaser
     padding: 2px;
 }
 
+
 .note .details
 {
     display:none;
@@ -723,7 +733,7 @@ article .teaser
     border-top:2px solid #FFFFFF;
 }
 
-#add_note_container{
+#add_note_container, #note_details_container{
     width: 345px;
     height: 490px;
     position:absolute;
@@ -757,6 +767,24 @@ article .teaser
     float:right;
     margin:0 50px 0 0;
     color:#993333;
+}
+
+#note_details_container .user_info h6
+{
+    font-size:14px;    
+}
+#note_details_container h2
+{
+    padding:10px;
+}
+
+
+#note_details_container .closeLink
+{
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    font-size:14px;
 }
 
 

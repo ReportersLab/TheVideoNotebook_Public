@@ -163,7 +163,7 @@ $(function(){
             //first get the note's time
             var noteTime = note.get("date_time");
             //and how many seconds earlier the start of the video is
-            var offset = this.player.getCurrentTime(); //this works for YouTube. If we use an MP4 player in future, must add this method somewhere.
+            var offset = this.getCurrentOffset(); 
             //and create a new date based on that.
             var newTime = new Date(noteTime - offset * 1000);
             this.model.set({time: newTime, sync_notes:true});
@@ -178,6 +178,11 @@ $(function(){
                     app.endSyncNotes('There was an error syncing your notes')
                 }
             });
+       },
+       
+       getCurrentOffset: function(){
+            //this works for YouTube. If we use an MP4 player in future, must add this method somewhere.
+            return this.player.getCurrentTime();
        }
        
        
@@ -316,8 +321,12 @@ $(function(){
             //scroll to the note.
             this.scrollToNote(this.selectedNote);
             
+      },
+      
+      showNoteDetails: function(note){
+          this.noteDetailsView = new NoteDetailsView({el:$('#note_details_container'), notesView: this, note:note});  
       }
-       
+      
     });
     
     
@@ -418,7 +427,8 @@ $(function(){
        events: {
             'click .note_text': 'onNoteClicked',
             'mouseenter': 'onNoteEnter',
-            'mouseleave': 'onNoteLeave'
+            'mouseleave': 'onNoteLeave',
+            'click .show_details_link': 'onDetailsLinkClicked'
        },
        
        render: function(){
@@ -458,7 +468,9 @@ $(function(){
             app.router.navigate("note/" + this.model.id);
        },
        
-       
+       onDetailsLinkClicked: function(event){
+            this.container.showNoteDetails(this.model);
+       },
        
        highlightNote: function(){
             $(this.el).addClass('highlighted');
@@ -472,12 +484,53 @@ $(function(){
     });
     
     
+    window.NoteDetailsView = Backbone.View.extend({
+        tagName: 'div',
+        className: 'noteDetails',
+        template: _.template($("#noteDetailsTemplate").html()),
+        initialize: function(){
+            this.note = this.options.note;
+            this.notesView = this.options.notesView;
+            this.render();
+        },
+        
+        events: {
+            'click .closeLink': 'onCloseClick',
+            'click .sync_note_link': 'onSyncNoteClick'
+        },
+        
+        render: function(){
+            $(this.el).html(this.template(this.note.toJSON()));
+            $(this.el).slideDown('slow');
+            return this;
+        },
+        
+        onCloseClick: function(event){
+            $(this.el).slideUp('slow');
+        },
+        
+        onSyncNoteClick: function(event){
+            this.note.set({offset: app.videoView.getCurrentOffset(), time:null});
+            app.showMessage("<h4>Updating Note...</h4>");
+            var self = this;
+            this.note.save(null, {
+                success: function(){
+                    app.showMessage("<h4>Note Saved</h4>");
+                    self.notesView.notes.sort();
+                },
+                failure: function(){
+                    app.showMessage("<h4>There was an error saving</h4>");
+                }
+            });
+        }
+        
+    });
+    
     
     window.AddNoteView = Backbone.View.extend({
        tagName: 'div',
        className: 'add_note',
        id:'add_note_container',
-       template: _.template($("#addNoteTemplate").html()),
        
        initialize: function(){
             this.notes = this.options.notes;
@@ -489,8 +542,6 @@ $(function(){
        },
        
        render: function(){
-            $(this.el).html(this.template(this.model.toJSON()));
-            return this;
        },
        
        onNoteKeyUp: function(event){

@@ -70,13 +70,56 @@
             </span>
         </div>
         <div class="details">
-            <!--<span class="showDetailsLink" class="link">Show Details</span><br />-->
-            <b>source:</b><span><%= source %></span>
+            <span class="show_details_link link">Show Details</span>
         </div>
     </script>
     
     <script type="text/html" id="addNoteTemplate">
         
+    </script>
+    
+    <script type="text/html" id="noteDetailsTemplate">
+        <div class="margin_bottom">
+            <% if(obj.icon_link){ %>
+                <div class="avatar">
+                    <a href="<%= link %>">
+                        <img src="<%= icon_link %>" alt="" title="<%= user_name %>" />
+                    </a>
+                </div>
+            <% } %>
+            <div class="user_info">
+                <% if(obj.user_name){ %>
+                    <h6><a href="<% if(obj.user_link != null) print(user_link); else print(link); %>"><%= user_name %></a></h6>
+                <% } %>
+                <h6>
+                    <% if(isValidDate(date_time)){ %>    
+                            <%= date_time.format('mm/dd/yy h:MM:ss TT') %> 
+                        <% } %> (<%= offset %>)
+                </h6>
+            </div>
+        </div>
+        <div class="black_bar"></div>
+        <h2><%= text %></h2>
+        <div class="black_bar"></div>
+        <div class="margined">
+            <div>
+                <b>Type: </b>
+                <span><%= type %></span>    
+            </div>
+            <div>
+                <b>Source: </b>
+                <span><%= source %></span>    
+            </div>
+            <div>
+                <b>Link: </b>
+                <span><%= link %></span>    
+            </div>
+        </div>
+        <div class="black_bar"></div>
+        <div class="margin_top">
+            <span class="sync_note_link link"><b>Click to sync this note to the current video time.</b></span>
+        </div>
+        <span class="closeLink link">Close Details</span>
     </script>
     
 {% endblock %}
@@ -87,6 +130,7 @@
         <div id="video"></div>
         <div id="right_rail">
             <div id="notes_container">
+                <div id="note_details_container" class="box_shadow"></div>
                 <div id="add_note_container" class="box_shadow">
                     {% if user.is_authenticated %}
                         <textarea id="new_note_text" name="new_note_text"></textarea>

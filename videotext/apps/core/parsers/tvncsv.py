@@ -1,7 +1,8 @@
-import csv
+import csv, urllib2
 from django.http import HttpResponse
 
-def import_tvn_csv():
+def import_tvn_csv(source):
+    #u = urllib2.urlopen( 'http://media.reporterslab.org/videotetx/{1}'.format(source.content))
     pass
 
 def export_tvn_csv(video):

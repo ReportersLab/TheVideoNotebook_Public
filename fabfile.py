@@ -137,9 +137,9 @@ def checkout_latest():
     put('%(project_name)s/configs/staging/settings_private.py' % env, '%(repo_path)s/%(project_name)s/configs/staging/settings_private.py' % env)
     put('%(project_name)s/configs/production/settings_private.py' % env, '%(repo_path)s/%(project_name)s/configs/production/settings_private.py' % env)    
     #and then cat their contents into the original settings files.
-    run('cat %(repo_path)s/%(project_name)s/configs/common/settings_private.py >> %(repo_path)s/%(project_name)s/configs/common/settings.py' % env)
-    run('cat %(repo_path)s/%(project_name)s/configs/staging/settings_private.py >> %(repo_path)s/%(project_name)s/configs/staging/settings.py' % env)
-    run('cat %(repo_path)s/%(project_name)s/configs/production/settings_private.py >> %(repo_path)s/%(project_name)s/configs/production/settings.py' % env)
+    #run('cat %(repo_path)s/%(project_name)s/configs/common/settings_private.py >> %(repo_path)s/%(project_name)s/configs/common/settings.py' % env)
+    #run('cat %(repo_path)s/%(project_name)s/configs/staging/settings_private.py >> %(repo_path)s/%(project_name)s/configs/staging/settings.py' % env)
+    #run('cat %(repo_path)s/%(project_name)s/configs/production/settings_private.py >> %(repo_path)s/%(project_name)s/configs/production/settings.py' % env)
     
     
     

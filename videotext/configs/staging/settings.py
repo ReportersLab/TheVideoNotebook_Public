@@ -22,8 +22,8 @@ DATABASES = {
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 # MEDIA_URL = 'http://media.beta.reporterslab.org/videotext/'
-MEDIA_URL = 'http://media.reporterslab.org/videotext/site_media/'
-STATIC_URL = 'http://media.reporterslab.org/beta/videotext/site_media/static/'
+MEDIA_URL = 'http://media.reporterslab.org/tvn/site_media/'
+STATIC_URL = 'http://media.reporterslab.org/beta/tvn/site_media/static/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
 
 

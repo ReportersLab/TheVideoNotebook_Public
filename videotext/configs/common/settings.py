@@ -54,7 +54,7 @@ STATIC_ROOT = os.path.join(SITE_ROOT, 'assets/static')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://media.reporterslab.org/videotext/site_media/'
+MEDIA_URL = 'http://media.reporterslab.org/tvn/site_media/'
 STATIC_URL = '/static/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -161,5 +161,10 @@ logging.basicConfig(
 # Allow for local (per-user) override
 try:
     from local_settings import *
+except ImportError:
+    pass
+
+try:
+    from settings_private import * 
 except ImportError:
     pass

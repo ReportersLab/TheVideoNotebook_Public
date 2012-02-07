@@ -24,8 +24,8 @@ DATABASES = {
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 # MEDIA_URL = 'http://media.reporterslab.org/videotext/'
-MEDIA_URL = 'http://media.reporterslab.org/videotext/site_media/'
-STATIC_URL = 'http://media.reporterslab.org/videotext/site_media/static/'
+MEDIA_URL = 'http://media.reporterslab.org/tvn/site_media/'
+STATIC_URL = 'http://media.reporterslab.org/tvn/site_media/static/'
 
 # Predefined domain
 MY_SITE_DOMAIN = 'videotext.reporterslab.org'
@@ -38,7 +38,7 @@ EMAIL_PORT = 25
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
 # S3
-AWS_S3_URL = 's3://[[ your.bucket ]]/videotext/'
+AWS_S3_URL = 's3://[[ your.bucket ]]/tvn/'
 
 # logging
 import logging.config

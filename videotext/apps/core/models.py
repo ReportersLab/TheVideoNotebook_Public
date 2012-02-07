@@ -140,7 +140,7 @@ class Source(CommonInfo):
     scraped   = models.BooleanField(default = False, verbose_name = 'Data Scraped')
     # Either we save scraped content here as a zip file or text file or whatever
     # OR we let people upload a CSV in a specific format to parse for notes.
-    content   = models.FileField(upload_to = 'videotext/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location')
+    content   = models.FileField(upload_to = 'tvn/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location')
     
     
     def save(self, *args, **kwargs):

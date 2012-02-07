@@ -33,7 +33,7 @@ def import_tvn_csv(source):
 
 def export_tvn_csv(video):
     response = HttpResponse(mimetype = 'text/csv')
-    response['Content-Disposition'] = 'attachment; filename=decisionmakers.csv'
+    response['Content-Disposition'] = 'attachment; filename=notes.csv'
     writer = csv.writer(response)
     
     writer.writerow([

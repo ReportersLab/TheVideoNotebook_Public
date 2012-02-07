@@ -14,7 +14,7 @@ from itertools import chain
 from operator import attrgetter
 from core.api.resources import NoteResource, VideoResource
 from tastypie.bundle import Bundle
-
+from parsers.tvncsv import export_tvn_csv
 
 
 def index_view(request):
@@ -48,6 +48,13 @@ def video_view(request, slug):
         'notes_json': note_resource.serialize( None, [note_resource.full_dehydrate(Bundle(obj = note)) for note in notes], 'application/json')
     }
     return get_response(template='video.django.html', data=data, request=request)
+
+
+
+def video_csv_view(request, slug):
+    video = get_object_or_404(Video, slug = slug)
+    return export_tvn_csv(video)
+
 
 
 def login_main_view(request):

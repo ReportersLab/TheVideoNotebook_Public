@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^l/logout/?$', views.logout_view, name="logout_view"),
     url(r'^video/add/?$', views.add_video_view, name='add_video_view'),
     url(r'^video/(?P<slug>[-\w]+)/?$', views.video_view, name='video_view'),
+    url(r'^video/(?P<slug>[-\w]+)/notes.csv$', views.video_csv_view, name='video_csv_view'),
     url(r'^taggit_autosuggest/list/$', views.list_tags, name='taggit_autosuggest-list'),
     url(r'', views.index_view, name='index_view'),
 )

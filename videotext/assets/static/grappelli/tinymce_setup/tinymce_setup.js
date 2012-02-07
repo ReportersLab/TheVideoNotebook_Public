@@ -111,6 +111,7 @@ tinyMCE.init({
     advlink_styles: 'Internal Link=internal;External Link=external',
     advimage_update_dimensions_onchange: true,
     
+    gecko_spellcheck : true,
     // Grappelli
     grappelli_adv_hidden: false,
     grappelli_show_documentstructure: 'on'

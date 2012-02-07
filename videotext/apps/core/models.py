@@ -148,11 +148,12 @@ class Source(CommonInfo):
         from parsers.scribblelive import parse_scribbling
         from parsers.storify import parse_storify
         from parsers.fark import parse_fark
+        from parsers.tvncsv import import_tvn_csv
         #save first so we at least have an id?
         if not self.id:
             super(Source, self).save(*args, **kwargs)
         
-        if self.video and self.url and not self.scraped:
+        if self.video and (self.url or self.content) and not self.scraped:
             try:
                 if self.type == "twitter":
                     pass
@@ -163,13 +164,13 @@ class Source(CommonInfo):
                 elif self.type == "scribblelive":
                     parse_scribbling(self.url, self.video)
                 elif self.type == "csv":
-                    pass
+                    import_tvn_csv(self)
                 elif self.type == "fark":
                     parse_fark(self.url, self.video)
                 self.scraped = True
             except Exception:
                 self.scraped = False
-            
+        
         
         super(Source, self).save(*args, **kwargs)
 

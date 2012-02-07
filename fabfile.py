@@ -212,7 +212,7 @@ def deploy_to_s3():
     Deploy the latest project site media to S3.
     """
     env.gzip_path = '%(path)s/repository/%(project_name)s/gzip/assets/' % env
-    run(('s3cmd -P --add-header=Content-encoding:gzip --guess-mime-type --rexclude-from=%(path)s/repository/s3exclude sync %(gzip_path)s s3://%(s3_bucket)s/%(project_name)s/%(site_media_prefix)s/') % env)
+    run(('s3cmd -P --add-header=Content-encoding:gzip --guess-mime-type --rexclude-from=%(path)s/repository/s3exclude sync %(gzip_path)s s3://%(s3_bucket)s/tvn/%(site_media_prefix)s/') % env)
 
 def run_migrations():
     """

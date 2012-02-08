@@ -30,7 +30,8 @@ $(document).ready(function(){
        className: 'add_source',
        template: _.template($("#sourceTemplate").html()),
        events: {
-            'click .source_save': 'onSaveClick'
+            'click .source_save': 'onSaveClick',
+            'change .source_type': 'onSourceTypeChange'
        },
        
        initialize: function(){
@@ -43,12 +44,28 @@ $(document).ready(function(){
             return this;
        },
        
+       onSourceTypeChange: function(event){
+            var type = $(this.el).find('.source_type').val();
+            if(type == 'twitter'){
+                $(this.el).find('.source_twitter').slideDown('slow');
+                $(this.el).find('.source_url_container').slideUp('slow');
+            }else{
+                $(this.el).find('.source_twitter').slideUp('slow');
+                $(this.el).find('.source_url_container').slideDown('slow');
+            }
+       },
+       
        onSaveClick: function(event){
             status = $(this.el).find('.status');
             status.html("Saving source").show();
             var url = $(this.el).find('.source_url').val();
             var type = $(this.el).find('.source_type').val();
-            if( (type == "") || (url == "") ){
+            var twitter_user = $(this.el).find('.source_twitter_user').val();
+            var twitter_start_id = $(this.el).find('.source_twitter_start_id').val();
+            var twitter_end_id = $(this.el).find('.source_twitter_end_id').val();
+            var twitter_hash = $(this.el).find('.source_twitter_hash').val();
+            
+            if( (type == "") || ((url == "") && (twitter_user == "")) ){
                 status.html("Please fill out everything.").effect("pulsate", {times:3, mode:"show"}, 500);
                 return;
             }
@@ -57,7 +74,11 @@ $(document).ready(function(){
                 url: url,
                 type: type,
                 video: app.video.get('resource_uri'),
-                video_id : parseInt(app.video.get('id'))
+                video_id : parseInt(app.video.get('id')),
+                twitter_user : twitter_user,
+                twitter_start_id : twitter_start_id,
+                twitter_end_id : twitter_end_id,
+                twitter_hash : twitter_hash
             },
             {
                 success: function(){

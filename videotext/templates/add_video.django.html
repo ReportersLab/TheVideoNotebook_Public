@@ -15,9 +15,7 @@
     </script>
     
     <script type="text/html" id="sourceTemplate">
-        <input type="text" class="source_url" placeholder="Source URL" />
-        <div style="float:right; clear:both;">
-            <span class="status"></span>
+        <div style="margin-bottom:10px;">
             <label>Source:</label>
             <select class="source_type">
                 <option value="" selected="selected">Select Type</option>
@@ -26,7 +24,19 @@
                 <option value="coveritlive">Cover It Live</option>
                 <option value="scribblelive">ScribbleLive</option>
                 <option value="csv">CSV</option>
-            </select>
+            </select>    
+        </div>
+        <div class="source_url_container">
+            <input type="text" class="source_url" placeholder="Source URL" />
+        </div>
+        <div class="source_twitter" style="display:none; clear:both;">
+            <input type="text" class="source_twitter_user" placeholder="Twitter User Name" />
+            <input type="text" class="source_twitter_start_id" placeholder="Twitter Starting Post URL" />
+            <input type="text" class="source_twitter_end_id" placeholder="Twitter Ending Post URL" />
+            <input type="text" class="source_twitter_hash" placeholder="Twitter Hash Tag (if desired)" />    
+        </div>
+        <div style="float:right; clear:both;">
+            <span class="status"></span>
             <input type="button" class="source_save" value="Save" />
         </div>
     </script>

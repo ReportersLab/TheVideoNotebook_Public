@@ -5,7 +5,9 @@ from core.models import Note, Video
 from datetime import datetime
 
 def import_tvn_csv(source):
-    url = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, source.content)
+    url = source.url
+    if source.content is not None and source.content != '':
+        url = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, source.content)
     data = urllib2.urlopen( url )
     reader = csv.DictReader(data, )
     video = source.video

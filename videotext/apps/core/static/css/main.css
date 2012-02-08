@@ -903,7 +903,7 @@ article .teaser
     font-weight:bold;
 }
 
-.add_source .source_url
+.add_source .source_url, .source_twitter_user, .source_twitter_start_id, .source_twitter_end_id, .source_twitter_hash
 {
     width:95%;
     padding:2px 0 2px 16px;
@@ -917,7 +917,7 @@ article .teaser
 
 .add_source .source_type
 {
-    
+    width:200px;
 }
 
 .add_source .source_save

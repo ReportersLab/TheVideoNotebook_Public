@@ -53,6 +53,13 @@ $(document).ready(function(){
                 $(this.el).find('.source_twitter').slideUp('slow');
                 $(this.el).find('.source_url_container').slideDown('slow');
             }
+            
+            if(type == "csv"){
+                $(this.el).find('.source_csv').slideDown('slow');
+            }else{
+                $(this.el).find('.source_csv').slideUp('slow');
+            }
+            
        },
        
        onSaveClick: function(event){
@@ -64,8 +71,9 @@ $(document).ready(function(){
             var twitter_start_id = $(this.el).find('.source_twitter_start_id').val();
             var twitter_end_id = $(this.el).find('.source_twitter_end_id').val();
             var twitter_hash = $(this.el).find('.source_twitter_hash').val();
+            var csv_data = $(this.el).find('.source_csv_data').val();
             
-            if( (type == "") || ((url == "") && (twitter_user == "")) ){
+            if( (type == "") || ((url == "") && (twitter_user == "") && ( csv_data == "")) ){
                 status.html("Please fill out everything.").effect("pulsate", {times:3, mode:"show"}, 500);
                 return;
             }
@@ -78,7 +86,8 @@ $(document).ready(function(){
                 twitter_user : twitter_user,
                 twitter_start_id : twitter_start_id,
                 twitter_end_id : twitter_end_id,
-                twitter_hash : twitter_hash
+                twitter_hash : twitter_hash,
+                csv_data : csv_data
             },
             {
                 success: function(){

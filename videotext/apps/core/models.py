@@ -144,6 +144,8 @@ class Source(CommonInfo):
     twitter_start_id     = models.CharField(max_length = 128, blank = True, null = True)
     twitter_end_id       = models.CharField(max_length = 128, blank = True, null = True)
     twitter_search       = models.CharField(max_length = 256, blank = True, null = True) #possibly a search string to attack Twitter with
+    #silly attempt to get around no file-upload support in TastyPie. Just paste the CSV!
+    csv_data             = models.TextField(blank = True, null = True)
     
     # Either we save scraped content here as a zip file or text file or whatever
     # OR we let people upload a CSV in a specific format to parse for notes.
@@ -167,7 +169,7 @@ class Source(CommonInfo):
         self.twitter_hash = self.twitter_hash.replace('#', '')
         self.twitter_user = self.twitter_user.replace('@', '')
         
-        if self.video and (self.url or self.content or (self.type == 'twitter')) and not self.scraped:
+        if self.video and (self.url or self.content or (self.type == 'twitter') or self.csv_data) and not self.scraped:
             try:
                 if self.type == "twitter":
                     get_tweets(self)

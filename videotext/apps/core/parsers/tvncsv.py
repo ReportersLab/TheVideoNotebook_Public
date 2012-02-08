@@ -1,20 +1,26 @@
-import csv, urllib2
+import csv, urllib2, StringIO
 from django.http import HttpResponse
 from django.conf import settings
 from core.models import Note, Video
 from datetime import datetime
 
 def import_tvn_csv(source):
-    url = source.url
-    if source.content is not None and source.content != '':
-        url = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, source.content)
-    data = urllib2.urlopen( url )
-    reader = csv.DictReader(data, )
-    video = source.video
     
+    data = source.csv_data.decode('utf-8')
+    if not source.csv_data or source.csv_data == '':
+        url = source.url
+        if source.content is not None and source.content != '':
+            url = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, source.content)
+        data = urllib2.urlopen( url )
+    else:
+        data = StringIO.StringIO(data)
+    
+    reader = csv.DictReader(data)
+    print '===================='
+    print reader.fieldnames
+    video = source.video
     if not video:
         return
-    
     for row in reader:
         note, created = Note.objects.get_or_create(
                                    text = row['text'].decode('utf8'),

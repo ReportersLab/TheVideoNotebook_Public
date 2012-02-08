@@ -53,6 +53,11 @@ class SourceAdmin(CommonAdmin):
                 'fields': ('twitter_user', 'twitter_hash', 'twitter_start_id', 'twitter_end_id', 'twitter_search',)
             }
         ),
+        ('CSV Specific',
+            {
+                'fields': ('csv_data',)
+            }
+        ),
         ('Oops',
             {
                 'fields': ('error_message',)
@@ -61,7 +66,8 @@ class SourceAdmin(CommonAdmin):
     )
     
     list_display = ('url', 'video', 'creation_time',)
-    list_display_links = ('url',)
+    list_display_links = ('url', 'video', 'creation_time',)
+    readonly_fields = ('csv_data',)
 
 
 

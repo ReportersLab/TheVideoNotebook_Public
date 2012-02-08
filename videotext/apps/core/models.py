@@ -160,6 +160,10 @@ class Source(CommonInfo):
         if not self.id:
             super(Source, self).save(*args, **kwargs)
         
+        #twitter IDs may be send in as URLs to the post. The id is the last portion of that.
+        self.twitter_start_id = self.twitter_start_id.split('/')[-1]
+        self.twitter_end_id = self.twitter_end_id.split('/')[-1]
+        
         if self.video and (self.url or self.content) and not self.scraped:
             try:
                 if self.type == "twitter":

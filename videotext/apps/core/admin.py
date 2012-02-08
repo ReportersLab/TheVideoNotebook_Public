@@ -53,6 +53,11 @@ class SourceAdmin(CommonAdmin):
                 'fields': ('twitter_user', 'twitter_hash', 'twitter_start_id', 'twitter_end_id', 'twitter_search',)
             }
         ),
+        ('Oops',
+            {
+                'fields': ('error_message',)
+            }
+        )
     )
     
     list_display = ('url', 'video', 'creation_time',)

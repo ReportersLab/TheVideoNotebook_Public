@@ -148,7 +148,7 @@ class Source(CommonInfo):
     # Either we save scraped content here as a zip file or text file or whatever
     # OR we let people upload a CSV in a specific format to parse for notes.
     content   = models.FileField(upload_to = 'tvn/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location')
-    
+    error_message = models.CharField(max_length = 256, null = True, blank = True)
     
     def save(self, *args, **kwargs):
         
@@ -156,6 +156,7 @@ class Source(CommonInfo):
         from parsers.storify import parse_storify
         from parsers.fark import parse_fark
         from parsers.tvncsv import import_tvn_csv
+        from parsers.twitterparser import get_tweets
         #save first so we at least have an id?
         if not self.id:
             super(Source, self).save(*args, **kwargs)
@@ -163,11 +164,13 @@ class Source(CommonInfo):
         #twitter IDs may be send in as URLs to the post. The id is the last portion of that.
         self.twitter_start_id = self.twitter_start_id.split('/')[-1]
         self.twitter_end_id = self.twitter_end_id.split('/')[-1]
+        self.twitter_hash = self.twitter_hash.replace('#', '')
+        self.twitter_user = self.twitter_user.replace('@', '')
         
-        if self.video and (self.url or self.content) and not self.scraped:
+        if self.video and (self.url or self.content or (self.type == 'twitter')) and not self.scraped:
             try:
                 if self.type == "twitter":
-                    pass
+                    get_tweets(self)
                 elif self.type == "storify":
                     parse_storify(self.url, self.video)
                 elif self.type == "coveritlive":
@@ -179,7 +182,9 @@ class Source(CommonInfo):
                 elif self.type == "fark":
                     parse_fark(self.url, self.video)
                 self.scraped = True
-            except Exception:
+                self.error_message = ''
+            except Exception as e:
+                self.error_message = '{0}'.format(e)
                 self.scraped = False
         
         
@@ -235,8 +240,8 @@ class Note(CommonInfo):
         delta = self.time - self.video.time
         if self.time < self.video.time:
             delta = self.video.time - self.time
-            return delta.seconds * -1 
-        return delta.seconds
+            return delta.total_seconds() * -1 
+        return delta.total_seconds()
     
     
     

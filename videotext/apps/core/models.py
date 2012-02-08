@@ -133,11 +133,18 @@ class Video(CommonInfo):
 Places to pull in content from when creating a video.
 '''
 class Source(CommonInfo):
-    url       = models.URLField(max_length = 512, blank = True, verify_exists = False)
-    type      = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
-    video     = models.ForeignKey(to = "Video", blank = False, null = True)
-    user      = models.ForeignKey(to=User, blank = True, null = True)
-    scraped   = models.BooleanField(default = False, verbose_name = 'Data Scraped')
+    url                  = models.URLField(max_length = 512, blank = True, verify_exists = False)
+    type                 = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
+    video                = models.ForeignKey(to = "Video", blank = False, null = True)
+    user                 = models.ForeignKey(to=User, blank = True, null = True)
+    scraped              = models.BooleanField(default = False, verbose_name = 'Data Scraped')
+    #twitter specific stuff
+    twitter_user         = models.CharField(max_length = 32, blank = True, null = True)
+    twitter_hash         = models.CharField(max_length = 64, blank = True, null = True)
+    twitter_start_id     = models.CharField(max_length = 128, blank = True, null = True)
+    twitter_end_id       = models.CharField(max_length = 128, blank = True, null = True)
+    twitter_search       = models.CharField(max_length = 256, blank = True, null = True) #possibly a search string to attack Twitter with
+    
     # Either we save scraped content here as a zip file or text file or whatever
     # OR we let people upload a CSV in a specific format to parse for notes.
     content   = models.FileField(upload_to = 'tvn/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location')
@@ -179,19 +186,22 @@ class Source(CommonInfo):
 
 
 class Note(CommonInfo):
-    text        = models.TextField(blank = False) #cover-it-live and live blogs may have much longer posts.
-    user        = models.ForeignKey(to = User, blank = True, null = True) # if a user is annotating a video
-    user_name   = models.CharField(max_length = 64, blank = True, null = True) # if not a user in the system, just a name
-    user_link   = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) # if the user has a link.
-    video       = models.ForeignKey(to = "Video", blank = False, null = True) # related video. Shouldn't be null, but null for testing.
-    link        = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) #link to original comment -- ie, a Tweet
-    icon        = models.ImageField(upload_to='videotext/contrib/icons/', null=True, blank=True) # image icon if uploaded
-    icon_link   = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) # image icon if on another server, ie Twitter User Photo
-    type        = models.CharField(max_length = 32, blank = True, null = True)
-    source_link = models.CharField(max_length = 512, blank = True,  null = True) #could be absolute URL or path.
-    source      = models.CharField(max_length = 256, blank = True, null=True)
-    offset      = models.IntegerField(null = True, blank = True) # position within video in seconds.
-    private     = models.BooleanField(default = False)
+    text                    = models.TextField(blank = False) #cover-it-live and live blogs may have much longer posts.
+    user                    = models.ForeignKey(to = User, blank = True, null = True) # if a user is annotating a video
+    user_name               = models.CharField(max_length = 64, blank = True, null = True) # if not a user in the system, just a name
+    user_link               = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) # if the user has a link.
+    video                   = models.ForeignKey(to = "Video", blank = False, null = True) # related video. Shouldn't be null, but null for testing.
+    link                    = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) #link to original comment -- ie, a Tweet
+    icon                    = models.ImageField(upload_to='videotext/contrib/icons/', null=True, blank=True) # image icon if uploaded
+    icon_link               = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) # image icon if on another server, ie Twitter User Photo
+    type                    = models.CharField(max_length = 32, blank = True, null = True)
+    source_link             = models.CharField(max_length = 512, blank = True,  null = True) #could be absolute URL or path.
+    source                  = models.CharField(max_length = 256, blank = True, null = True) #string describing the source
+    original_source         = models.CharField(max_length = 256, blank = True, null = True) #if the source pulls content from elsewhere -- see Storify
+    original_source_link    = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True)
+    offset                  = models.IntegerField(null = True, blank = True) # position within video in seconds.
+    private                 = models.BooleanField(default = False) 
+    original_data           = models.TextField(blank = True, null = True) #would like to store the original HTML or JSON block here.
     
     
     def save(self, *args, **kwargs):

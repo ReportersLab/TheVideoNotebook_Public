@@ -48,6 +48,11 @@ class SourceAdmin(CommonAdmin):
                 'fields': ('user', 'video', 'url', 'type', 'scraped', 'content',)
             }
         ),
+        ('Twitter Specific',
+            {
+                'fields': ('twitter_user', 'twitter_hash', 'twitter_start_id', 'twitter_end_id', 'twitter_search',)
+            }
+        ),
     )
     
     list_display = ('url', 'video', 'creation_time',)
@@ -65,7 +70,8 @@ class NoteAdmin(CommonAdmin):
         ),
         ('The Details',
             {
-                'fields': ('time', 'end_time', 'offset', 'user_name', 'user_link', 'link', 'icon_link', 'icon', 'type', 'source_link', 'source',)
+                'fields': ('time', 'end_time', 'offset', 'user_name', 'user_link', 'link', 'icon_link', 'icon', 'type',
+                           'source', 'source_link', 'original_source', 'original_source_link', )
             }
         ),
     )

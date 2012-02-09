@@ -127,12 +127,10 @@ class NoteResource(ModelResource):
     '''
     def obj_create(self, bundle, request=None, **kwargs):
         if bundle.data is not None:
-            bundle.data['text'] = strip(bundle.data['text'])
+            self.strip_bundle_data(bundle)
             kwargs['video'] = Video.objects.get(id = bundle.data['video'])
             kwargs['user'] = request.user
             kwargs['user_name'] = request.user.username
-            kwargs['private'] = bundle.data['private_note']
-            bundle.data['source_link'] = strip(bundle.data['source_link'])
             kwargs['source'] = 'tv'
         return super(NoteResource, self).obj_create(bundle, request, **kwargs)
     
@@ -145,6 +143,7 @@ class NoteResource(ModelResource):
             note = Note.objects.get( id = bundle.data['id'] )
             if note is not None:
                 if note.user == request.user or note.video.user == request.user:
+                    self.strip_bundle_data(bundle)
                     return_val = super(NoteResource, self).obj_update(bundle, request, **kwargs)
                     return return_val
                 else:
@@ -191,6 +190,23 @@ class NoteResource(ModelResource):
     def obj_delete_list(self, request=None, **kwargs):
         pass
     
+    
+    #Theoretically removes any JS injections.
+    def strip_bundle_data(self, bundle):
+        bundle.data['text'] = strip(bundle.data.get('text', ''))
+        bundle.data['user_name'] = strip(bundle.data.get('user_name', ''))
+        bundle.data['icon_link'] = strip(bundle.data.get('icon_link', ''))
+        bundle.data['source'] = strip(bundle.data.get('source', ''))
+        bundle.data['source_link'] = strip(bundle.data.get('source_link', ''))
+        bundle.data['type'] = strip(bundle.data.get('type', ''))
+        bundle.data['original_source'] = strip(bundle.data.get('original_source', ''))
+        bundle.data['original_source_link'] = strip(bundle.data.get('original_source_link', ''))
+        bundle.data['original_data'] = ''
+        return bundle
+        
+        
+        
+        
     class Meta:
         queryset = Note.objects.all()
         resource_name = "note"
@@ -224,8 +240,13 @@ class SourceResource(ModelResource):
     '''
     def obj_create(self, bundle, request=None, **kwargs):
         if bundle.data is not None:
-            bundle.data['url'] = strip(bundle.data['url'])
-            bundle.data['type'] = strip(bundle.data['type'])
+            bundle.data['url'] = strip(bundle.data.get('url', ''))
+            bundle.data['type'] = strip(bundle.data.get('type', ''))
+            bundle.data['twitter_user'] = strip(bundle.data.get('twitter_user', ''))
+            bundle.data['twitter_start_id'] = strip(bundle.data.get('twitter_start_id', ''))
+            bundle.data['twitter_end_id'] = strip(bundle.data.get('twitter_end_id', ''))
+            bundle.data['twitter_search'] = strip(bundle.data.get('twitter_search', ''))
+            bundle.data['twitter_hash'] = strip(bundle.data.get('twitter_hash', ''))
             kwargs['video'] = Video.objects.get(id = bundle.data['video_id'])
             kwargs['user'] = request.user
             kwargs['user_name'] = request.user.username

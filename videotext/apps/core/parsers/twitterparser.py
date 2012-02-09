@@ -26,7 +26,6 @@ def get_tweets(source = None):
                 if hash.text.lower() == source.twitter_hash.lower():
                     add_note = True
         
-        print tweet.text
         
         if add_note:
             note, created = Note.objects.get_or_create(
@@ -41,10 +40,7 @@ def get_tweets(source = None):
                                     original_data = tweet.AsJsonString(),
                                     video = source.video
                             )
-            print "==========="
-            print note
-    
-
+        
 
 
 

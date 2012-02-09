@@ -16,8 +16,6 @@ def import_tvn_csv(source):
         data = StringIO.StringIO(data)
     
     reader = csv.DictReader(data)
-    print '===================='
-    print reader.fieldnames
     video = source.video
     if not video:
         return

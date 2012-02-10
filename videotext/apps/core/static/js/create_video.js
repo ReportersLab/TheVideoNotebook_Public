@@ -132,7 +132,7 @@ $(document).ready(function(){
             if(this.type == 'youtube'){
                 this.getYouTubeDetails();
             }
-            else if(this.type == 'upload'){
+            else if(this.type == 'mp4'){
                 this.getManualDetails();
             }
         },
@@ -152,7 +152,7 @@ $(document).ready(function(){
                     var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
                     this.video.set({time: dt});
                     this.video.set({date_time: dt});
-                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + dt.getMonth() + '/' + dt.getDate()})
+                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + (dt.getMonth() + 1) + '/' + dt.getDate()})
                     
                     $('#add_video_details').append(template(this.video.toJSON()))
                     $('#add_video_details_container').slideDown('slow');
@@ -201,13 +201,15 @@ $(document).ready(function(){
                     $("#video_save_button").click(function(){
                         var title = $("#video-title").html();
                         var description = $("#video-description").html();
-                        var icon_url = $("#video-icon_link").html();
+                        var icon_link = $("#video-icon_link").html();
                         var private_note = $("#video-private").html();
                         var lock_notes = $("#video-lock_notes").html()
                         var time = $('#video_date_component').html() + 'T' + $('#video_time_component').html() + '.000Z';
-                        self.video.set({title: title, description: description, icon_url: icon_url, private: private_note, lock_notes: lock_notes, time: time});
+                        self.video.set({title: title, description: description, icon_link: icon_link,
+                                        private: private_note, lock_notes: lock_notes, time: time, type:self.type});
                         self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
-                        self.addSourceView = new AddSourceView();
+                        if(!self.addSourceView)
+                            self.addSourceView = new AddSourceView();
                     });
                 }else{
                     this.displayVideo(true, true);
@@ -302,7 +304,8 @@ $(document).ready(function(){
                 
                 this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Add sources or view the video to sync and add notes.")}});
                 //and allow the adding of sources...
-                this.addSourceView = new AddSourceView();
+                if(!this.addSourceView)
+                    this.addSourceView = new AddSourceView();
             }else{
                 this.updateStatus("This video already exists!")
             }
@@ -503,7 +506,7 @@ $.editable.addInputType('datepicker', {
         var form = this;
         settings.onblur = 'cancel';
         $("input", this)
-        .datePicker({createButton:false})
+        .datePicker({createButton:false, startDate: new Date(1980, 0, 1)})
         .bind('click', function() {
             //$(this).blur();
             $(this).dpDisplay();

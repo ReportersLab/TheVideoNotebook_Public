@@ -51,6 +51,8 @@ class VideoResource(ModelResource):
                 self.strip_bundle_data(bundle)
                 if bundle.data['icon'] is not None:
                     del(bundle.data['icon'])
+                if bundle.data['video_file'] is not None:
+                    del(bundle.data['video_file'])
             
                 return_val = super(VideoResource, self).obj_update(bundle, request, **kwargs)
                 #if we're doing a sync, re-save all notes on this video.
@@ -75,7 +77,7 @@ class VideoResource(ModelResource):
         bundle.data['icon'] = strip(str(bundle.data.get('icon', '')))
         bundle.data['icon_link'] = strip(str(bundle.data.get('icon_link', '')))
         bundle.data['teaser'] = strip(str(bundle.data.get('teaser', '')))
-        bundle.data['video_file'] = strip(str(bundle.data.get('video_file', '')))
+        #bundle.data['video_file'] = strip(str(bundle.data.get('video_file', '')))
         bundle.data['user_link'] = strip(str(bundle.data.get('user_link', '')))
         
         

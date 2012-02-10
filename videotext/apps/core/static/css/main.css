@@ -852,7 +852,7 @@ article .teaser
     margin:10px 0 10px -10px;
 }
 
-#youtube_submit{
+#youtube_submit, .video_submit{
     z-index:11;
     float:left;
     position:relative;

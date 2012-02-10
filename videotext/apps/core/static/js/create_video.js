@@ -107,33 +107,129 @@ $(document).ready(function(){
         el: $("#app"),
         events: {
             "change input:radio": 'onRadioChange',
-            'click #youtube_submit': 'onYouTubeSubmit',
-            'keydown #youtube_ID' : 'onYouTubeIDKeyDown'
+            'click .video_submit': 'onVideoSubmit',
+            'keydown .video_entry' : 'onVideoEntryKeyDown'
         },
         
         initialize: function(){
             this.video = new Video();
+            this.type = $('input:radio[name=video_type]:checked').val();
         },
         
         onRadioChange: function(event){
-            $('.add_box').hide();
-            $('#' + event.target.id + '_add').show();
+            this.type = $(event.currentTarget).val();
+            $('.add_box').slideUp('slow');
+            $('#' + event.target.id + '_add').slideDown('slow');
         },
         
-        onYouTubeIDKeyDown: function(event){
+        onVideoEntryKeyDown: function(event){
             if(event.keyCode == 13){ //the 'enter' key
-                this.getYouTubeDetails();
+                this.onVideoSubmit();
             }
         },
         
-        onYouTubeSubmit: function(){
-            this.getYouTubeDetails();
+        onVideoSubmit: function(){
+            if(this.type == 'youtube'){
+                this.getYouTubeDetails();
+            }
+            else if(this.type == 'upload'){
+                this.getManualDetails();
+            }
         },
         
+        getManualDetails : function(){
+            this.video = new Video();
+            this.updateStatus("Checking to see if this video already exists", true);
+            id = $("#upload_url").val();
+            this.video.getVideoByURL(id, function(exists){
+                if(!exists){
+                    this.updateStatus("Please fill out the details for your new video.", true);
+                    var template =  _.template($("#videoFormTemplate").html());
+                    var self = this;
+                    
+                    var dt = new Date();
+                    var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
+                    var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
+                    this.video.set({time: dt});
+                    this.video.set({date_time: dt});
+                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + dt.getMonth() + '/' + dt.getDate()})
+                    
+                    $('#add_video_details').append(template(this.video.toJSON()))
+                    $('#add_video_details_container').slideDown('slow');
+                    
+                    $("#add_edit_message").show();
+                    $('#add_video_details .edit').editable(function(value, settings){
+                        var data = {};
+                        data[this.id.split('-')[1]] = value;
+                        self.video.set(data);
+                        return value;
+                    },
+                    {
+                        type: 'textarea', cancel: 'Cancel', submit: 'Submit', select: true,tooltip: 'Click to edit...',onblur: 'submit'
+                    });
+                    
+                    $('#add_video_details .timepicker').editable(function(value, settings){
+                        var stamp = $('#video_date_component').html() + 'T' + value + '.000Z';
+                        self.video.set({time: stamp});
+                        return value;
+                    },
+                    {
+                        type: 'timepicker', submit: 'Submit', tooltip: 'Click to edit...'
+                    });
+                    
+                    $('#add_video_details .datepicker').editable(function(value, settings){
+                        var vp = value.split('/');
+                        value = vp[2] + '-' + vp[1] + '-' + vp[0];
+                        var stamp = value + 'T' + $('#video_time_component').html() + '.000Z';
+                        self.video.set({time: stamp});
+                        return value;
+                    },
+                    {
+                        type: 'datepicker', submit: 'Submit', tooltip: 'Click to edit...'
+                    });
+                    
+                    $('#add_video_details .checkbox').editable(function(value, settings){
+                        var data = {};
+                        data[this.id.split('-')[1]] = value == 'true' ? true : false;
+                        self.video.set(data);
+                        return value;
+                    },
+                    {
+                        type: 'checkbox', cancel: 'Cancel', submit: 'Submit', select: true,tooltip: 'Click to edit...',onblur: 'submit'
+                    });
+                    
+                    $("#video_save_button").click(function(){
+                        var title = $("#video-title").html();
+                        var description = $("#video-description").html();
+                        var icon_url = $("#video-icon_link").html();
+                        var private_note = $("#video-private").html();
+                        var lock_notes = $("#video-lock_notes").html()
+                        var time = $('#video_date_component').html() + 'T' + $('#video_time_component').html() + '.000Z';
+                        self.video.set({title: title, description: description, icon_url: icon_url, private: private_note, lock_notes: lock_notes, time: time});
+                        self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
+                        self.addSourceView = new AddSourceView();
+                    });
+                }else{
+                    this.displayVideo(true, true);
+                }
+                
+            }, this);
+        },
+ /**
+  *
+  *       <h1 id="video_title" class="edit">Enter the Video Title here.</h1>
+        <p id="video_description" class="edit">Enter a description here. It should be a few sentences in length and explain what the video is about.</p>
+        <strong>Date: </strong><h6 id="video_date_component" class="datepicker"><%= date_component %></h6><br />
+        <strong>Time: </strong><h6 id="video_time_component" class="timepicker"><%= time_component %></h6><br />
+        <strong>Icon URL: </strong><h6 id="video_icon_link" class="edit">A URL to a video image. Should be approximately 550px wide by 350px tall</h6><br />
+        <strong>Private: </strong><h6 id="video_private" class="checkbox">False</h6><br />
+        <strong>Lock Noting: </strong><h6 id="video_lock_notes" class="checkbox"></h6><br />
+        <input type="button" value="Save Video" style="float:right; clear:both;" id="video_save_button" />
+**/
         getYouTubeDetails: function(){
             this.video = new Video();
             id = $('#youtube_ID').val();
-            this.updateStatus("Checking if video exists...");
+            this.updateStatus("Checking if video exists...", true);
             this.video.getVideoByURL(id, function(exists){
                 if(!exists){
                     this.updateStatus("Getting data from YouTube...");
@@ -154,7 +250,7 @@ $(document).ready(function(){
                 return;
             }
             
-            var template =  _.template($("#createVideoTemplate").html());
+            var template =  _.template($("#videoDetailsTemplate").html());
             var self = this;
             
             $('#add_video_details').append(template(this.video.toJSON()))
@@ -424,3 +520,69 @@ $.editable.addInputType('datepicker', {
         .click();
     }
 });
+
+
+
+
+/**
+ * Usage:
+ *
+ * 1. Install Jeditable: http://www.appelsiini.net/projects/jeditable
+ * 2. Add the code below to your javascript.
+ * 3. Call it like this:
+ *
+ * $('p').editable('/edit', {
+ *   type:   'checkbox',
+ *   cancel: 'Cancel',
+ *   submit: 'OK',
+ *   checkbox: { trueValue: 'Yes', falseValue: 'No' }
+ * });
+ *
+ * Upon clicking on the <p>, it's content will be replaced by a checkbox.
+ * If the text within the paragraph is 'Yes', the checkbox will be checked
+ * by default, otherwise it will be unchecked.
+ *
+ * trueValue is submitted when the checkbox is checked and falseValue otherwise.
+ *
+ * Have fun!
+ *
+ * Peter BŸcker (spam.naag@gmx.net)
+ * http://www.pastie.org/893364
+ */
+
+$.editable.addInputType('checkbox', {
+  element: function(settings, original) {
+    $(this).append('<input type="checkbox"/>');
+    var hidden = $('<input type="hidden"/>');
+    $(this).append(hidden);
+    return(hidden);
+  },
+
+  submit: function(settings, original) {
+    settings = $.extend({ checkbox: {
+      trueValue: 'true',
+      falseValue: 'false'
+    }}, settings);
+
+    if ($(':checkbox', this).is(':checked')) {
+      $(':hidden', this).val(settings.checkbox.trueValue);
+    } else {
+      $(':hidden', this).val(settings.checkbox.falseValue);
+    }
+  },
+
+  content: function(data, settings, original) {
+    settings = $.extend({ checkbox: {
+      trueValue: '1',
+      falseValue: '0'
+    }}, settings);
+
+    if (data == settings.checkbox.trueValue) {
+      $(':checkbox', this).attr('checked', 'checked');
+    } else {
+      $(':checkbox', this).removeAttr('checked');
+    }
+  }
+});
+
+

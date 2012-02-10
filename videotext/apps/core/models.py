@@ -79,10 +79,10 @@ class Video(CommonInfo):
     '''
     video_url       = models.CharField(max_length = 256,  blank = True, verbose_name = "Path to source video or YouTube ID", unique = True)
     #do we just take the video url and set it to video file if upload?
-    video_file      = models.FileField(upload_to='viodeotext/contrib/videos/', null=True, blank=True)
+    video_file      = models.FileField(upload_to='tvn/contrib/videos/', null=True, blank=True, max_length = 512)
     user_name       = models.CharField(max_length = 64, blank = True) # if not a user in the system, just a name
     user_link       = models.URLField(blank = True, verify_exists = False) # if the user has a link.
-    icon            = models.ImageField(upload_to='tvn/contrib/icons/', null=True, blank=True, max_length = 256) # image icon if uploaded
+    icon            = models.ImageField(upload_to='tvn/contrib/icons/', null=True, blank=True, max_length = 512) # image icon if uploaded
     icon_link       = models.URLField(blank = True, verify_exists = False) # image icon if on another server, ie YouTube Screenshot
     private         = models.BooleanField(default = False) #if for some reason we want to make this accessible only ot "user"
     lock_notes      = models.BooleanField(default = False) #stops notes from being added -- should only work on uploaded videos.
@@ -91,8 +91,11 @@ class Video(CommonInfo):
         if not self.id:
             self.slug = slugify("{0} {1}".format(self.title, datetime.now().strftime('%m-%d-%Y-%H-%M-%S') ))
         
-        if self.icon is not None:
-            self.icon_link = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, self.icon)
+        #if self.icon is not None:
+        #    self.icon_link = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, self.icon)
+        
+        if not self.time:
+            self.time_time = datetime.now()
         #getting an error: can't subtract offset-naive and offset-aware datetimes -- may not be worth it to solve.
         #if (self.time != None) and (self.end_time != None):
                 #self.video_length = (self.end_time - self.time).seconds     

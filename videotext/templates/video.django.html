@@ -14,9 +14,16 @@
     {% endautoescape %}
     
     <script type="text/html" id="videoTemplate">
-        <div id="player_container">
-            Flash Player and Javascript required for YouTube Videos.
-        </div>
+        <% if (obj.type == 'youtube'){ %>
+            <div id="player_container">
+                Flash Player and Javascript required for YouTube Videos.
+            </div>
+        <% }else if (obj.type =='mp4'){ %>
+            <video id="video_tag" class="video-js vjs-default-skin"
+                        controls preload="auto" width="550" height="350" poster="<%= icon_link %>" data-setup="{}">
+                <source src="<%= video_url %>" type='video/mp4' />
+            </video>
+        <% } %>
         <div id="video_details_container" class="box_shadow margined padded">
             <h1 id="video_title" class="edit"><%= title %></h1>
             <div id="video_description" class="edit">

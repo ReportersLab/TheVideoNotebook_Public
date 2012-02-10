@@ -23,12 +23,9 @@ class VideoResource(ModelResource):
     
     def obj_create(self, bundle, request = None, **kwargs):
         if bundle.data is not None:
-            bundle.data['title'] = strip(bundle.data['title'])
-            bundle.data['description'] = strip(bundle.data['description'])
+            self.strip_bundle_data(bundle)
             bundle.data['user'] = request.user
             bundle.data['user_name'] = request.user.username
-            bundle.data['video_url'] = strip(bundle.data['video_url'])
-            bundle.data['type'] = strip(bundle.data['type'])
             
             #Video File would probably be uploaded separately? I don't really know how to handle that yet.
             #video_file = strip(bundle.data['video_file'])
@@ -51,6 +48,10 @@ class VideoResource(ModelResource):
         if bundle.data is not None:
             video = Video.objects.get( id = bundle.data['id'] )
             if video is not None and video.user == request.user:
+                self.strip_bundle_data(bundle)
+                if bundle.data['icon'] is not None:
+                    del(bundle.data['icon'])
+            
                 return_val = super(VideoResource, self).obj_update(bundle, request, **kwargs)
                 #if we're doing a sync, re-save all notes on this video.
                 sync = bundle.data.get('sync_notes', False)
@@ -65,7 +66,20 @@ class VideoResource(ModelResource):
                 
         return Bundle(obj = video)
                 
-    
+    #Theoretically removes any JS injections.
+    def strip_bundle_data(self, bundle):
+        bundle.data['video_url'] = strip(str(bundle.data.get('video_url', '')))
+        bundle.data['type'] = strip(str(bundle.data.get('type', '')))
+        bundle.data['title'] = strip(str(bundle.data.get('title', '')))
+        bundle.data['description'] = strip(str(bundle.data.get('description', '')))
+        bundle.data['icon'] = strip(str(bundle.data.get('icon', '')))
+        bundle.data['icon_link'] = strip(str(bundle.data.get('icon_link', '')))
+        bundle.data['teaser'] = strip(str(bundle.data.get('teaser', '')))
+        bundle.data['video_file'] = strip(str(bundle.data.get('video_file', '')))
+        bundle.data['user_link'] = strip(str(bundle.data.get('user_link', '')))
+        
+        
+        
     '''
     The original save_related function is here: https://github.com/toastdriven/django-tastypie/blob/master/tastypie/resources.py#L1893
     
@@ -193,15 +207,15 @@ class NoteResource(ModelResource):
     
     #Theoretically removes any JS injections.
     def strip_bundle_data(self, bundle):
-        bundle.data['text'] = strip(bundle.data.get('text', ''))
-        bundle.data['user_name'] = strip(bundle.data.get('user_name', ''))
-        bundle.data['icon_link'] = strip(bundle.data.get('icon_link', ''))
-        bundle.data['source'] = strip(bundle.data.get('source', ''))
-        bundle.data['source_link'] = strip(bundle.data.get('source_link', ''))
-        bundle.data['type'] = strip(bundle.data.get('type', ''))
-        bundle.data['original_source'] = strip(bundle.data.get('original_source', ''))
-        bundle.data['original_source_link'] = strip(bundle.data.get('original_source_link', ''))
-        bundle.data['original_data'] = ''
+        bundle.data['text'] = strip(str(bundle.data.get('text', '')))
+        bundle.data['user_name'] = strip(str(bundle.data.get('user_name', '')))
+        bundle.data['icon_link'] = strip(str(bundle.data.get('icon_link', '')))
+        bundle.data['source'] = strip(str(bundle.data.get('source', '')))
+        bundle.data['source_link'] = strip(str(bundle.data.get('source_link', '')))
+        bundle.data['type'] = strip(str(bundle.data.get('type', '')))
+        bundle.data['original_source'] = strip(str(bundle.data.get('original_source', '')))
+        bundle.data['original_source_link'] = strip(str(bundle.data.get('original_source_link', '')))
+        del(bundle.data['original_data'])
         return bundle
         
         

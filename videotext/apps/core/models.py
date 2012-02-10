@@ -82,7 +82,7 @@ class Video(CommonInfo):
     video_file      = models.FileField(upload_to='viodeotext/contrib/videos/', null=True, blank=True)
     user_name       = models.CharField(max_length = 64, blank = True) # if not a user in the system, just a name
     user_link       = models.URLField(blank = True, verify_exists = False) # if the user has a link.
-    icon            = models.ImageField(upload_to='tvn/contrib/icons/', null=True, blank=True) # image icon if uploaded
+    icon            = models.ImageField(upload_to='tvn/contrib/icons/', null=True, blank=True, max_length = 256) # image icon if uploaded
     icon_link       = models.URLField(blank = True, verify_exists = False) # image icon if on another server, ie YouTube Screenshot
     private         = models.BooleanField(default = False) #if for some reason we want to make this accessible only ot "user"
     lock_notes      = models.BooleanField(default = False) #stops notes from being added -- should only work on uploaded videos.

@@ -30,7 +30,7 @@ PLAYER_STATES = {
 function onYouTubePlayerReady(playerId){
     app.videoView.player = document.getElementById("player");
     app.videoView.player.addEventListener("onStateChange", "onYouTubeStateChange");
-    app.videoView.addYouTubeVideoEvents();
+    app.videoView.addVideoEvents();
 }
 
 function onYouTubeStateChange(newState)
@@ -38,10 +38,11 @@ function onYouTubeStateChange(newState)
     app.videoView.videoState = newState;
     //if it's not playing, stop our timer
     if(newState != 1){
-        app.videoView.videoStatusChecker.cancel();
+        if(app.videoView.videoStatusChecker)
+            app.videoView.videoStatusChecker.cancel();
     //otherwise, check away.
     }else{
-        app.videoView.addYouTubeVideoEvents();
+        app.videoView.addVideoEvents();
     }
     //Not sure if we'll be doing anything else.
 }
@@ -75,6 +76,8 @@ $(function(){
                 //time-to-execution, context, function, parameters, recur
                 //NOTE: Didn't know about _.defer or _.delay
                 $.later(100, this, 'embedYouTube', [], false);
+            }else{
+                $.later(100, this, 'embedVideoJS', [], false);
             }
             //if the logged in user is the owner of this video, let them edit the content.
             if (this.model.get("user") && parseInt(this.model.get('user').id, 10) == LOGGED_IN_USER){
@@ -109,50 +112,123 @@ $(function(){
             //then 'this.player' available and 'addYouTubeVideoEvents' called
        },
        
-       addYouTubeVideoEvents: function(){
-            this.videoStatusChecker = $.later(1000, this, 'checkYouTubeStatus', [], true);
+       embedVideoJS: function(){
+            var self = this;
+            //videojs api to create a video
+            _V_("video_tag").ready(function(){
+                self.player = this;
+                self.addVideoEvents();
+            });
        },
        
-       checkYouTubeStatus: function(){
-            this.videoTime = this.player.getCurrentTime(); //seconds into video.
+       addVideoEvents: function(){
+            if(this.model.get('type') == "youtube"){
+                this.videoStatusChecker = $.later(1000, this, 'checkVideoStatus', [], true);
+            }
+            if(this.model.get('type') == "mp4"){
+                var listener = _.bind(this.checkVideoStatus, this);
+                this.player.addEvent("timeupdate", listener);
+            }
+       },
+       
+       checkVideoStatus: function(){
+            this.videoTime = this.getCurrentOffset(); //seconds into video.
             //update the notes scrolling.
-            //console.log("New Video Time: " + this.videoTime);
             app.notesView.showNoteAtTime(this.videoTime);
             
        },
        
        pauseVideo: function(){
-            if(this.player != null)
-                this.player.pauseVideo();
+            if(this.player != null){
+                if(this.model.get('type') == "youtube"){
+                    this.player.pauseVideo();
+                }
+                if(this.model.get('type') == "mp4"){
+                    this.player.pause();
+                }
+            }
        },
        
        playVideo: function(){
-            if(this.player != null)
-                this.player.playVideo();
+            if(this.player != null){
+                if(this.model.get('type') == "youtube"){
+                    this.player.playVideo();
+                }
+                if(this.model.get('type') == "mp4"){
+                    this.player.play();
+                }
+            }
+       },
+       
+       getCurrentOffset: function(){
+            if(this.player != null){
+                if(this.model.get('type') == "youtube")
+                    this.videoTime = this.player.getCurrentTime();
+                if(this.model.get('type') == "mp4")
+                    this.videoTime = this.player.currentTime();
+            }
+            return this.videoTime;
+       },
+       
+       getDuration: function(){
+            if(this.player != null){
+                if(this.model.get('type') == "youtube")
+                    this.videoDuration = this.player.getDuration();
+                if(this.model.get('type') == "mp4")
+                    this.videoDuration = this.player.duration();
+            }
+            return this.videoDuration;
+       },
+       
+       awaitDurationChange: function(){
+            //remove the duration listener
+            this.player.removeEvent("durationchange", this.durationListener);
+            this.durationListener = null;
+            //and redo our note seek with the last note that attempted seek. Defered because the player isn't aware of duration until next frame.
+            _.defer(_.bind(function(){this.seekToNote(this.lastNote, false)}, this));
        },
        
        seekToNote: function(note, exact){
             if(this.syncingNotes)
                 return;
             var seconds = note.get('offset');
+            this.lastNote = note;
             //subtract some time so that we're slightly before the note
             if(!exact)
                 seconds = seconds - NOTE_SEEK_BEFORE_TIME;
             
-            if(this.model.get('type') == 'youtube'){
-                if(this.player == null){
-                    $.later(500, this, 'seekToNote', [note, exact], false);
-                    return;
-                }
-                if(seconds < 0) seconds = 0; // if pre-event, just go to beginning.
-                if(seconds > this.player.getDuration()) return; //need graceful way to indicate note is after video ends.
-                this.seekToOffset(seconds);
+            if(this.player == null){
+                $.later(500, this, 'seekToNote', [note, exact], false);
+                return;
             }
+            
+            var duration = this.getDuration();
+            //unfortunately, Flash player doesn't prefetch, so you have to play the video to get things moving, if only for an instant.
+            if(duration == 0){
+                this.durationListener = _.bind(this.awaitDurationChange, this)
+                //once we have an actual duration, this triggers an event.
+                this.player.addEvent('durationchange', this.durationListener);
+                this.playVideo();
+                this.pauseVideo();
+            }
+            
+            
+            if(seconds < 0) seconds = 0; // if pre-event, just go to beginning.
+            if(seconds > this.getDuration()) return; //need graceful way to indicate note is after video ends.
+            this.seekToOffset(seconds);
+            
        },
        
        seekToOffset: function(offset){
-            this.player.seekTo(offset, true);
-            this.player.playVideo();
+            if(this.player != null){
+                if(this.model.get('type') == "youtube"){
+                   this.player.seekTo(offset, true);
+                }
+                if(this.model.get('type') == "mp4"){
+                    this.player.currentTime(offset);
+                }
+                this.playVideo();
+            }
        },
        
        onSyncNotesClick: function(event){
@@ -178,11 +254,6 @@ $(function(){
                     app.endSyncNotes('There was an error syncing your notes')
                 }
             });
-       },
-       
-       getCurrentOffset: function(){
-            //this works for YouTube. If we use an MP4 player in future, must add this method somewhere.
-            return this.player.getCurrentTime();
        }
        
        

@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, login, authenticate
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from itertools import chain
 from operator import attrgetter
@@ -25,7 +26,7 @@ def index_view(request):
     return get_response(template='index.django.html', data=data, request=request)
 
 
-
+@login_required
 def add_video_view(request):
     data = {}
     return get_response(template='add_video.django.html', data=data, request=request)

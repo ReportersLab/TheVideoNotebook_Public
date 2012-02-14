@@ -15,14 +15,37 @@
     </script>
     
     <script type="text/html" id="videoFormTemplate">
-        <h1 id="video-title" class="edit">Enter the Video Title here.</h1><br />
-        <p id="video-description" class="edit">Enter a description here. It should be a few sentences in length and explain what the video is about.</p><br /><br />
-        <strong>Date: </strong><h6 id="video_date_component" class="datepicker"><%= date_component %></h6><br /><br />
-        <strong>Time: </strong><h6 id="video_time_component" class="timepicker"><%= time_component %></h6><br /><br />
-        <strong>Icon URL: </strong><h6 id="video-icon_link" class="edit">A URL to a video image. Should be approximately 550px wide by 350px tall</h6><br /><br />
-        <strong>Private: </strong><h6 id="video-private" class="checkbox">false</h6><br /><br />
-        <strong>Lock Noting: </strong><h6 id="video-lock_notes" class="checkbox">false</h6><br /><br />
-        <input type="button" value="Save Video" style="float:right; clear:both;" id="video_save_button" /><br />
+        <div id="add_video_form_container">
+            <div>
+                <strong>Title:</strong>
+                <input id="video-title" type="text" class="edit" placeholder="Enter the Video Title here" />
+            </div>
+            <div>
+                <strong>Description:</strong>
+                <textarea id="video-description" class="edit" placeholder="Enter a description here. It should be a few sentences in length and explain what the video is about."></textarea> 
+            </div>
+            <div>
+                <strong>Date:</strong>
+                <input id="video_date_component" class="datepicker" value="<%= date_component %>" />
+            </div>
+            <div>
+                <strong>Time:</strong>
+                <input id="video_time_component" class="timepicker" value="<%= time_component %>" />
+            </div>
+            <div>
+                <strong>Icon URL:</strong>
+                <textarea id="video-icon_link" class="edit" placeholder="A URL to a video image. Should be approximately 550px wide by 350px tall"></textarea>
+            </div>
+            <div>
+                <strong>Private:</strong>
+                <input id="video-private" type="checkbox" />
+            </div>
+            <div>
+                <strong>Lock Noting:</strong>
+                <input id="video-lock_notes" type="checkbox" />
+            </div>
+            <input type="button" value="Save Video" style="float:right; clear:both;" id="video_save_button" />
+        </div>
     </script>
     
     <script type="text/html" id="sourceTemplate">

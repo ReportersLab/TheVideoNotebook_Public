@@ -8,7 +8,7 @@ $(function(){
                  var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
                  var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
                  this.set({date_time: dt});
-                 this.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + (dt.getMonth() + 1)+ '/' + dt.getDate()})   
+                 this.set({time_component:dt.getHours() + ':' + minutes, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})   
              }
              if(this.get('end_time')){
                  this.set({end_date_time: new Date(this.get('end_time'))});
@@ -28,7 +28,7 @@ $(function(){
                     if(response.objects && response.objects.length == 1){
                         self.set(response.objects[0]);
                         if(self.get('time'))
-                           self.set({time_component:self.get('time').split('T')[1].replace('.000Z', ''), date_component:self.get('time').split('T')[0]})
+                           self.set({time_component:self.get('time').split('T')[1].replace('.000Z', ''), date_component:self.get('time').split('T')[0]});
                         if(callback)
                             callback.call(object, true);
                         return;

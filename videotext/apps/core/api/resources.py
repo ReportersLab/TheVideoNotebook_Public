@@ -217,7 +217,7 @@ class NoteResource(ModelResource):
         bundle.data['type'] = strip(str(bundle.data.get('type', '')))
         bundle.data['original_source'] = strip(str(bundle.data.get('original_source', '')))
         bundle.data['original_source_link'] = strip(str(bundle.data.get('original_source_link', '')))
-        del(bundle.data['original_data'])
+        #del(bundle.data['original_data'])
         return bundle
         
         

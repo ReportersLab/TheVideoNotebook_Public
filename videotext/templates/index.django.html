@@ -22,7 +22,7 @@
            <div class="teaser">
                 {{ v.description|safe }}
            </div>
-           <a class="more_link">View Video</a>
+           <a class="more_link" href="{{ v.get_absolute_url }}">View Video</a>
         </article>
     {% endfor %}
     </div>

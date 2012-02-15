@@ -466,13 +466,13 @@ $(function(){
             
             
             _.each(toHide, function(note){
-                if(note.view.visible)
+                //if(note.view.visible)
                     $(note.view.el).addClass("hidden");
                 note.view.visible = false;
             });
             
             _.each(toShow, function(note){
-                if(!note.view.visible)
+                //if(!note.view.visible)
                     $(note.view.el).removeClass("hidden");
                 note.view.visible = true;
             });
@@ -483,7 +483,7 @@ $(function(){
         
         resetNotes: function(){
             this.notes.each(function(note){
-                if(!note.view.visible)
+                //if(!note.view.visible)
                     $(note.view.el).removeClass("hidden");
                //_.defer(function(){$(note.view.el).show()}); 
             });

@@ -435,7 +435,7 @@ $(function(){
         
         onSearchKeyUp: function(element){
             text = $("#note_search_text").val();
-            if(text.length > 2)
+            if(text.length > 0)
                 this.search();
             if(text.length == 0)
                 this.resetNotes();
@@ -466,11 +466,15 @@ $(function(){
             
             
             _.each(toHide, function(note){
-               $(note.view.el).hide(); 
+                if(note.view.visible)
+                    $(note.view.el).addClass("hidden");
+                note.view.visible = false;
             });
             
             _.each(toShow, function(note){
-               $(note.view.el).show(); 
+                if(!note.view.visible)
+                    $(note.view.el).removeClass("hidden");
+                note.view.visible = true;
             });
             
             this.resultCount = toShow.length || 0;
@@ -479,7 +483,9 @@ $(function(){
         
         resetNotes: function(){
             this.notes.each(function(note){
-               _.defer(function(){$(note.view.el).show()}); 
+                if(!note.view.visible)
+                    $(note.view.el).removeClass("hidden");
+               //_.defer(function(){$(note.view.el).show()}); 
             });
             this.resultCount = app.notes.length;
             this.render();
@@ -497,6 +503,7 @@ $(function(){
        initialize: function(){
             //this.model.set({'time_formatted': this.model.get('time').format("mm/dd/yy h:MM:ss TT")});
             this.container = this.options.container;
+            this.visible = true;
        },
        
        events: {

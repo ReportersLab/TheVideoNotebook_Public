@@ -87,7 +87,7 @@ class NoteAdmin(CommonAdmin):
         ),
     )
     
-    list_display = ('text', 'video', 'published',)
+    list_display = ('text', 'video', 'offset', 'published',)
     list_editable= ('published',)
     list_display_links = ('text',)
 

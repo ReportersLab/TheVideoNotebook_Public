@@ -186,6 +186,11 @@ fieldset legend
 }
 
 
+.hidden
+{
+    display:none;
+}
+
 #wrapper
 {
     position:relative;
@@ -655,7 +660,7 @@ article .teaser
 #note_search_button
 {
     font-size:16px;
-    float:right;
+    display:inline;
     margin: -1px 0 0 0;
 }
 

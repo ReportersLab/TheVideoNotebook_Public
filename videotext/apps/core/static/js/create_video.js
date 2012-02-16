@@ -19,6 +19,7 @@ $(document).ready(function(){
             source = new Source();
             var view = new SourceView({model:source, container:this});
             $("#sources").append(view.render().el);
+            $(view.el).fadeIn('slow');
             source.view = view;
             this.sources.add(source);
         }
@@ -40,7 +41,7 @@ $(document).ready(function(){
        
        render: function(){
             $(this.el).html(this.template(this.model.toJSON()));
-            $(this.el).fadeIn('slow');
+            //$(this.el).fadeIn('slow');
             return this;
        },
        
@@ -63,7 +64,7 @@ $(document).ready(function(){
        },
        
        onSaveClick: function(event){
-            status = $(this.el).find('.status');
+            var status = $(this.el).find('.status');
             status.html("Saving source").show();
             var url = $(this.el).find('.source_url').val();
             var type = $(this.el).find('.source_type').val();

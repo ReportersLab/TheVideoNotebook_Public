@@ -10,28 +10,28 @@ def parse_storify(url, video):
     
     elements = data['elements']
     for e in elements:
-        element = elements[e]
-        time = datetime.fromtimestamp(float(element['created_at']))
-        user_name = user_link = icon_link = None
-        
-        if element.has_key('author'):
-            author = element['author']
-            user_name = author.get('name', None)
-            #href doesn't work for some reason, even though this is the JSON:
-            #"href" : "http://twitter.com/DoyleMcManus",
-            user_link = author.get('href', None)
-            icon_link = author.get('avatar', None)
-        
-        message_text = element.get('description', None)
-        message_link = element.get('permalink', None)
-        source_link = element.get('source', None)
-        source = url
-        
-        note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = message_link,
-                               icon_link = icon_link, video = video, time = time, source_link = source_link, source = source)
-        print note
-        print created
-    
+        try:
+            element = elements[e]
+            time = datetime.fromtimestamp(float(element['created_at']))
+            user_name = user_link = icon_link = None
+            
+            if element.has_key('author'):
+                author = element['author']
+                user_name = author.get('name', None)
+                #href doesn't work for some reason, even though this is the JSON:
+                #"href" : "http://twitter.com/DoyleMcManus",
+                user_link = author.get('href', None)
+                icon_link = author.get('avatar', None)
+            
+            message_text = element.get('description', None)
+            message_link = element.get('permalink', None)
+            source_link = element.get('source', None)
+            source = url
+            
+            note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = message_link,
+                                   icon_link = icon_link, video = video, time = time, source_link = source_link, source = source)
+        except:
+            pass
 
 
 

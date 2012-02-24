@@ -248,8 +248,9 @@ class Note(CommonInfo):
         delta = self.time - self.video.time
         if self.time < self.video.time:
             delta = self.video.time - self.time
-            return delta.total_seconds() * -1 
-        return delta.total_seconds()
+            #return delta.total_seconds() * -1
+            return ((delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6) / 10**6) * -1
+        return ((delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6) / 10**6)
     
     
     

@@ -93,7 +93,6 @@ class Video(CommonInfo):
         
         #if self.icon is not None:
         #    self.icon_link = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, self.icon)
-        
         if not self.time:
             self.time_time = datetime.now()
         #getting an error: can't subtract offset-naive and offset-aware datetimes -- may not be worth it to solve.
@@ -226,29 +225,27 @@ class Note(CommonInfo):
         if not self.id:
             super(Note, self).save(*args, **kwargs)
             
-        
         if self.video != None:
             if (self.time != None) and (self.video.time != None):  #If we have the times, calculate offset, otherwise assume it's passed in.
-                    self.offset = self.gen_offset
+                    self.offset = self.gen_offset()
             
             if (self.time == None) and (self.video.time != None) and (self.offset != None):
                 self.time = self.video.time + timedelta(seconds = self.offset)
-        
+                
             self.link = '{0}#note/{1}'.format(self.video.get_absolute_url(), self.id) 
         
         #Get or create sets force_insert = True. Which causes this to bomb on parser inputs. Lets stop that.
         kwargs['force_insert'] = False
         super(Note, self).save(*args, **kwargs)
-        
-            
     
-    @property
+    
     def gen_offset(self):
         #I'm sure there's a more concise way to do this, but timedeltas, man.
         delta = self.time - self.video.time
         if self.time < self.video.time:
             delta = self.video.time - self.time
             #return delta.total_seconds() * -1
+            #server is python 2.6, no total_seconds property. Should probably update at some point.
             return ((delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6) / 10**6) * -1
         return ((delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6) / 10**6)
     

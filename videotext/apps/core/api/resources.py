@@ -1,17 +1,22 @@
-from tastypie import fields
-from tastypie.bundle import Bundle
-from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
-from tastypie.authentication import Authentication
-from tastypie.authorization import DjangoAuthorization
 from core.models import *
 from core.helpers.strip_tags import strip
-from datetime import datetime, timedelta
-from django.db import connection
-from django.contrib.auth.models import User
-from tastypie.exceptions import NotFound, ImmediateHttpResponse
-from django.core.exceptions import PermissionDenied
-from tastypie import http
 
+from tastypie import fields
+from tastypie import http
+from tastypie.authentication import Authentication
+from tastypie.authorization import DjangoAuthorization
+from tastypie.bundle import Bundle
+from tastypie.exceptions import NotFound, ImmediateHttpResponse
+from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
+
+from datetime import datetime, timedelta
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.db import connection
+
+from customfields import TzDateTimeField
          
 
 
@@ -20,6 +25,8 @@ class VideoResource(ModelResource):
     #neither have to know about the other.
     #notes = fields.ToManyField('core.api.resources.NoteResource', 'note_set')
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
+    #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
+    time = TzDateTimeField(attribute = 'time')
     
     def obj_create(self, bundle, request = None, **kwargs):
         if bundle.data is not None:
@@ -53,7 +60,10 @@ class VideoResource(ModelResource):
                     del(bundle.data['icon'])
                 if bundle.data['video_file'] is not None:
                     del(bundle.data['video_file'])
-            
+                
+                
+                
+                
                 return_val = super(VideoResource, self).obj_update(bundle, request, **kwargs)
                 #if we're doing a sync, re-save all notes on this video.
                 sync = bundle.data.get('sync_notes', False)
@@ -134,7 +144,8 @@ class NoteResource(ModelResource):
     #video = fields.ForeignKey(VideoResource, 'video')
     
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
-    
+    #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
+    time = TzDateTimeField(attribute = 'time', null = True, blank = True)
     
     
     '''

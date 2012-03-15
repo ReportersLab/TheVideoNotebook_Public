@@ -34,3 +34,4 @@ simplejson==2.2.1
 windmill==1.6
 wsgiref==0.1.2
 yolk==0.4.1
+pytz

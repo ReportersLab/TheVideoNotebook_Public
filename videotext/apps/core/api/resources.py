@@ -25,7 +25,8 @@ class VideoResource(ModelResource):
     #I guess it should be expected that the user first grabs the video, gets the id, and then grabs the notes.
     #neither have to know about the other.
     #notes = fields.ToManyField('core.api.resources.NoteResource', 'note_set')
-    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
+    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True, readonly = True)
+    published = fields.BooleanField('published', default = True, readonly = True)
     #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
     time = TzDateTimeField(attribute = 'time')
     
@@ -147,7 +148,7 @@ class NoteResource(ModelResource):
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
     #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
     time = TzDateTimeField(attribute = 'time', null = True, blank = True)
-    
+    published = fields.BooleanField('published', default = True, readonly = True)
     
     '''
     So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)
@@ -267,7 +268,7 @@ class SourceResource(ModelResource):
     
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
     video = fields.ToOneField('core.api.resources.VideoResource', 'video', null = True, blank = True)
-    
+    published = fields.BooleanField('published', default = True, readonly = True)
     
     '''
     So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)

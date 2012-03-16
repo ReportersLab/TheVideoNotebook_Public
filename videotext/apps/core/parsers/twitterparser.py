@@ -38,7 +38,8 @@ def get_tweets(source = None):
                                     icon_link = tweet.user.profile_image_url,
                                     type = 'twitter',
                                     original_data = tweet.AsJsonString(),
-                                    video = source.video
+                                    video = source.video,
+                                    import_source = source,
                             )
         
 

@@ -3,7 +3,7 @@ import simplejson as json
 from datetime import datetime, timedelta
 from core.models import Note, Video
 
-def parse_storify(url, video):
+def parse_storify(url, video, import_source):
     json_url = '{0}.json'.format(url)
     read_data = urllib2.urlopen(json_url).read()
     data = json.loads(read_data)
@@ -28,8 +28,8 @@ def parse_storify(url, video):
             source_link = element.get('source', None)
             source = url
             
-            note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = message_link,
-                                   icon_link = icon_link, video = video, time = time, source_link = source_link, source = source)
+            note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = message_link, icon_link = icon_link,
+                                                       video = video, time = time, source_link = source_link, source = source, import_source = import_source)
         except:
             pass
 

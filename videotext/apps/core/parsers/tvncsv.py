@@ -33,7 +33,8 @@ def import_tvn_csv(source):
                                    source_link = row['source_link'],
                                    source = row['source'],
                                    offset = row['offset'],
-                                   private = row['private']
+                                   private = row['private'],
+                                   import_source = source,
         )
         
 

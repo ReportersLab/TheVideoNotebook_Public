@@ -157,6 +157,13 @@ class Source(CommonInfo):
     content   = models.FileField(upload_to = 'tvn/contrib/source_data/', null = True, blank = True, verbose_name = 'Content Location')
     error_message = models.CharField(max_length = 256, null = True, blank = True)
     
+    def __unicode__(self):
+        if self.type == 'twitter':
+            return 'Source: @%s, %s to %s (scraped: %s)' % (self.twitter_user, self.twitter_start_id, self.twitter_end_id, self.scraped)
+        return 'Source: %s -- %s (scraped: %s)' % (self.url, self.type, self.scraped)
+    
+    
+    
     def save(self, *args, **kwargs):
         
         from parsers.scribblelive import parse_scribbling
@@ -179,15 +186,15 @@ class Source(CommonInfo):
                 if self.type == "twitter":
                     get_tweets(self)
                 elif self.type == "storify":
-                    parse_storify(self.url, self.video)
+                    parse_storify(self.url, self.video, self)
                 elif self.type == "coveritlive":
                     pass
                 elif self.type == "scribblelive":
-                    parse_scribbling(self.url, self.video)
+                    parse_scribbling(self.url, self.video, self)
                 elif self.type == "csv":
                     import_tvn_csv(self)
                 elif self.type == "fark":
-                    parse_fark(self.url, self.video)
+                    parse_fark(self.url, self.video, self)
                 self.scraped = True
                 self.error_message = ''
             except Exception as e:
@@ -207,7 +214,7 @@ class Note(CommonInfo):
     user_name               = models.CharField(max_length = 64, blank = True, null = True) # if not a user in the system, just a name
     user_link               = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) # if the user has a link.
     video                   = models.ForeignKey(to = "Video", blank = False, null = True) # related video. Shouldn't be null, but null for testing.
-    link                    = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) #link to original comment -- ie, a Tweet
+    link                    = models.CharField(max_length = 512, blank = True, null = True) #link to original comment -- ie, a Tweet
     icon                    = models.ImageField(upload_to='videotext/contrib/icons/', null=True, blank=True) # image icon if uploaded
     icon_link               = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True) # image icon if on another server, ie Twitter User Photo
     type                    = models.CharField(max_length = 32, blank = True, null = True)
@@ -218,7 +225,7 @@ class Note(CommonInfo):
     offset                  = models.IntegerField(null = True, blank = True) # position within video in seconds.
     private                 = models.BooleanField(default = False) 
     original_data           = models.TextField(blank = True, null = True) #would like to store the original HTML or JSON block here.
-    
+    import_source           = models.ForeignKey(to = Source, blank = True, null = True, verbose_name = 'Import Data Source')
     
     def save(self, *args, **kwargs):
         #if we don't have an id, save to get one.

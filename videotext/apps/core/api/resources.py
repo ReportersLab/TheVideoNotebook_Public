@@ -151,6 +151,9 @@ class NoteResource(ModelResource):
     #video = fields.ForeignKey(VideoResource, 'video')
     
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True, readonly = True)
+    import_source = fields.ToOneField('core.api.resources.SourceResource', 'import_source', full = False, null = True, blank = True, readonly = True)
+    video = fields.ToOneField('core.api.resources.VideoResource', 'video', full = False, null = True, blank = True, readonly = True)
+    
     creation_time = fields.DateField(attribute = 'creation_time', readonly = True)
     update_time  = fields.DateField(attribute = 'update_time', readonly = True)
     #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
@@ -166,17 +169,17 @@ class NoteResource(ModelResource):
     
     '''
     So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)
-    So ratehr than dealing with the default bundle saving, I'm just creating a new note and saving it myself.
+    So rather than dealing with the default bundle saving, I'm just creating a new note and saving it myself.
     '''
     def obj_create(self, bundle, request=None, **kwargs):
         if bundle.data is not None:
             self.strip_bundle_data(bundle)
-            kwargs['video'] = Video.objects.get(id = bundle.data['video'])
-            kwargs['source'] = 'tv'
+            kwargs['source'] = 'TheVideoNotebook'
             saved_object = super(NoteResource, self).obj_create(bundle, request, **kwargs)
             #do this here because the user property is readonly.    
             saved_object.obj.user = request.user
             saved_object.obj.user_name = request.user.username
+            saved_object.obj.video = Video.objects.get(id = bundle.data['video'])
             saved_object.obj.save()
             return saved_object
         return bundle
@@ -184,7 +187,6 @@ class NoteResource(ModelResource):
     
     def obj_update(self, bundle, request = None, **kwargs):
         note = None
-        
         if bundle.data is not None:
             note = Note.objects.get( id = bundle.data['id'] )
             if note is not None:

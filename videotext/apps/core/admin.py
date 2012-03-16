@@ -82,7 +82,7 @@ class NoteAdmin(CommonAdmin):
         ('The Details',
             {
                 'fields': ('time', 'end_time', 'offset', 'user_name', 'user_link', 'link', 'icon_link', 'icon', 'type',
-                           'source', 'source_link', 'original_source', 'original_source_link', )
+                           'source', 'source_link', 'original_source', 'original_source_link', 'import_source',)
             }
         ),
     )

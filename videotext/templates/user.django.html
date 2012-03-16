@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+
+
+{% block main_content %}
+    <div id="video_list">
+    {% for v in video_list %}
+        <article class="video_list_item">
+            {% if v.icon_link %}
+            <figure>
+                <img src="{{ v.icon_link}}" />
+            </figure>
+            {% endif %}
+           <header>
+                <h2><a href="{{ v.get_absolute_url }}">{{ v.title }}</a></h2>
+                <div class="entry_meta">
+                    <span>{{ v.user.first_name }} {{ v.user.last_name }}</span>
+                    <span class="slashes">//</span>
+                    <span class="timestamp">{{ v.update_time|date:"DATETIME_FORMAT" }}</span>
+                </div>
+           </header>
+           <div class="teaser">
+                {{ v.description|safe }}
+           </div>
+           <a class="more_link" href="{{ v.get_absolute_url }}">View Video</a>
+        </article>
+    {% endfor %}
+    </div>
+    
+    <div id="right_rail">
+        <aside>
+            <h3>{{ user_info.first_name }} {{ user_info.last_name }}</h3>
+            <p>These are the latest videos for {{ user_info.first_name }} {{ user_info.last_name }}.</p>
+        </aside>
+    </div>
+{% endblock %}

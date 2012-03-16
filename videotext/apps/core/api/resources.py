@@ -13,8 +13,9 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.db import connection
+from django.db.models import Q
 
 from customfields import TzDateTimeField
          
@@ -196,6 +197,13 @@ class NoteResource(ModelResource):
             else:
                 raise ImmediateHttpResponse(response=http.HttpUnauthorized())
                 #raise PermissionDenied("User Doesn't have permission to delete this note.")
+    
+    
+    
+    
+    def get_object_list(self, request):
+        return get_user_visible_objects(Note, request)
+    
         
     
     #TODO: Searching notes
@@ -235,7 +243,7 @@ class NoteResource(ModelResource):
         
         
     class Meta:
-        queryset = Note.objects.all()
+        queryset = Note.published_objects.all()
         resource_name = "note"
         filtering = {
             'video': ALL_WITH_RELATIONS,
@@ -342,5 +350,23 @@ class UserResource(ModelResource):
         #important. Let's just whitelist what we need.
         fields = ['id', 'username', 'first_name', 'last_name',]
         
-        
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+def get_user_visible_objects(model, request):
+    #first, figure out if the user should see unpublished objects
+    qs = model.published_objects
+    if request.user.is_authenticated() and request.user.is_staff:
+        qs = model.objects
+    
+    #now exclude the items where the private is marked AND aren't from this user
+    qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    return qs        
     

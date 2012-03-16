@@ -679,7 +679,7 @@ $(function(){
        
        addNote: function(){
             text = $("#new_note_text").val();
-            private_note = $("#new_note_private").val();
+            private_note = $("#new_note_private").is(":checked");
             if(text.length < 10){
                 //too short? Do nothing. Should we send a warning?
                 return;
@@ -692,7 +692,7 @@ $(function(){
             var newNote = this.notes.create({
                     text: text,
                     offset: app.videoView.videoTime,
-                    private_note: !private_note
+                    private: private_note
                 }, {
                     success: function(model, response){
                         var newNoteTemplate = _.template($("#addNoteTemplate").html());

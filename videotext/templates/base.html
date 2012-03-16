@@ -128,7 +128,7 @@
                 <div class="main_content">
                     <div id="login_box">
                         {% if user.is_authenticated %}
-                            Welcome {{ user }} <span class="slashes">//</span> <a href="/l/logout/">log out</a>
+                            Welcome <a href="/user/{{ user }}">{{ user }}</a> <span class="slashes">//</span> <a href="/l/logout/">log out</a>
                             <span class="slashes">//</span>
                             <a href="/video/add/">Add a video</a>
                         {% else %}

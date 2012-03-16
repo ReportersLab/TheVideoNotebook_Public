@@ -19,8 +19,9 @@ from parsers.tvncsv import export_tvn_csv
 
 
 def index_view(request):
+    videos = get_user_visible_objects(Video, request)
     data = {
-        'video_list'  : Video.objects.all(),
+        'video_list'  : videos,
         'is_index' : True,
     }
     return get_response(template='index.django.html', data=data, request=request)
@@ -36,12 +37,9 @@ def video_view(request, slug):
     note_resource = NoteResource()
     video_resource = VideoResource()
     
-    video = get_object_or_404(Video, slug = slug)
-    
-    #This could be event_notes, but for now let's load everything.
-    #It's about 300K for 2,300 notes. Can't imagine a single video being many more than this...?
-    #though eventually we may want to build in some sort of 'load 100 notes and Ajax the rest as needed' system.
-    notes = video.all_notes
+    video = get_user_visible_object(Video, request, slug = slug)
+    notes = get_user_visible_objects(Note, request)
+    notes = notes.filter(video = video)
     
     data = {
         'video' : video,
@@ -50,6 +48,18 @@ def video_view(request, slug):
     }
     return get_response(template='video.django.html', data=data, request=request)
 
+
+
+def user_view(request, username):
+    user_info = get_object_or_404(User, username = username)
+    videos = get_user_visible_objects(Video, request)
+    data = {
+        'user_info'   : user_info, 
+        'video_list'  : videos.filter(user__username = username),
+        'is_index'    : True,
+    }
+    
+    return get_response(template='user.django.html', data=data, request=request)
 
 
 def video_csv_view(request, slug):
@@ -64,6 +74,37 @@ def login_main_view(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+
+
+
+
+
+
+def get_user_visible_objects(model, request):
+    #first, figure out if the user should see unpublished objects
+    qs = model.published_objects
+    if request.user.is_authenticated() and request.user.is_staff:
+        qs = model.objects
+    
+    #now exclude the items where the private is marked AND aren't from this user
+    qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    return qs
+
+
+def get_user_visible_object(model, request, **kwargs):
+    qs = model.published_objects
+    if request.user.is_authenticated() and request.user.is_staff:
+        qs = model.objects
+        
+    #exclude private objects that don't belong to this user
+    qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    
+    return get_object_or_404(qs, **kwargs)
+
+
+
 
 
 

@@ -34,7 +34,7 @@ class VideoAdmin(CommonAdmin):
         ),
     )
     readonly_fields = ('slug',)
-    list_display = ('title', 'video_url', 'published', 'type',)
+    list_display = ('title', 'video_url', 'published', 'type', 'private', 'user',)
     list_editable= ('published',)
     list_display_links = ('title',)
 
@@ -90,6 +90,7 @@ class NoteAdmin(CommonAdmin):
     list_display = ('text', 'video', 'offset', 'published',)
     list_editable= ('published',)
     list_display_links = ('text',)
+    list_filter = ('published', 'private', 'video', 'user',)
 
 
 

@@ -26,16 +26,16 @@ class VideoResource(ModelResource):
     #neither have to know about the other.
     #notes = fields.ToManyField('core.api.resources.NoteResource', 'note_set')
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True, readonly = True)
+    creation_time = fields.DateField(attribute = 'creation_time', readonly = True)
+    update_time  = fields.DateField(attribute = 'update_time', readonly = True)
     published = fields.BooleanField('published', default = True, readonly = True)
     #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
     time = TzDateTimeField(attribute = 'time')
+    slug = fields.CharField(attribute = 'slug', readonly = True, null = True, blank = True)
     
     def obj_create(self, bundle, request = None, **kwargs):
         if bundle.data is not None:
             self.strip_bundle_data(bundle)
-            bundle.data['user'] = request.user
-            bundle.data['user_name'] = request.user.username
-            
             #Video File would probably be uploaded separately? I don't really know how to handle that yet.
             #video_file = strip(bundle.data['video_file'])
             if bundle.data['type'] == 'youtube':
@@ -47,6 +47,11 @@ class VideoResource(ModelResource):
                 saved_object = Bundle(obj = saved_object)
             except:
                 saved_object = super(VideoResource, self).obj_create(bundle, request, **kwargs)
+            
+            #do this here because the user property is readonly.    
+            saved_object.obj.user = request.user
+            saved_object.obj.user_name = request.user.username
+            saved_object.obj.save()
             return saved_object
 
             
@@ -145,10 +150,19 @@ class NoteResource(ModelResource):
     
     #video = fields.ForeignKey(VideoResource, 'video')
     
-    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
+    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True, readonly = True)
+    creation_time = fields.DateField(attribute = 'creation_time', readonly = True)
+    update_time  = fields.DateField(attribute = 'update_time', readonly = True)
     #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
     time = TzDateTimeField(attribute = 'time', null = True, blank = True)
     published = fields.BooleanField('published', default = True, readonly = True)
+    type = fields.CharField(attribute = 'type', readonly = True, blank = True, null = True)
+    source_link = fields.CharField(attribute = 'source_link', readonly = True, blank = True, null = True)
+    source = fields.CharField(attribute = 'source', readonly = True, blank = True, null = True)
+    original_source = fields.CharField(attribute = 'original_source', readonly = True, blank = True, null = True)
+    original_source_link = fields.CharField(attribute = 'original_source_link', readonly = True, blank = True, null = True)
+    original_data = fields.CharField(attribute = 'original_data', readonly = True, blank = True, null = True)
+    
     
     '''
     So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)
@@ -158,11 +172,14 @@ class NoteResource(ModelResource):
         if bundle.data is not None:
             self.strip_bundle_data(bundle)
             kwargs['video'] = Video.objects.get(id = bundle.data['video'])
-            kwargs['user'] = request.user
-            kwargs['user_name'] = request.user.username
             kwargs['source'] = 'tv'
-        return super(NoteResource, self).obj_create(bundle, request, **kwargs)
-    
+            saved_object = super(NoteResource, self).obj_create(bundle, request, **kwargs)
+            #do this here because the user property is readonly.    
+            saved_object.obj.user = request.user
+            saved_object.obj.user_name = request.user.username
+            saved_object.obj.save()
+            return saved_object
+        return bundle
     
     
     def obj_update(self, bundle, request = None, **kwargs):
@@ -269,6 +286,8 @@ class SourceResource(ModelResource):
     user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True)
     video = fields.ToOneField('core.api.resources.VideoResource', 'video', null = True, blank = True)
     published = fields.BooleanField('published', default = True, readonly = True)
+    creation_time = fields.DateField(attribute = 'creation_time', readonly = True)
+    update_time  = fields.DateField(attribute = 'update_time', readonly = True)
     
     '''
     So it appears that related models don't get saved. (As in, a video id won't be converted to the right video.)

@@ -159,7 +159,7 @@ class NoteResource(ModelResource):
     #have to use this because updating the video time caused chaos. This field converts to UTC on output and from UTC on input.
     time = TzDateTimeField(attribute = 'time', null = True, blank = True)
     published = fields.BooleanField('published', default = True, readonly = True)
-    type = fields.CharField(attribute = 'type', readonly = True, blank = True, null = True)
+    type = fields.CharField(attribute = 'type', readonly = False, blank = True, null = True)
     source_link = fields.CharField(attribute = 'source_link', readonly = True, blank = True, null = True)
     source = fields.CharField(attribute = 'source', readonly = True, blank = True, null = True)
     original_source = fields.CharField(attribute = 'original_source', readonly = True, blank = True, null = True)
@@ -174,11 +174,11 @@ class NoteResource(ModelResource):
     def obj_create(self, bundle, request=None, **kwargs):
         if bundle.data is not None:
             self.strip_bundle_data(bundle)
-            kwargs['source'] = 'TheVideoNotebook'
             saved_object = super(NoteResource, self).obj_create(bundle, request, **kwargs)
             #do this here because the user property is readonly.    
             saved_object.obj.user = request.user
             saved_object.obj.user_name = request.user.username
+            saved_object.obj.source = 'TheVideoNotebook'
             saved_object.obj.video = Video.objects.get(id = bundle.data['video'])
             saved_object.obj.save()
             return saved_object

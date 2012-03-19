@@ -140,7 +140,7 @@ class Source(CommonInfo):
     url                  = models.URLField(max_length = 512, blank = True, verify_exists = False)
     type                 = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
     video                = models.ForeignKey(to = "Video", blank = False, null = True)
-    user                 = models.ForeignKey(to=User, blank = True, null = True)
+    user                 = models.ForeignKey(to=User, blank = False, null = False)
     scraped              = models.BooleanField(default = False, verbose_name = 'Data Scraped')
     #twitter specific stuff
     twitter_user         = models.CharField(max_length = 32, blank = True, null = True)
@@ -185,15 +185,15 @@ class Source(CommonInfo):
                 if self.type == "twitter":
                     get_tweets(self)
                 elif self.type == "storify":
-                    parse_storify(self.url, self.video, self)
+                    parse_storify(self.url, self.video, import_source = self)
                 elif self.type == "coveritlive":
                     pass
                 elif self.type == "scribblelive":
-                    parse_scribbling(self.url, self.video, self)
+                    parse_scribbling(self.url, self.video, import_source = self)
                 elif self.type == "csv":
                     import_tvn_csv(self)
                 elif self.type == "fark":
-                    parse_fark(self.url, self.video, self)
+                    parse_fark(self.url, self.video, import_source = self)
                 self.scraped = True
                 self.error_message = ''
             except Exception as e:

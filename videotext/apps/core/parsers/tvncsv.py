@@ -23,8 +23,8 @@ def import_tvn_csv(source):
         note, created = Note.objects.get_or_create(
                                    text = row['text'].decode('utf8'),
                                    time =  datetime.strptime(row['time'], '%Y-%m-%dT%H:%M:%S.000Z') if row['time'] else None,
-                                   user_name = row['user_name'],
-                                   user = row.get('user', source.user),
+                                   user_name = source.user.username, #Let's not allow importers to just assign notes to users.
+                                   user = source.user, #let's not allow importers to just assign notes to other users.
                                    video = video,
                                    link = row['link'],
                                    icon = row['icon'],

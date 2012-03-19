@@ -578,7 +578,8 @@ $(function(){
         events: {
             'click .closeLink': 'onCloseClick',
             'click .sync_note_link': 'onSyncNoteClick',
-            'click .delete_note_link': 'onDeleteClick'
+            'click .delete_note_link': 'onDeleteClick',
+            'change input:checkbox': 'onCheckboxChange'
         },
         
         render: function(){
@@ -611,6 +612,21 @@ $(function(){
                 });
             }
             return this;
+        },
+        
+        onCheckboxChange: function(event){
+            var data = {};
+            var el = $(event.target);
+            var value = el.is(":checked");
+            //pattern is note_detail_VAR
+            data[el.attr('id').split('_')[2]] = value;
+            this.note.set(data);
+            app.showMessage("<h4>Updating Note Details</h4>");
+            this.note.save(null, {wait:true,
+                                  success:function(model, response){app.showMessage("<h4>Note Details Updated!</h4>")},
+                                  error: function(model, response){app.showMessage("<h4>You don't have permission to edit this note.</h4>")}
+                                  });
+            return value;  
         },
         
         onCloseClick: function(event){

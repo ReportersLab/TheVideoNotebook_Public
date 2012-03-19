@@ -89,7 +89,14 @@ def get_user_visible_objects(model, request):
         qs = model.objects
     
     #now exclude the items where the private is marked AND aren't from this user
-    qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    #qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    if request.user.is_authenticated():
+        if model is Note:
+            qs = qs.exclude( Q(private = True) & ~(Q(user__id = request.user.id) | Q(video__user__id = request.user.id) | Q(import_source__user__id = request.user.id)) )
+        else:
+            qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    else:
+        qs = qs.exclude(private = True)
     return qs
 
 

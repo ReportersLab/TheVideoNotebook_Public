@@ -113,7 +113,11 @@
             </div>
             <div>
                 <b>Source: </b>
-                <span id="note_detail_source" class="edit"><%= source %></span>    
+                <span id="note_detail_source"><%= source %></span>    
+            </div>
+            <div>
+                <b>Private: </b>
+                <input type="checkbox" id="note_detail_private" <% if (obj.private == true){ %>checked="checked"<% } %>/>    
             </div>
             <div>
                 <b>Link: </b>

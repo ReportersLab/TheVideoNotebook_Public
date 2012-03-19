@@ -1,13 +1,12 @@
-from django.db import models
-from django.template.defaultfilters import slugify
-#users
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
-#tags
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save
+from django.template.defaultfilters import slugify
 from taggit_autosuggest.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, TagBase
-from django.db.models.signals import post_save
-from django.conf import settings
+import pytz
 
 
 class PublishedManager(models.Manager):
@@ -247,6 +246,16 @@ class Note(CommonInfo):
     
     
     def gen_offset(self):
+        # Make sure both times have a timezone so we can do math.
+        # I'm honestly not sure if we can even save this data to make this unnecessary.
+        # I think what's happening is that the Note being saved comes from TastyPie and
+        # has a TZ, but the Video doesn't (because it's unsavable). The math then explodes.
+        django_tz = pytz.timezone(settings.TIME_ZONE)
+        if self.video.time.tzinfo is None:
+            self.video.time = django_tz.localize(self.video.time)
+        if self.time.tzinfo is None:
+            self.time = django_tz.localize(self.time)
+            
         #I'm sure there's a more concise way to do this, but timedeltas, man.
         delta = self.time - self.video.time
         if self.time < self.video.time:

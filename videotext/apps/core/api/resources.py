@@ -216,7 +216,6 @@ class NoteResource(ModelResource):
                 return_val = super(NoteResource, self).obj_delete(request, **kwargs)
             else:
                 raise ImmediateHttpResponse(response=http.HttpUnauthorized())
-                #raise PermissionDenied("User Doesn't have permission to delete this note.")
     
     
     
@@ -389,6 +388,12 @@ def get_user_visible_objects(model, request):
         qs = model.objects
     
     #now exclude the items where the private is marked AND aren't from this user
-    qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
-    return qs        
-    
+    #qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    if request.user.is_authenticated():
+        if model is Note:
+            qs = qs.exclude( Q(private = True) & ~(Q(user__id = request.user.id) | Q(video__user__id = request.user.id) | Q(import_source__user__id = request.user.id)) )
+        else:
+            qs = qs.exclude( Q(private = True) & ~Q(user__id = request.user.id) )
+    else:
+        qs = qs.exclude(private = True)
+    return qs  

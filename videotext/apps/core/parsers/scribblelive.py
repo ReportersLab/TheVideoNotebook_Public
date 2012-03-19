@@ -3,7 +3,7 @@ import re, urllib2, argparse
 from datetime import datetime, timedelta
 from core.models import Note, Video
 
-def parse_scribbling(url, video, import_source):
+def parse_scribbling(url, video, import_source = None):
     #we assume that the url passed is of the first page
     #ie: http://livewire.4029tv.com/Event/Republican_Presidential_Debate_September_22_20112?Page=0
     response = urllib2.urlopen(url)
@@ -42,10 +42,15 @@ def parse_scribbling(url, video, import_source):
             full_date = datetime.strptime(server_time, '%m/%d/%Y %I:%M:%S %p')
             full_date = full_date - timedelta(hours = 4)
         
+        
+        user = video.user
+        if import_source is not None:
+            user = import_source.user
+        
         #since this is rendered in JS, can't get at it. Argh.
         #if comment.find('span', 'Posted') != None:
         #    message_time = comment.find('span', 'Posted').text #there's a script tag in here, hopefully doesn't get pulled in.
-        note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = link, import_source = import_source,
+        note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = link, import_source = import_source, user = user,
                                icon_link = icon_link, video = video, time = full_date, source_link = url, source = 'ScribbleLive')
         print note
         print created

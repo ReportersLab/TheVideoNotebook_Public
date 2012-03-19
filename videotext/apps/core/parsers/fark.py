@@ -3,7 +3,7 @@ import re, urllib2, argparse
 from datetime import datetime, timedelta
 from core.models import Note, Video
 
-def parse_fark(url, video, import_source):
+def parse_fark(url, video, import_source = None):
     
     #http://www.fark.com/comments/6585847/Bachmann-Perry-Romney-those-other-people-who-think-they-have-a-chance-at-GOP-presidential-nomination-square-off-in-second-GOP-2012-Debate-Watch-derp-fly-discuss-it-here?cpp=1
     headers = { 'User-Agent': 'Mozilla/5.0'}
@@ -28,11 +28,14 @@ def parse_fark(url, video, import_source):
         text_id = table['id'].replace('ctable', 'ct')
         text = comments.find('div', id = text_id).text
         
+        user = video.user
+        if import_source is not None:
+            user = import_source.user
         
         
         
         note, created = Note.objects.get_or_create(text = text, user_name = user_name, user_link = user_link, link = message_link,
-                               video = video, time = time, source_link = url, source = source, import_source = import_source)
+                               video = video, time = time, source_link = url, source = source, import_source = import_source, user = user)
         print note
         print created
     

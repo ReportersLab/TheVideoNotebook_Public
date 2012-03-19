@@ -63,11 +63,11 @@
             <p><%= text %></p>
         </div>
         <div class="user_info">
-            <% if (obj.user != null){ %>
-                <a href="<% if(obj.user_link != null) print(user_link); else print(link); %>"><%= user.first_name %> <%= user.last_name %></a>
-                <span class="slashes">//</span>
-            <% } else if(obj.user_name){ %>
+            <% if(obj.user_name){ %>
                 <a href="<% if(obj.user_link != null) print(user_link); else print(link); %>"><%= user_name %></a>
+                <span class="slashes">//</span>
+            <% } else if (obj.user != null){ %>
+                <a href="<% if(obj.user_link != null) print(user_link); else print(link); %>"><%= user.first_name %> <%= user.last_name %></a>
                 <span class="slashes">//</span>
             <% } %>
             <span>

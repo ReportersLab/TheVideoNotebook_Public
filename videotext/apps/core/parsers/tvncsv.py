@@ -24,7 +24,7 @@ def import_tvn_csv(source):
                                    text = row['text'].decode('utf8'),
                                    time =  datetime.strptime(row['time'], '%Y-%m-%dT%H:%M:%S.000Z') if row['time'] else None,
                                    user_name = row['user_name'],
-                                   user = row.get('user', None),
+                                   user = row.get('user', source.user),
                                    video = video,
                                    link = row['link'],
                                    icon = row['icon'],

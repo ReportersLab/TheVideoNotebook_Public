@@ -31,6 +31,7 @@ def get_tweets(source = None):
             note, created = Note.objects.get_or_create(
                                     text = tweet.text,
                                     time = datetime.fromtimestamp(tweet.created_at_in_seconds),
+                                    user = source.user,
                                     user_name = tweet.user.screen_name,
                                     source = 'Twitter',
                                     source_link = 'https://twitter.com/#!/{0}/status/{1}'.format(tweet.user.screen_name, tweet.id),

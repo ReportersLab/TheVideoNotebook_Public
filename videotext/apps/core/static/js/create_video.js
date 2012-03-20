@@ -66,6 +66,7 @@ $(document).ready(function(){
        onSaveClick: function(event){
             var status = $(this.el).find('.status');
             status.html("Saving source").show();
+            var name = $(this.el).find('.source_name').val();
             var url = $(this.el).find('.source_url').val();
             var type = $(this.el).find('.source_type').val();
             var twitter_user = $(this.el).find('.source_twitter_user').val();
@@ -80,6 +81,7 @@ $(document).ready(function(){
             }
             this.model.save(
             {
+                name: name,
                 url: url,
                 type: type,
                 video: app.video.get('resource_uri'),

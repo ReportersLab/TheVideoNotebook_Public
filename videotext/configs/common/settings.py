@@ -154,9 +154,9 @@ TASTYPIE_FULL_DEBUG = True
 
 
 # Logging
-logging.basicConfig(
-    level=logging.DEBUG,
-)
+#logging.basicConfig(
+#    level=logging.DEBUG,
+#)
 
 # Allow for local (per-user) override
 try:

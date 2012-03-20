@@ -955,7 +955,7 @@ article .teaser
     font-weight:bold;
 }
 
-.add_source .source_url, .source_twitter_user, .source_twitter_start_id, .source_twitter_end_id, .source_twitter_hash
+.add_source .source_url, .source_twitter_user, .source_twitter_start_id, .source_twitter_end_id, .source_twitter_hash, .source_name
 {
     width:95%;
     padding:2px 0 2px 16px;

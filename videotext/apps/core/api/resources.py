@@ -192,12 +192,23 @@ class NoteResource(ModelResource):
             if note is not None:
                 if note.user == request.user or note.video.user == request.user:
                     self.strip_bundle_data(bundle)
+                    #check to see if we want to sync all of the notes from the same source as the upodating note.
+                    sync = bundle.data.get('sync_source', False)
+                    if sync is True:
+                        #calculate offset to move all notes by
+                        offset_difference = bundle.data['offset'] - note.offset
+                        #and get the notes
+                        notes_to_sync = Note.objects.filter(import_source = note.import_source)
+                        for n in notes_to_sync:
+                            n.offset = n.offset + offset_difference
+                            n.time = None
+                            n.save()
+                    #finally, save the note and return it (probably actually already saved once above, but whatever)
                     return_val = super(NoteResource, self).obj_update(bundle, request, **kwargs)
                     return return_val
                 else:
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized())
-                    #raise PermissionDenied("User Doesn't have permission to edit this note.")
-            
+                    
         return Bundle(obj = note)
     
     
@@ -217,6 +228,12 @@ class NoteResource(ModelResource):
             else:
                 raise ImmediateHttpResponse(response=http.HttpUnauthorized())
     
+    
+    def dehydrate(self, bundle):
+        bundle.data['source_title'] = ''
+        if bundle.obj.import_source is not None:
+            bundle.data['source_title'] = bundle.obj.import_source.description
+        return bundle
     
     
     

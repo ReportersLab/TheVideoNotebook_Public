@@ -45,7 +45,7 @@ class SourceAdmin(CommonAdmin):
     fieldsets = (
         ('The Basics',
             {
-                'fields': ('user', 'video', 'url', 'type', 'scraped', 'content',)
+                'fields': ('name', 'user', 'video', 'url', 'type', 'scraped', 'content',)
             }
         ),
         ('Twitter Specific',
@@ -65,8 +65,8 @@ class SourceAdmin(CommonAdmin):
         )
     )
     
-    list_display = ('url', 'video', 'creation_time',)
-    list_display_links = ('url', 'video', 'creation_time',)
+    list_display = ('name', 'url', 'video', 'creation_time',)
+    list_display_links = ('name', 'url', 'video', 'creation_time',)
     readonly_fields = ('csv_data',)
 
 

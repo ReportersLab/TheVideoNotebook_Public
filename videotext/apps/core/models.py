@@ -137,6 +137,7 @@ class Video(CommonInfo):
 Places to pull in content from when creating a video.
 '''
 class Source(CommonInfo):
+    name                 = models.CharField(max_length = 128, blank = True, null = True)
     url                  = models.URLField(max_length = 512, blank = True, verify_exists = False)
     type                 = models.CharField(max_length = 32, blank = False, choices = SOURCE_TYPE_CHOICES, default = 'twitter')
     video                = models.ForeignKey(to = "Video", blank = False, null = True)
@@ -161,6 +162,13 @@ class Source(CommonInfo):
             return 'Source: @%s, %s to %s (scraped: %s)' % (self.twitter_user, self.twitter_start_id, self.twitter_end_id, self.scraped)
         return 'Source: %s -- %s (scraped: %s)' % (self.url, self.type, self.scraped)
     
+    @property
+    def description(self):
+        if self.name:
+            return self.name
+        if self.type == 'twitter':
+            return 'Source: @%s, %s to %s' % (self.twitter_user, self.twitter_start_id, self.twitter_end_id)
+        return 'Source: %s -- %s' % (self.url, self.type)
     
     
     def save(self, *args, **kwargs):

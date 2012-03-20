@@ -578,6 +578,7 @@ $(function(){
         events: {
             'click .closeLink': 'onCloseClick',
             'click .sync_note_link': 'onSyncNoteClick',
+            'click .sync_source_link': 'onSyncSourceClick',
             'click .delete_note_link': 'onDeleteClick',
             'change input:checkbox': 'onCheckboxChange'
         },
@@ -635,12 +636,41 @@ $(function(){
         },
         
         onSyncNoteClick: function(event){
-            this.note.set({offset: app.videoView.getCurrentOffset(), time:null});
-            app.showMessage("<h4>Updating Note...</h4>");
+            this.note.set({offset: app.videoView.getCurrentOffset(), time:null, sync_source:false});
+            app.showMessage("<h4>Syncing Note...</h4>");
             var self = this;
             this.note.save(null, {
                 success: function(){
-                    app.showMessage("<h4>Note Saved</h4>");
+                    app.showMessage("<h4>Note Synced</h4>");
+                    self.notesView.notes.sort();
+                },
+                failure: function(){
+                    app.showMessage("<h4>There was an error saving</h4>");
+                }
+            });
+        },
+        
+        onSyncSourceClick: function(event){
+            var diff = app.videoView.getCurrentOffset() - this.note.get('offset');
+            this.note.set({offset: app.videoView.getCurrentOffset(), time:null, sync_source:true});
+            app.showMessage("<h4>Syncing Notes From " + this.note.get("source_title")  + "</h4>");
+            var self = this;
+            this.note.save(null, {
+                success: function(){
+                    app.showMessage("<h4>Notes Synced</h4>");
+                    
+                    var sourceNotes = self.notesView.notes.filter(function(n){
+                        return n.get('import_source') == self.note.get('import_source');
+                    })
+                    
+                    _.each(sourceNotes, function(n){
+                        newOffset = Math.round(n.get('offset') + diff);
+                        n.set({offset: newOffset});
+                        if(n.view){
+                            n.view.render();
+                        }
+                    });
+                    
                     self.notesView.notes.sort();
                 },
                 failure: function(){

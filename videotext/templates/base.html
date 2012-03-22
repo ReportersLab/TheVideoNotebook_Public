@@ -21,10 +21,12 @@
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
         
         <!-- videojs, used for displaying HTML 5 video either natively or in a Flash container. Best with MP4s. http://videojs.com/ -->
-        <link href="{{ STATIC_URL }}js/video-js/video-js.css" rel="stylesheet">
-        <script src="{{ STATIC_URL }}js/video-js/video.js"></script>
-
-
+        <!--<lin k href="{{ STATIC_URL }}js/video-js/video-js.css" rel="stylesheet">
+        <scr ipt src="{{ STATIC_URL }}js/video-js/video.js"></sc ript>-->
+        <!-- Media Element. May Replace VideoJS because it also plays audio. https://github.com/johndyer/mediaelement -->
+        <script src="{{ STATIC_URL }}js/mediaelement/mediaelement-and-player.min.js"></script>
+        <link rel="stylesheet" href="{{ STATIC_URL }}js/mediaelement/mediaelementplayer.css" /></code>
+        
         
         <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{{ STATIC_URL }}css/reset.css" type="text/css" />

@@ -135,7 +135,7 @@ $(document).ready(function(){
             if(this.type == 'youtube'){
                 this.getYouTubeDetails();
             }
-            else if(this.type == 'mp4'){
+            else if( (this.type == 'mp4') || (this.type == 'mp3') ){
                 this.getManualDetails();
             }
         },

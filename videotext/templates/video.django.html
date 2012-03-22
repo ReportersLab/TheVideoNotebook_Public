@@ -10,6 +10,7 @@
         VIDEO_ID = "{{ video.id }}";
         NOTES_DATA = {{ notes_json }};
         VIDEO_DATA = {{ video_json }};
+        SITE_MEDIA_PATH = '{{ STATIC_URL }}';
     </script>
     {% endautoescape %}
     
@@ -19,10 +20,14 @@
                 Flash Player and Javascript required for YouTube Videos.
             </div>
         <% }else if (obj.type =='mp4'){ %>
-            <video id="video_tag" class="video-js vjs-default-skin"
+            <video id="media_tag" class="video-js vjs-default-skin"
                         controls preload="auto" width="550" height="350" poster="<%= icon_link %>" data-setup="{}">
                 <source src="<%= video_url %>" type='video/mp4' />
             </video>
+        <% }else if (obj.type =='mp3'){ %>
+            <audio id="media_tag" controls preload="auto" width="550" height="350" poster="<%= icon_link %>">
+                <source src="<%= video_url %>" type="audio/mp3" />
+            </audio>
         <% } %>
         <div id="video_details_container" class="box_shadow margined padded">
             <h1 id="video_title" class="edit"><%= title %></h1>

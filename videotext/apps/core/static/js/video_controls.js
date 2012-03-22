@@ -76,8 +76,10 @@ $(function(){
                 //time-to-execution, context, function, parameters, recur
                 //NOTE: Didn't know about _.defer or _.delay
                 $.later(100, this, 'embedYouTube', [], false);
-            }else{
+            }else if(this.model.get('type') == 'mp4'){
                 $.later(100, this, 'embedVideoJS', [], false);
+            }else if(this.model.get('type') == 'mp3'){
+                $.later(100, this, 'embedAudioJS', [], false);
             }
             //if the logged in user is the owner of this video, let them edit the content.
             if (this.model.get("user") && parseInt(this.model.get('user').id, 10) == LOGGED_IN_USER){
@@ -114,23 +116,76 @@ $(function(){
        
        embedVideoJS: function(){
             var self = this;
-            //videojs api to create a video
-            _V_("video_tag").ready(function(){
-                self.player = this;
-                self.addVideoEvents();
+            //media element player, converts audio / video tags into flash if needed.
+            new MediaElementPlayer('#media_tag', {
+                // shows debug errors on screen
+                enablePluginDebug: false,
+                // remove or reorder to change plugin priority
+                plugins: ['flash','silverlight'],
+                pluginPath: SITE_MEDIA_PATH + 'js/mediaelement/',
+                // name of flash file
+                flashName: 'flashmediaelement.swf',
+                // name of silverlight file
+                silverlightName: 'silverlightmediaelement.xap',
+                // Turn off the keyboard capturing my spacebar event.
+                enableKeyboard: false,
+                // rate in milliseconds for Flash and Silverlight to fire the timeupdate event
+                // larger number is less accurate, but less strain on plugin->JavaScript bridge
+                timerRate: 250,
+                // method that fires when the Flash or Silverlight object is ready
+                success: function (mediaElement, domObject) {
+                    //save the player
+                    self.player = mediaElement;
+                    //add our playhead listener
+                    self.addVideoEvents();
+                    //once the video can play, start playing so we can get a duration 
+                    mediaElement.addEventListener('canplay', function(){
+                           self.playVideo();
+                           //mute so we don't annoy people.
+                           mediaElement.setVolume(0);
+                           //listener binding for our 'play until we have a duration' function.
+                           self.mediaElementLoadedListener = _.bind(self.onMediaElementLoaded, self);
+                           mediaElement.addEventListener('timeupdate', self.mediaElementLoadedListener);
+                    })
+                     
+                },
+                // fires when a problem is detected
+                error: function () {
+                    app.showMessage("<h4>There was an error loading the media.</h4>")
+                }
             });
+            
        },
        
+       /**
+        * This is sort of a hack. Basically we can't do much of anything until we at least have the media duration. The problem is that with
+        * the flash player that doesn't happen until you play the video. SO, we play the video above, keep checking for a duration as it plays,
+        * and once we actually have a duration go ahead and pause, put the volume back to normal, and abort abort abort.
+        **/
+       onMediaElementLoaded: function(){
+            if (this.getDuration() != 0){
+                this.pauseVideo();
+                this.player.setVolume(.85);
+                this.player.removeEventListener('timeupdate', this.mediaElementLoadedListener);
+            }
+       },
+       
+       embedAudioJS: function(){
+            this.embedVideoJS();
+       },
+       
+       //adds listener for video offset updates
        addVideoEvents: function(){
             if(this.model.get('type') == "youtube"){
                 this.videoStatusChecker = $.later(1000, this, 'checkVideoStatus', [], true);
             }
-            if(this.model.get('type') == "mp4"){
+            if((this.model.get('type') == "mp4") || (this.model.get('type') == 'mp3')){
                 var listener = _.bind(this.checkVideoStatus, this);
-                this.player.addEvent("timeupdate", listener);
+                this.player.addEventListener("timeupdate", listener);
+                //this.player.load();
             }
        },
-       
+       //checks video offset
        checkVideoStatus: function(){
             this.videoTime = this.getCurrentOffset(); //seconds into video.
             //update the notes scrolling.
@@ -143,7 +198,10 @@ $(function(){
                 if(this.model.get('type') == "youtube"){
                     this.player.pauseVideo();
                 }
-                if(this.model.get('type') == "mp4"){
+                if(this.model.get('type') == "mp4" && !this.player.paused){
+                    this.player.pause();
+                }
+                if(this.model.get('type') == "mp3" && !this.player.paused){
                     this.player.pause();
                 }
             }
@@ -154,7 +212,10 @@ $(function(){
                 if(this.model.get('type') == "youtube"){
                     this.player.playVideo();
                 }
-                if(this.model.get('type') == "mp4"){
+                if(this.model.get('type') == "mp4" && this.player.paused){
+                    this.player.play();
+                }
+                if(this.model.get('type') == "mp3" && this.player.paused){
                     this.player.play();
                 }
             }
@@ -165,7 +226,9 @@ $(function(){
                 if(this.model.get('type') == "youtube")
                     this.videoTime = this.player.getCurrentTime();
                 if(this.model.get('type') == "mp4")
-                    this.videoTime = this.player.currentTime();
+                    this.videoTime = this.player.currentTime;
+                if(this.model.get('type') == "mp3")
+                    this.videoTime = this.player.currentTime;
             }
             return this.videoTime;
        },
@@ -175,17 +238,11 @@ $(function(){
                 if(this.model.get('type') == "youtube")
                     this.videoDuration = this.player.getDuration();
                 if(this.model.get('type') == "mp4")
-                    this.videoDuration = this.player.duration();
+                    this.videoDuration = this.player.duration;
+                if(this.model.get('type') == "mp3")
+                    this.videoDuration = this.player.duration;
             }
             return this.videoDuration;
-       },
-       
-       awaitDurationChange: function(){
-            //remove the duration listener
-            this.player.removeEvent("durationchange", this.durationListener);
-            this.durationListener = null;
-            //and redo our note seek with the last note that attempted seek. Defered because the player isn't aware of duration until next frame.
-            _.defer(_.bind(function(){this.seekToNote(this.lastNote, false)}, this));
        },
        
        seekToNote: function(note, exact){
@@ -198,18 +255,16 @@ $(function(){
                 seconds = seconds - NOTE_SEEK_BEFORE_TIME;
             
             if(this.player == null){
-                $.later(500, this, 'seekToNote', [note, exact], false);
+                $.later(2000, this, 'seekToNote', [note, exact], false);
                 return;
             }
             
             var duration = this.getDuration();
             //unfortunately, Flash player doesn't prefetch, so you have to play the video to get things moving, if only for an instant.
+            //this is done above, and we just time this out for a couple of seconds to wait until the thing is loaded.
             if(duration == 0){
-                this.durationListener = _.bind(this.awaitDurationChange, this)
-                //once we have an actual duration, this triggers an event.
-                this.player.addEvent('durationchange', this.durationListener);
-                this.playVideo();
-                this.pauseVideo();
+                $.later(2000, this, 'seekToNote', [note, exact], false);
+                return;
             }
             
             
@@ -223,11 +278,19 @@ $(function(){
             if(this.player != null){
                 if(this.model.get('type') == "youtube"){
                    this.player.seekTo(offset, true);
+                   this.playVideo();
                 }
                 if(this.model.get('type') == "mp4"){
-                    this.player.currentTime(offset);
+                    this.player.setCurrentTime(offset);
+                    //if mediaelement had to add a flash player (ie: we're using FF), DON'T PLAY! It duplicates the Audio / Video.
+                    if($('#me_flash_0').length == 0 )
+                        this.playVideo();
                 }
-                this.playVideo();
+                if(this.model.get('type') == "mp3"){
+                    this.player.setCurrentTime(offset);
+                    if($('#me_flash_0').length == 0 )
+                       this.playVideo();
+                }
             }
        },
        

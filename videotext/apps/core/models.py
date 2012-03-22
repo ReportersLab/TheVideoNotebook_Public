@@ -47,8 +47,7 @@ class CommonInfo(models.Model):
 VIDEO_TYPE_CHOICES = (
     ('youtube','YouTube'),
     ('mp4','mp4'),
-    ('flv','flv'),
-    ('3gp','3gp'),
+    ('mp3','mp3'),
 )
 
 

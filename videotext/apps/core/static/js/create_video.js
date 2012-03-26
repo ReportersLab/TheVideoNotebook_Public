@@ -105,6 +105,36 @@ $(document).ready(function(){
     
     
     
+    window.MainRouter = Backbone.Router.extend({
+        
+        initialize: function(options){
+            this.app = options.app; // um, no options?
+        },
+        
+        routes: {
+            'edit/:videoID': 'editVideo'
+        },
+        
+        editVideo: function(videoID){
+            //do something.
+            console.log("editing video: " + videoID);
+            this.app.video.set({id: videoID, resource_uri:VIDEO_API+videoID+"/"});
+            this.app.video.fetch({
+                success: function(model, response){
+                    //once data is fetched, initialize dates.
+                    this.app.video.initialize();
+                    this.app.displayVideo(true, true);
+                },
+                error: function(model, response){
+                    this.app.updateStatus("There was an error loading that video", true);
+                }
+            });
+        }
+        
+        
+    });
+    
+    
     
     window.App = Backbone.View.extend({
         el: $("#app"),
@@ -117,6 +147,8 @@ $(document).ready(function(){
         initialize: function(){
             this.video = new Video();
             this.type = $('input:radio[name=video_type]:checked').val();
+            this.router = new MainRouter({app:this});
+            Backbone.history.start();
         },
         
         onRadioChange: function(event){
@@ -222,10 +254,11 @@ $(document).ready(function(){
             var template =  _.template($("#videoDetailsTemplate").html());
             var self = this;
             
-            $('#add_video_details').append(template(this.video.toJSON()))
+            $('#add_video_details').html(template(this.video.toJSON()))
             $('#add_video_details_container').slideDown('slow');
             $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
-            if(!alreadyExists){
+            if(!alreadyExists || ( alreadyExists && (LOGGED_IN_USER.toString() == this.video.get("user").id.toString())) ){
+                this.updateStatus("Click components to edit video or add a source");
                 $("#add_edit_message").show();
                 $('#add_video_details .edit').editable(function(value, settings){
                     var data = {};
@@ -268,13 +301,14 @@ $(document).ready(function(){
                     submit: 'Submit',
                     tooltip: 'Click to edit...'
                 });
-                
-                this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Add sources or view the video to sync and add notes.")}});
+                if(!alreadyExists){
+                    this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Add sources or view the video to sync and add notes.")}});
+                }
                 //and allow the adding of sources...
                 if(!this.addSourceView)
                     this.addSourceView = new AddSourceView();
             }else{
-                this.updateStatus("This video already exists!")
+                this.updateStatus("This video already exists and you do not have permission to edit it.")
             }
         },
         

@@ -40,7 +40,8 @@
             <% if (obj.user.id == LOGGED_IN_USER.toString()){ %>
             <div id="video_owner_controls">
                 <strong>Change video details by clicking on them</strong><br />
-                <strong>Notes not matching the video? </strong><span id="sync_notes_link" class="link">Sync Notes</span>
+                <strong>Notes not matching the video? </strong><span id="sync_notes_link" class="link">Sync Notes</span><br />
+                <strong><a class="link" href="/video/add/#edit/<%= id %>">Edit the video details or add a source</a></strong>
             </div>
             <% } %>
         </div>

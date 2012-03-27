@@ -146,10 +146,13 @@
                    ( !obj.user && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
               ){ %>
                 <span class="sync_note_link link"><b>Click to sync this note to the current video time.</b></span><br /><br />
-                <% if(obj.source != null){ %>            
+                <% if(obj.import_source != null){ %>            
                     <span class="sync_source_link link"><b>Click to sync ALL notes from "<%= source_title %>" to current video time.</b></span><br /><br />
                 <% } %>
-                <br /><span class="delete_note_link link" style="color:#FF3333 !important;"><b>Delete this note</b></span>
+                <span class="delete_note_link link" style="color:#FF3333 !important;"><b>Delete this note</b></span><br />
+                <% if(obj.import_source != null){ %>   
+                    <span class="delete_source_notes_link link" style="color:#FF3333 !important;"><b>Delete ALL notes from "<%= source_title%>."</b></span>
+                <% } %>
             <% } %>
         </div>
         <span class="closeLink link">Close Details</span>

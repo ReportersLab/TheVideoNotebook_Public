@@ -985,7 +985,10 @@ article .teaser
     margin:5px 0 10px 0;
 }
 
-
+#note_detail_text
+{
+    font-size:14px;
+}
 
 
 

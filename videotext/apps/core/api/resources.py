@@ -223,6 +223,7 @@ class NoteResource(ModelResource):
         if obj is not None:
             if obj.user == request.user or obj.video.user == request.user:
                 return_val = super(NoteResource, self).obj_delete(request, **kwargs)
+                return return_val
             else:
                 raise ImmediateHttpResponse(response=http.HttpUnauthorized())
     
@@ -325,6 +326,34 @@ class SourceResource(ModelResource):
         return super(SourceResource, self).obj_create(bundle, request, **kwargs)
     
     
+    def obj_update(self, bundle, request = None, **kwargs):
+        raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+    
+    
+    def obj_delete(self, request=None, **kwargs):
+        
+        obj = kwargs.pop('_obj', None)
+
+        if not hasattr(obj, 'delete'):
+            try:
+                obj = self.obj_get(request, **kwargs)
+            except ObjectDoesNotExist:
+                raise NotFound("A model instance matching the provided arguments could not be found.")
+        
+        if obj is not None:
+            if obj.user == request.user or obj.video.user == request.user:
+                #first delete all of the notes.
+                notes_to_delete = obj.note_set.all()
+                for n in notes_to_delete:
+                    n.delete()
+                return_val = super(SourceResource, self).obj_delete(request, **kwargs)
+                return return_val
+            else:
+                raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+    
+    
+    
+    
     def save_related(self, bundle):
         pass
     def obj_delete_list(self, request=None, **kwargs):
@@ -339,7 +368,7 @@ class SourceResource(ModelResource):
         }
         ordering = ['update_time',]
         list_allowed_methods = ['get', 'post', ]
-        detail_allowed_methods = ['get', 'post', 'put', 'patch',]
+        detail_allowed_methods = ['get', 'post', 'delete',]
         always_return_data = True
         authentication = Authentication()
         authorization = DjangoAuthorization()

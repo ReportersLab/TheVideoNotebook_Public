@@ -643,6 +643,7 @@ $(function(){
             'click .sync_note_link': 'onSyncNoteClick',
             'click .sync_source_link': 'onSyncSourceClick',
             'click .delete_note_link': 'onDeleteClick',
+            'click .delete_source_notes_link': 'onDeleteSourceClick',
             'change input:checkbox': 'onCheckboxChange'
         },
         
@@ -743,11 +744,38 @@ $(function(){
         },
         
         onDeleteClick: function(event){
-            if(confirm("Are you sure you wish to delete this note?")){
+            if(confirm("Are you sure you wish to delete this note? This cannot be undone.")){
                 this.notesView.notes.remove(this.note);
                 this.note.destroy();
                 this.notesView.notes.sort();
                 this.onCloseClick();
+                app.showMessage("<h4> Note Deleted </h4>");
+            }
+        },
+        
+        onDeleteSourceClick: function(event){
+            if(confirm('Are you sure you want to delete all notes from this source? This cannot be undone.')){
+                var source = new Source();
+                source.clear();
+                source.set({resource_uri: this.note.get('import_source'), id: _.last(this.note.get('import_source').split('/'), 2)[0]});
+                //var source = new Source({resource_uri: this.note.get('import_source')});
+                //knowing the URI should be enough to delete properly.
+                console.log(source);
+                source.destroy();
+                var self = this;
+                //and find the notes with this source.
+                var sourceNotes = this.notesView.notes.filter(function(n){
+                    return n.get('import_source') == self.note.get('import_source');
+                })
+                //and remove them.
+                _.each(sourceNotes, function(n){
+                    self.notesView.notes.remove(n);
+                    self.notesView.notes.sort();
+                });
+                
+                this.onCloseClick();
+                app.showMessage("<h4> Source Deleted </h4>");
+                
             }
         }
         

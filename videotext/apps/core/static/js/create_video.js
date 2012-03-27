@@ -122,6 +122,8 @@ $(document).ready(function(){
             this.app.video.fetch({
                 success: function(model, response){
                     //once data is fetched, initialize dates.
+                    this.app.type = this.app.video.get("type");
+                    $("input:radio[value=" + this.app.type + "]").attr('checked',true);
                     this.app.video.initialize();
                     this.app.displayVideo(true, true);
                 },
@@ -178,48 +180,7 @@ $(document).ready(function(){
             id = $("#upload_url").val();
             this.video.getVideoByURL(id, function(exists){
                 if(!exists){
-                    this.updateStatus("Please fill out the details for your new video.", true);
-                    var template =  _.template($("#videoFormTemplate").html());
-                    var self = this;
-                    
-                    var dt = new Date();
-                    var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
-                    var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
-                    this.video.set({time: dt});
-                    this.video.set({date_time: dt});
-                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + (dt.getMonth() + 1) + '/' + dt.getDate()})
-                    
-                    $('#add_video_details').append(template(this.video.toJSON()))
-                    $('#add_video_details_container').slideDown('slow');
-                    
-                    $("#add_edit_message").show();
-                    $('#add_video_details .timepicker').timepicker();
-                    $('#add_video_details .datepicker').datePicker({createButton:true, startDate: new Date(1980, 0, 1)})
-                    
-                    $("#video_save_button").click(function(){
-                        var title = $("#video-title").val();
-                        var description = $("#video-description").val();
-                        var icon_link = $("#video-icon_link").val();
-                        var private_note = $("#video-private").attr('checked');
-                        var lock_notes = $("#video-lock_notes").attr('checked');
-                        //'DD/MM/YYYY'
-                        var dateparts = $('#video_date_component').val().split('/');
-                        var timeparts = $('#video_time_component').val();
-                        
-                        if( (title == '') || (description == '') || (icon_link == '') || (dateparts.length < 3) || (timeparts == '')){
-                            self.updateStatus("Please fill out all video fields.", true);
-                            return;
-                        }
-                        
-                        var dateComponent = dateparts[2] + '-' + dateparts[1] + '-' + dateparts[0];
-                        var time = dateComponent + 'T' + timeparts + '.000Z';
-                        
-                        self.video.set({title: title, description: description, icon_link: icon_link, time_component: timeparts, date_component: dateComponent,
-                                        private: private_note, lock_notes: lock_notes, time: time, type:self.type});
-                        self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
-                        if(!self.addSourceView)
-                            self.addSourceView = new AddSourceView();
-                    });
+                    this.displayVideo(false, true);
                 }else{
                     this.displayVideo(true, true);
                 }
@@ -251,55 +212,54 @@ $(document).ready(function(){
                 return;
             }
             
-            var template =  _.template($("#videoDetailsTemplate").html());
+            var template =  _.template($("#videoFormTemplate").html());
             var self = this;
             
             $('#add_video_details').html(template(this.video.toJSON()))
             $('#add_video_details_container').slideDown('slow');
             $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
+            
             if(!alreadyExists || ( alreadyExists && (LOGGED_IN_USER.toString() == this.video.get("user").id.toString())) ){
-                this.updateStatus("Click components to edit video or add a source");
+                this.updateStatus("Please fill out the details for your new video.", true);
+                var self = this;
+                
+                var dt = new Date();
+                var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
+                var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
+                this.video.set({time: dt});
+                this.video.set({date_time: dt});
+                this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + (dt.getMonth() + 1) + '/' + dt.getDate()})
+                
+                $('#add_video_details').html(template(this.video.toJSON()))
+                $('#add_video_details_container').slideDown('slow');
+                
                 $("#add_edit_message").show();
-                $('#add_video_details .edit').editable(function(value, settings){
-                    var data = {};
-                    data[this.id.split('_')[1]] = value;
-                    self.video.set(data);
-                    self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
-                    return value;
-                },
-                {
-                    type: 'textarea',
-                    cancel: 'Cancel',
-                    submit: 'Submit',
-                    select: true,
-                    tooltip: 'Click to edit...',
-                    onblur: 'submit'
-                });
+                $('#add_video_details .timepicker').timepicker();
+                $('#add_video_details .datepicker').datePicker({createButton:true, startDate: new Date(1980, 0, 1)})
                 
-                $('#add_video_details .timepicker').editable(function(value, settings){
-                    var stamp = $('#video_date_component').html() + 'T' + value + '.000Z';
-                    self.video.set({time: stamp});
+                $("#video_save_button").click(function(){
+                    var title = $("#video-title").val();
+                    var description = $("#video-description").val();
+                    var icon_link = $("#video-icon_link").val();
+                    var private_note = $("#video-private").attr('checked');
+                    var lock_notes = $("#video-lock_notes").attr('checked');
+                    //'DD/MM/YYYY'
+                    var dateparts = $('#video_date_component').val().split('/');
+                    var timeparts = $('#video_time_component').val();
+                    
+                    if( (title == '') || (description == '') || (icon_link == '') || (dateparts.length < 3) || (timeparts == '')){
+                        self.updateStatus("Please fill out all video fields.", true);
+                        return;
+                    }
+                    
+                    var dateComponent = dateparts[2] + '-' + dateparts[1] + '-' + dateparts[0];
+                    var time = dateComponent + 'T' + timeparts + '.000Z';
+                    
+                    self.video.set({title: title, description: description, icon_link: icon_link, time_component: timeparts, date_component: dateComponent,
+                                    private: private_note, lock_notes: lock_notes, time: time, type:self.type});
                     self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
-                    return value;
-                },
-                {
-                    type: 'timepicker',
-                    submit: 'Submit',
-                    tooltip: 'Click to edit...'
-                });
-                
-                $('#add_video_details .datepicker').editable(function(value, settings){
-                    var vp = value.split('/');
-                    value = vp[2] + '-' + vp[1] + '-' + vp[0];
-                    var stamp = value + 'T' + $('#video_time_component').html() + '.000Z';
-                    self.video.set({time: stamp});
-                    self.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Details Updated!")}});
-                    return value;
-                },
-                {
-                    type: 'datepicker',
-                    submit: 'Submit',
-                    tooltip: 'Click to edit...'
+                    if(!self.addSourceView)
+                        self.addSourceView = new AddSourceView();
                 });
                 if(!alreadyExists){
                     this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Add sources or view the video to sync and add notes.")}});

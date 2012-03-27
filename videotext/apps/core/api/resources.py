@@ -36,12 +36,7 @@ class VideoResource(ModelResource):
     def obj_create(self, bundle, request = None, **kwargs):
         if bundle.data is not None:
             self.strip_bundle_data(bundle)
-            #Video File would probably be uploaded separately? I don't really know how to handle that yet.
-            #video_file = strip(bundle.data['video_file'])
-            if bundle.data['type'] == 'youtube':
-                kwargs['time'] = datetime.strptime(bundle.data['time'], '%Y-%m-%dT%H:%M:%S.000Z')
-              
-            
+                
             try:
                 saved_object = self.obj_get(request, video_url = bundle.data['video_url'])
                 saved_object = Bundle(obj = saved_object)
@@ -96,7 +91,10 @@ class VideoResource(ModelResource):
         bundle.data['teaser'] = strip(str(bundle.data.get('teaser', '')))
         #bundle.data['video_file'] = strip(str(bundle.data.get('video_file', '')))
         bundle.data['user_link'] = strip(str(bundle.data.get('user_link', '')))
-        
+        #YouTube videos shouldn't be private or locked.
+        if bundle.data['type'] == 'youtube':
+                bundle.data['private'] = False
+                bundle.data['lock_notes'] = False
         
         
     '''

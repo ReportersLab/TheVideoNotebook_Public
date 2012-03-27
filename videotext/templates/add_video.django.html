@@ -8,21 +8,21 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.datePicker.js"></script>
     <script type="text/html" id="videoDetailsTemplate">
-        <h1 id="video_title" class="edit"><%= title %></h1>
-        <p id="video_description" class="edit"><%= description %></p>
-        <strong>Date: </strong><h6 id="video_date_component" class="datepicker"><%= date_component %></h6><br />
-        <strong>Time: </strong><h6 id="video_time_component" class="timepicker"><%= time_component %></h6>
+            <h1 id="video_title" class="edit"><%= title %></h1>
+            <p id="video_description" class="edit"><%= description %></p>
+            <strong>Date: </strong><h6 id="video_date_component" class="datepicker"><%= date_component %></h6><br />
+            <strong>Time: </strong><h6 id="video_time_component" class="timepicker"><%= time_component %></h6>
     </script>
     
     <script type="text/html" id="videoFormTemplate">
         <div id="add_video_form_container">
             <div>
                 <strong>Title:</strong>
-                <input id="video-title" type="text" class="edit" placeholder="Enter the Video Title here" />
+                <input id="video-title" type="text" class="edit" placeholder="Enter the Video Title here" <% if (obj.title && (obj.title != '')){ %> value="<%= title %>" <% } %> />
             </div>
             <div>
                 <strong>Description:</strong>
-                <textarea id="video-description" class="edit" placeholder="Enter a description here. It should be a few sentences in length and explain what the video is about."></textarea> 
+                <textarea id="video-description" class="edit" placeholder="Enter a description here. It should be a few sentences in length and explain what the video is about."><% if (obj.description && (obj.description != '')){ %><%= description %><% } %> </textarea> 
             </div>
             <div>
                 <strong>Date:</strong>
@@ -34,16 +34,18 @@
             </div>
             <div>
                 <strong>Icon URL:</strong>
-                <textarea id="video-icon_link" class="edit" placeholder="A URL to a video image. Should be approximately 550px wide by 350px tall"></textarea>
+                <textarea id="video-icon_link" class="edit"  placeholder="A URL to a video image. Should be approximately 550px wide by 350px tall"><% if (obj.icon_link && (obj.icon_link != '')){ %><%= icon_link %><%}%></textarea>
             </div>
+            <% if (obj.type != 'youtube'){ %>
             <div>
                 <strong>Private:</strong>
-                <input id="video-private" type="checkbox" />
+                <input id="video-private" type="checkbox" <% if (obj.private){ %> checked='checked' <% } %> />
             </div>
             <div>
                 <strong>Lock Noting:</strong>
-                <input id="video-lock_notes" type="checkbox" />
+                <input id="video-lock_notes" type="checkbox" <% if (obj.lock_notes){ %> checked='checked' <% } %> />
             </div>
+            <% } %>
             <input type="button" value="Save Video" style="float:right; clear:both;" id="video_save_button" />
         </div>
     </script>

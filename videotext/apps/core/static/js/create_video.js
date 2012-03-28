@@ -2,109 +2,6 @@
 $(document).ready(function(){
     
     
-    window.AddSourceView = Backbone.View.extend({
-        el: $('#add_source_container'),
-        events: {
-            'click #add_source_link' : 'onAddSourceClick'
-        },
-        initialize: function(){
-            this.sources = new Sources();
-            this.addSource();
-            $(this.el).slideDown('slow');
-        },
-        onAddSourceClick: function(event){
-            this.addSource();
-        },
-        addSource: function(){
-            source = new Source();
-            var view = new SourceView({model:source, container:this});
-            $("#sources").append(view.render().el);
-            $(view.el).fadeIn('slow');
-            source.view = view;
-            this.sources.add(source);
-        }
-        
-    });
-    
-    window.SourceView = Backbone.View.extend({
-       tagName: 'div',
-       className: 'add_source',
-       template: _.template($("#sourceTemplate").html()),
-       events: {
-            'click .source_save': 'onSaveClick',
-            'change .source_type': 'onSourceTypeChange'
-       },
-       
-       initialize: function(){
-            this.container = this.options.container;
-       },
-       
-       render: function(){
-            $(this.el).html(this.template(this.model.toJSON()));
-            //$(this.el).fadeIn('slow');
-            return this;
-       },
-       
-       onSourceTypeChange: function(event){
-            var type = $(this.el).find('.source_type').val();
-            if(type == 'twitter'){
-                $(this.el).find('.source_twitter').slideDown('slow');
-                $(this.el).find('.source_url_container').slideUp('slow');
-            }else{
-                $(this.el).find('.source_twitter').slideUp('slow');
-                $(this.el).find('.source_url_container').slideDown('slow');
-            }
-            
-            if(type == "csv"){
-                $(this.el).find('.source_csv').slideDown('slow');
-            }else{
-                $(this.el).find('.source_csv').slideUp('slow');
-            }
-            
-       },
-       
-       onSaveClick: function(event){
-            var status = $(this.el).find('.status');
-            status.html("Saving source").show();
-            var name = $(this.el).find('.source_name').val();
-            var url = $(this.el).find('.source_url').val();
-            var type = $(this.el).find('.source_type').val();
-            var twitter_user = $(this.el).find('.source_twitter_user').val();
-            var twitter_start_id = $(this.el).find('.source_twitter_start_id').val();
-            var twitter_end_id = $(this.el).find('.source_twitter_end_id').val();
-            var twitter_hash = $(this.el).find('.source_twitter_hash').val();
-            var csv_data = $(this.el).find('.source_csv_data').val();
-            
-            if( (type == "") || ((url == "") && (twitter_user == "") && ( csv_data == "")) ){
-                status.html("Please fill out everything.").effect("pulsate", {times:3, mode:"show"}, 500);
-                return;
-            }
-            this.model.save(
-            {
-                name: name,
-                url: url,
-                type: type,
-                video: app.video.get('resource_uri'),
-                video_id : parseInt(app.video.get('id')),
-                twitter_user : twitter_user,
-                twitter_start_id : twitter_start_id,
-                twitter_end_id : twitter_end_id,
-                twitter_hash : twitter_hash,
-                csv_data : csv_data
-            },
-            {
-                success: function(){
-                    status.html("Source Saved");
-                    status.effect("pulsate", {times:3, mode:"show"}, 500);
-                }
-            });
-       }
-       
-    });
-    
-    
-    
-    
     window.MainRouter = Backbone.Router.extend({
         
         initialize: function(options){
@@ -116,8 +13,6 @@ $(document).ready(function(){
         },
         
         editVideo: function(videoID){
-            //do something.
-            console.log("editing video: " + videoID);
             this.app.video.set({id: videoID, resource_uri:VIDEO_API+videoID+"/"});
             this.app.video.fetch({
                 success: function(model, response){
@@ -213,15 +108,19 @@ $(document).ready(function(){
             }
             
             var template =  _.template($("#videoFormTemplate").html());
+            $('#add_video_details').html(template(this.video.toJSON()));
             var self = this;
             
-            $('#add_video_details').html(template(this.video.toJSON()))
             $('#add_video_details_container').slideDown('slow');
             $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
             
             if(!alreadyExists || ( alreadyExists && (LOGGED_IN_USER.toString() == this.video.get("user").id.toString())) ){
-                this.updateStatus("Please fill out the details for your new video.", true);
-                var self = this;
+                
+                if(!alreadyExists){
+                    this.updateStatus("Please fill out the details for your new video.", true);
+                }else{
+                    this.updateStatus("Edit your video.");
+                }
                 
                 var dt = new Date();
                 var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
@@ -268,7 +167,7 @@ $(document).ready(function(){
                 if(!this.addSourceView)
                     this.addSourceView = new AddSourceView();
             }else{
-                this.updateStatus("This video already exists and you do not have permission to edit it.")
+                this.updateStatus("This video already exists and you do not have permission to edit it.");
             }
         },
         

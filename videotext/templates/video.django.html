@@ -4,6 +4,7 @@
 
 
 {% block head %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/shared_views.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/video_controls.js"></script>
     {% autoescape off %}
     <script type="text/javascript">
@@ -158,6 +159,40 @@
         <span class="closeLink link">Close Details</span>
     </script>
     
+    
+    <script type="text/html" id="sourceTemplate">
+        <div style="margin-bottom:10px;">
+            <label>Source:</label>
+            <select class="source_type">
+                <option value="" selected="selected">Select Type</option>
+                <option value="twitter">Twitter</option>
+                <option value="storify">Storify</option>
+                <option value="coveritlive">Cover It Live</option>
+                <option value="scribblelive">ScribbleLive</option>
+                <option value="csv">CSV</option>
+            </select>    
+        </div>
+        <div>
+            <input type="text" class="source_name" placeholder="Name For This Source" />
+        </div>
+        <div class="source_url_container">
+            <input type="text" class="source_url" placeholder="Source URL" />
+        </div>
+        <div class="source_twitter" style="display:none; clear:both;">
+            <input type="text" class="source_twitter_user" placeholder="Twitter User Name" />
+            <input type="text" class="source_twitter_start_id" placeholder="Twitter Oldest Post URL" />
+            <input type="text" class="source_twitter_end_id" placeholder="Twitter Newest Post URL" />
+            <input type="text" class="source_twitter_hash" placeholder="Twitter Hash Tag (if desired)" />    
+        </div>
+        <div class="source_csv" style="display:none;">
+            <textarea class="source_csv_data" placeholder="paste csv content here!"></textarea>
+        </div>
+        <div style="float:right; clear:both;">
+            <span class="status">&nbsp;</span>
+            <input type="button" class="source_save" value="Save" />
+        </div>
+    </script>
+    
 {% endblock %}
 
 
@@ -167,6 +202,11 @@
         <div id="right_rail">
             <div id="notes_container">
                 <div id="note_details_container" class="box_shadow"></div>
+                <div id="add_source_container" class="box_shadow add_source_container" style="display:none;">
+                    <div id="sources"></div>
+                    <span id="add_source_link">Add Another Source...</span>
+                    <p class="close_link"><br />Finished adding sources? <span class="link">Click here to close the add source window.</span></p>
+                </div>
                 <div id="add_note_container" class="box_shadow">
                     {% if user.is_authenticated %}
                         <div id="add_note_display"><!-- content from JS --></div>
@@ -194,6 +234,8 @@
                         {% if user.is_authenticated %}
                             <span class="slashes">//</span>
                             <div id="add_note_link" class="add_note_link"><span>Add Notes</span></div>
+                            <span class="slashes">//</span>
+                            <div id="add_new_source_link"><span>Add Source</span></div>
                         {% endif %}
                     </div>
                 </div>
@@ -202,7 +244,7 @@
                 <div id="message_container">
                     <div class="black_bar"></div>
                     <div id="message" class="box_shadow margined padded">
-                        <h4>{% if user.is_authenticated %}Add some notes!{% else %}Log in to add notes!{% endif %}</h4>
+                        <h4>{% if user.is_authenticated %}{% else %}Log in to add notes!{% endif %}</h4>
                     </div>
                 </div>
             </div>

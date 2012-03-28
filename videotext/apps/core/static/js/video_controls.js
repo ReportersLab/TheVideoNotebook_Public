@@ -325,7 +325,7 @@ $(function(){
   
     
     window.NotesView = Backbone.View.extend({
-       initialize: function(){
+        initialize: function(){
             this.app = this.options.app;
             this.notes = this.options.notes;
             this.autoScroll = true;
@@ -342,18 +342,19 @@ $(function(){
             this.notesSearch = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
             this.addNoteView = new AddNoteView({el: $('#add_note_container'), notesView: this, notes: this.notes });
             this.noteDetailsView = new NoteDetailsView({el:$('#note_details_container'), notesView: this});  
-       },
+        },
        
-       events: {
+        events: {
             'click #auto_scroll': 'toggleAutoScroll',
-            'click .add_note_link': 'toggleAddNotes'
-       },
+            'click .add_note_link': 'toggleAddNotes',
+            'click #add_new_source_link': 'onAddSourceClick'
+        },
        
-       render: function(){
+        render: function(){
             return this;
-       },
+        },
        
-       addNote: function(note){
+        addNote: function(note){
             var view = new NoteView({model:note, id:'note_'+ note.id, container:this});
             $("#notes").append(view.render().el);
             note.view = view;
@@ -365,7 +366,7 @@ $(function(){
         },
        
        
-       toggleAutoScroll: function(){
+        toggleAutoScroll: function(){
             //console.log("Scrolling: " + this.autoScroll);
             if(this.autoScroll){
                 this.autoScroll = false;
@@ -374,9 +375,9 @@ $(function(){
                 this.autoScroll = true;
                 $("#auto_scroll").html("<span>Disable Auto-Scroll</span>");
             }
-       },
+        },
        
-       toggleAddNotes: function(){
+        toggleAddNotes: function(){
             if(this.addingNotes){
                 this.addingNotes = false;
                 $("#add_note_link").html("<span>Add Notes</span>");
@@ -387,39 +388,48 @@ $(function(){
                 $("#add_note_link").html("<span>View notes</span>");
                 $(this.addNoteView.el).slideDown(1000);
             }
-       },
+        },
        
-       showNoteDetails: function(note){
-          this.noteDetailsView.note = note;
-          this.noteDetailsView.render();
-       },
+        onAddSourceClick: function(){
+            if(!this.addSourceView){
+                this.addSourceView = new AddSourceView({loadAfterSave:true, notes:this.notes});
+            }else{
+                $(this.addSourceView.el).slideDown('slow');
+            }
+        },
        
-       scrollToTop: function(){
+       
+        showNoteDetails: function(note){
+            this.noteDetailsView.note = note;
+            this.noteDetailsView.render();
+        },
+       
+        scrollToTop: function(){
             $("#notes").scrollTo("0", 200);
-       },
+        },
         
-       scrollToNote: function(note){
+        scrollToNote: function(note){
             if(note == undefined)
                 return;
             if((this.autoScroll == false) || (!$(note.view.el).is(":visible")))
                 return;
             $("#notes").scrollTo($(note.view.el), 200, {offset:{top:-70}});
-       },
+        },
         
-       showNote: function(note){
+        showNote: function(note){
             this.selectNote(note);
             this.scrollToNote(note);
             this.autoHighlight = false;
             this.app.videoView.seekToNote(note, false);
-       },
+        },
         
         
-       showNoteById: function(noteId){
+        showNoteById: function(noteId){
             note = this.notes.get(noteId);
             this.showNote(note);
-      },
-       
-       selectNote: function(new_note){
+        },
+        
+        selectNote: function(new_note){
             //if we're in the "note sync" mode, just tell the app to do the syncing.
             if(this.syncNotes){
                 this.app.syncNotes(new_note);
@@ -434,10 +444,10 @@ $(function(){
                 this.selectedNote.view.removeNoteHighlight();
              this.selectedNote = new_note;
              this.selectedNote.view.highlightNote();
-       },
+        },
        
         
-       showNoteAtTime: function(time){
+        showNoteAtTime: function(time){
             //first, find the note we're looking for
             new_note = this.notes.find(function(note){
                 return note.get('offset') > time;
@@ -461,10 +471,7 @@ $(function(){
             //scroll to the note.
             this.scrollToNote(this.selectedNote);
             
-      }
-      
-      
-      
+        }
     });
     
     
@@ -486,7 +493,7 @@ $(function(){
         render: function(){
             if(this.resultCount == null)
                 this.resultCount = this.app.notes.length;
-            var html = "<span>" + this.resultCount + " results</span>";
+            var html = "<span>" + this.resultCount + " notes</span>";
             $("#search_results_count").html(html);
             this.notesView.scrollToTop();
             return this;
@@ -760,7 +767,6 @@ $(function(){
                 source.set({resource_uri: this.note.get('import_source'), id: _.last(this.note.get('import_source').split('/'), 2)[0]});
                 //var source = new Source({resource_uri: this.note.get('import_source')});
                 //knowing the URI should be enough to delete properly.
-                console.log(source);
                 source.destroy();
                 var self = this;
                 //and find the notes with this source.

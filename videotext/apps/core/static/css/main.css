@@ -629,7 +629,11 @@ article .teaser
     display:inline;
 }
 
-.add_note_link
+#note_controls .slashes {
+    margin: 0 2px;
+}
+
+.add_note_link, #add_new_source_link
 {
     cursor:pointer;
     color:#778E1E;
@@ -739,7 +743,7 @@ article .teaser
     border-top:2px solid #FFFFFF;
 }
 
-#add_note_container, #note_details_container{
+#add_note_container, #note_details_container, .add_source_container{
     width: 330px;
     height: 460px;
     position:absolute;
@@ -749,6 +753,11 @@ article .teaser
     padding:10px;
     background:#FFFFFF;
     display:none;
+}
+
+.add_source_container{
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 
 #add_note_display
@@ -943,7 +952,7 @@ article .teaser
     float: left;
     margin: 0 0 10px;
     padding: 0 0 10px;
-    width: 100%;
+    width: 90%;
     display:none;
 }
 
@@ -957,13 +966,12 @@ article .teaser
 
 .add_source .source_url, .source_twitter_user, .source_twitter_start_id, .source_twitter_end_id, .source_twitter_hash, .source_name
 {
-    width:95%;
+    width:92%;
     padding:2px 0 2px 16px;
     border:2px solid #DFDFDF;
     background:#FFFFFF;
     color:#000000;
-    font:14px 'LeagueGothicRegular',Arial,'Liberation Sans',FreeSans,sans-serif;
-    text-transform:uppercase;
+    font:14px Arial,'Liberation Sans',FreeSans,sans-serif;
     margin:0 0 5px 0;
 }
 
@@ -977,9 +985,16 @@ article .teaser
     
 }
 
+#add_source_container .close_link
+{
+    float:right;
+    clear:both;
+    
+}
+
 .source_csv_data
 {
-    width:363px;
+    width:92%;
     height:100px;
     clear:both;
     margin:5px 0 10px 0;

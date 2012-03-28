@@ -122,7 +122,8 @@ class VideoResource(ModelResource):
     def obj_delete_list(self, request=None, **kwargs):
         pass
     
-    
+    def get_object_list(self, request):
+        return get_user_visible_objects(Video, request)
     
     class Meta:
         queryset = Video.objects.all()
@@ -282,6 +283,7 @@ class NoteResource(ModelResource):
         resource_name = "note"
         filtering = {
             'video': ALL_WITH_RELATIONS,
+            'import_source': ALL_WITH_RELATIONS,
             'time': ['gt', 'gte', 'lt', 'lte',]
         }
         ordering = ['offset', 'time', 'end_time', 'creation_time',]

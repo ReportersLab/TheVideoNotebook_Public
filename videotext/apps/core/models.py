@@ -54,7 +54,7 @@ VIDEO_TYPE_CHOICES = (
 SOURCE_TYPE_CHOICES = (
     ('twitter','Twitter'),
     ('storify','Storify'),
-    ('coveritlive','Cover It Live'),
+#    ('coveritlive','Cover It Live'),
     ('scribblelive','ScribbleLive'),
     ('csv', 'CSV'),
 #    ('fark','Fark.com'),

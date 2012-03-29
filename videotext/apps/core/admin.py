@@ -65,8 +65,8 @@ class SourceAdmin(CommonAdmin):
         )
     )
     
-    list_display = ('name', 'url', 'video', 'creation_time',)
-    list_display_links = ('name', 'url', 'video', 'creation_time',)
+    list_display = ('name', 'url', 'video', 'creation_time', 'type')
+    list_display_links = ('name', 'url', 'video', 'creation_time', 'type',)
     readonly_fields = ('csv_data',)
 
 
@@ -90,7 +90,7 @@ class NoteAdmin(CommonAdmin):
     list_display = ('text', 'video', 'offset', 'published',)
     list_editable= ('published',)
     list_display_links = ('text',)
-    list_filter = ('published', 'private', 'video', 'user',)
+    list_filter = ('published', 'private', 'video', 'user', 'import_source',)
 
 
 

@@ -30,6 +30,10 @@
                 <source src="<%= video_url %>" type="audio/mp3" />
             </audio>
         <% } %>
+        <div id="extraVideoControls" style="text-align:center;">
+            <input type="button" id="skipBackButton" value="Back 30" />
+            <input type="button" id="skipForwardButton" value="Forward 30" />
+        </div>
         <div id="video_details_container" class="box_shadow margined padded">
             <h1 id="video_title" class="edit"><%= title %></h1>
             <div id="video_description" class="edit">

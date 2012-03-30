@@ -5,6 +5,7 @@
 //time we should seek before a note before playing the video.
 //this is probably a matter of personal preference, so maybe we want to make it user adjustable.
 NOTE_SEEK_BEFORE_TIME = 7;
+SKIP_INCREMENT = 30; //seconds to skip backwards or forwards on the skip button click.
 
 PLAYER_STATES = {
     '-1':'unstarted',
@@ -60,7 +61,9 @@ $(function(){
         className: 'video',
         template: _.template($("#videoTemplate").html()),
         events: {
-            'click #sync_notes_link': 'onSyncNotesClick'
+            'click #sync_notes_link': 'onSyncNotesClick',
+            'click #skipBackButton': 'onSkipBack',
+            'click #skipForwardButton': 'onSkipForward'
         },
         initialize: function(){
             this.player = null;
@@ -276,6 +279,13 @@ $(function(){
        
        seekToOffset: function(offset){
             if(this.player != null){
+                
+                if(offset > this.getDuration()){
+                    offset = this.getDuration();
+                }else if(offset < 0){
+                    offset = 0;
+                }
+                
                 if(this.model.get('type') == "youtube"){
                    this.player.seekTo(offset, true);
                    this.playVideo();
@@ -317,6 +327,14 @@ $(function(){
                     app.endSyncNotes('There was an error syncing your notes')
                 }
             });
+       },
+       
+       onSkipBack: function(event){
+            this.seekToOffset(this.getCurrentOffset() - SKIP_INCREMENT);
+       },
+       
+       onSkipForward: function(event){
+            this.seekToOffset(this.getCurrentOffset() + SKIP_INCREMENT);
        }
        
        

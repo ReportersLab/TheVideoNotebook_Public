@@ -357,7 +357,7 @@ $(function(){
             //bootstrap the notes
             this.notes.reset(NOTES_DATA);
             
-            this.notesSearch = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
+            this.searchView = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
             this.addNoteView = new AddNoteView({el: $('#add_note_container'), notesView: this, notes: this.notes });
             this.noteDetailsView = new NoteDetailsView({el:$('#note_details_container'), notesView: this});  
         },
@@ -423,7 +423,7 @@ $(function(){
         },
        
         scrollToTop: function(){
-            $("#notes").scrollTo("0", 200);
+            $("#notes").scrollTo("0", 100);
         },
         
         scrollToNote: function(note){
@@ -489,12 +489,75 @@ $(function(){
             //scroll to the note.
             this.scrollToNote(this.selectedNote);
             
+        },
+        
+        //shows all notes from a user.
+        showUserNotes: function(user){
+            var filter = function(note){
+                if(note.get('user_name') == null) return false;
+                return (note.get('user_name').toLowerCase() == user.toLowerCase());
+            }
+            this.app.router.navigate("user/" + user);
+            this.filterNotes(filter);
+        },
+        
+        //show all notes from a specific source.
+        showSourceNotes: function(source){
+            var filter = function(note){
+                if(note.get('import_source') == null) return false;
+                // /api/v1/source/ID/
+                return (note.get('import_source').split('/')[4] == source);
+            }
+            this.app.router.navigate("source/" + source);
+            this.filterNotes(filter);
+        },
+        
+        //show all notes of a specific type (ie 'tweet').
+        showTypeNotes: function(type){
+            var filter = function(note){
+                if(note.get('type') == null) return false;
+                return note.get('type') == type;
+            }
+            this.app.router.navigate("type/" + type);
+            this.filterNotes(filter);
+        },
+        
+        filterNotes: function(filterFunction, isSearch){
+            
+            var results = 0;
+            this.notes.each(function(note){
+                if(filterFunction(note)){
+                    $(note.view.el).removeClass('hidden');
+                    results++;
+                }else{
+                    $(note.view.el).addClass('hidden');
+                }
+            })
+            
+            if(!isSearch){
+                this.searchView.resetSearch();
+            }
+            
+            this.searchView.resultCount = results;
+            this.searchView.render();
+        },
+        
+        resetNotes: function(){
+            this.notes.each(function(note){
+                //if(!note.view.visible)
+                    $(note.view.el).removeClass("hidden");
+               //_.defer(function(){$(note.view.el).show()}); 
+            });
+            this.searchView.resultCount = this.notes.length;
+            this.searchView.resetSearch();
+            this.searchView.render();
+            this.scrollToTop();
         }
     });
     
     
     
-    
+    //this is more of a view / controller. The whole thing may be a bad idea, but it mostly works.
     window.NoteSearchView = Backbone.View.extend({
         initialize: function(){
             this.app = this.options.app;
@@ -504,6 +567,7 @@ $(function(){
         },
         events: {
             'click #note_search_button': 'onSearchPress',
+            'click .reset_filters_link': 'onResetFilters',
             'keyup #note_search_text': 'onSearchKeyUp',
             'blur #note_search_text': 'onSearchBlur'
         },
@@ -513,12 +577,16 @@ $(function(){
                 this.resultCount = this.app.notes.length;
             var html = "<span>" + this.resultCount + " notes</span>";
             $("#search_results_count").html(html);
-            this.notesView.scrollToTop();
             return this;
+        },
+        
+        onResetFilters: function(){
+            this.notesView.resetNotes();
         },
         
         onSearchPress: function(){
             this.search();
+            this.app.router.navigate("search/" + this.searchText);
         },
         
         onSearchKeyUp: function(element){
@@ -526,7 +594,7 @@ $(function(){
             if(text.length > 0)
                 this.search();
             if(text.length == 0)
-                this.resetNotes();
+                this.notesView.resetNotes();
         },
         
         onSearchBlur: function(){
@@ -540,46 +608,20 @@ $(function(){
         },
         
         search: function(){
-            this.searchText = $("#note_search_text").val();
-            //this.notes = app.notes;
+            var searchText = this.searchText = $("#note_search_text").val();
             //search the notes collection for matches.
+            //returns true if found.
+            var filter = function(note){
+                return note.get('text').toLowerCase().indexOf(searchText.toLowerCase()) != -1
+            }
             
-            toHide = this.notes.select(function(note){
-                return note.get('text').toLowerCase().indexOf(this.searchText.toLowerCase()) == -1
-            }, this);
-             
-            toShow = this.notes.select(function(note){
-                return note.get('text').toLowerCase().indexOf(this.searchText.toLowerCase()) != -1
-            }, this);
+            this.notesView.filterNotes(filter, true);
             
-            
-            _.each(toHide, function(note){
-                //if(note.view.visible)
-                    $(note.view.el).addClass("hidden");
-                note.view.visible = false;
-            });
-            
-            _.each(toShow, function(note){
-                //if(!note.view.visible)
-                    $(note.view.el).removeClass("hidden");
-                note.view.visible = true;
-            });
-            
-            this.resultCount = toShow.length || 0;
-            this.render();
         },
         
-        resetNotes: function(){
-            this.notes.each(function(note){
-                //if(!note.view.visible)
-                    $(note.view.el).removeClass("hidden");
-               //_.defer(function(){$(note.view.el).show()}); 
-            });
-            this.resultCount = app.notes.length;
-            this.render();
+        resetSearch: function(){
+            $("#note_search_text").val('');
         }
-        
-        
         
     })
     
@@ -598,7 +640,10 @@ $(function(){
             'click .note_text': 'onNoteClicked',
             'mouseenter': 'onNoteEnter',
             'mouseleave': 'onNoteLeave',
-            'click .show_details_link': 'onDetailsLinkClicked'
+            'click .show_details_link': 'onDetailsLinkClicked',
+            'click .show_source_link': 'onSourceLinkClicked',
+            'click .show_user_link': 'onUserLinkClicked',
+            'click .show_type_link': 'onTypeLinkClicked'
        },
        
        render: function(){
@@ -640,6 +685,22 @@ $(function(){
        
        onDetailsLinkClicked: function(event){
             this.container.showNoteDetails(this.model);
+       },
+       
+       onSourceLinkClicked: function(event){
+            var source = this.model.get('import_source');
+            if(source == null) return;
+            source = source.split('/')[4]; // id is the 4th component.
+            this.container.showSourceNotes(source);
+            
+       },
+       
+       onUserLinkClicked: function(event){
+            this.container.showUserNotes(this.model.get('user_name'));
+       },
+       
+       onTypeLinkClicked: function(event){
+            this.container.showTypeNotes(this.model.get('type'));
        },
        
        highlightNote: function(){
@@ -887,8 +948,11 @@ $(function(){
             'offset/:offset': 'videoOffset',
             'note/:noteId': 'note',
             'takeNotes': 'takeNotes',
-            'notes': 'showNotes',
-            'search/:search' : 'search'
+            'showallnotes': 'showNotes',
+            'search/:search' : 'search',
+            'user/:user': 'user',
+            'source/:source': 'source',
+            'type/:type': 'type'
         },
         
         videoOffset: function(offset){
@@ -900,7 +964,7 @@ $(function(){
         },
         
         search: function(search){
-            this.app.notesView.notesSearch.makeSearch(search);
+            this.app.notesView.searchView.makeSearch(search);
         },
         
         takeNotes: function(){
@@ -908,8 +972,21 @@ $(function(){
         },
         
         showNotes: function(){
-            //TODO: Show Note Panel.
+            this.app.notesView.resetNotes();
+        },
+        
+        user: function(user){
+            this.app.notesView.showUserNotes(user);
+        },
+        
+        source: function(source){
+            this.app.notesView.showSourceNotes(source);
+        },
+        
+        type: function(type){
+            this.app.notesView.showTypeNotes(type);
         }
+        
         
     })
     
@@ -938,7 +1015,10 @@ $(function(){
             this.notesView = new NotesView({el: $('#notes_container'), app:this, notes:this.notes });
             
             this.router = new MainRouter({app:this});
-            Backbone.history.start();
+            if(!Backbone.history.start()){
+                this.router.navigate("showallnotes");
+            }
+            //
         },
         
         startSyncNotes: function(){

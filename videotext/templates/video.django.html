@@ -31,8 +31,8 @@
             </audio>
         <% } %>
         <div id="extraVideoControls" style="text-align:center;">
-            <input type="button" id="skipBackButton" value="Back 30" />
-            <input type="button" id="skipForwardButton" value="Forward 30" />
+            <input type="button" id="skipBackButton" value="Back 30 seconds" />
+            <input type="button" id="skipForwardButton" value="Forward 30 seconds" />
         </div>
         <div id="video_details_container" class="box_shadow margined padded">
             <h1 id="video_title" class="edit"><%= title %></h1>
@@ -91,6 +91,19 @@
         </div>
         <div class="details">
             <span class="show_details_link link">Show Details</span>
+            <span class="slashes">//</span>
+            <span>Filter by:</span>
+            <% if (obj.import_source != null){ %>
+                <span class="show_source_link link">Source</span>
+                <span class="slashes">//</span>
+            <% } %>
+            <% if (obj.type != null){ %>
+                <span class="show_type_link link">Type</span>
+                <span class="slashes">//</span>
+            <% } %>
+            <% if (obj.user_name != null) { %>
+                <span class="show_user_link link">User</span>
+            <% } %>
         </div>
     </script>
     
@@ -227,7 +240,7 @@
                     {% endif %}
                 </div>
                 <div id="note_search">
-                    <h5>Search Notes</h5>
+                    <h5>Search Notes <span class="slashes">//</span><span class="link reset_filters_link">reset filters</span></h5>
                     <div>
                         <input type="text" name="note_search_text" id="note_search_text" placeholder="Search..." />
                         <input type="button" value="Search" id="note_search_button" />

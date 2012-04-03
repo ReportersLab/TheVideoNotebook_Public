@@ -67,6 +67,7 @@ $(function(){
         },
         initialize: function(){
             this.player = null;
+            this.isPlaying = false;
             this.syncingNotes = false;
             this.videoTime = 0;
         },
@@ -200,12 +201,15 @@ $(function(){
             if(this.player != null){
                 if(this.model.get('type') == "youtube"){
                     this.player.pauseVideo();
+                    this.isPlaying = false;
                 }
                 if(this.model.get('type') == "mp4" && !this.player.paused){
                     this.player.pause();
+                    this.isPlaying = false;
                 }
                 if(this.model.get('type') == "mp3" && !this.player.paused){
                     this.player.pause();
+                    this.isPlaying = false;
                 }
             }
        },
@@ -214,15 +218,27 @@ $(function(){
             if(this.player != null){
                 if(this.model.get('type') == "youtube"){
                     this.player.playVideo();
+                    this.isPlaying = true;
                 }
                 if(this.model.get('type') == "mp4" && this.player.paused){
                     this.player.play();
+                    this.isPlaying = true;
                 }
                 if(this.model.get('type') == "mp3" && this.player.paused){
                     this.player.play();
+                    this.isPlaying = true;
                 }
+                
             }
        },
+       
+       togglePlaying: function(){
+            if(this.isPlaying){
+                this.pauseVideo();
+            }else{
+                this.playVideo();
+            }
+        },
        
        getCurrentOffset: function(){
             if(this.player != null){
@@ -279,7 +295,7 @@ $(function(){
        
        seekToOffset: function(offset){
             if(this.player != null){
-                
+                this.isPlaying = true;
                 if(offset > this.getDuration()){
                     offset = this.getDuration();
                 }else if(offset < 0){
@@ -881,6 +897,7 @@ $(function(){
        events: {
             'click #new_note_submit': 'onNoteAdd',
             'keyup #new_note_text': 'onNoteKeyUp',
+            'keydown #new_note_text': 'onNoteKeyDown',
             'change #auto_stop_checkbox': 'onAutoStopCheck'
        },
        
@@ -888,10 +905,35 @@ $(function(){
        },
        
        onAutoStopCheck: function(){
-            this.autoStop = $("#new_note_private").is(":checked");
+            this.autoStop = $("#auto_stop_checkbox").is(":checked");
+       },
+       
+       onNoteKeyDown: function(event){
+            //alt/option + [space]
+            if(event.altKey && (event.keyCode == 32)){
+                //assume pro.
+                this.autoStop = false;
+                $('#auto_stop_checkbox').attr('checked', false);
+                app.videoView.togglePlaying();   
+                return false;
+            }
+            //alt/option + [leftarrow or rightarrow]
+            if(event.altKey && ((event.keyCode == 37) || (event.keyCode == 39))){
+                this.autoStop = false;
+                $('#auto_stop_checkbox').attr('checked', false);
+                if(event.keyCode == 37)
+                    app.videoView.onSkipBack();
+                if(event.keyCode == 39)
+                    app.videoView.onSkipForward();
+                return false;
+            }
+            
+            
+            return true;
        },
        
        onNoteKeyUp: function(event){
+            
             if( ($("#new_note_text").val().length > 0) && this.autoStop){
                 app.videoView.pauseVideo();
             }else if (this.autoStop){

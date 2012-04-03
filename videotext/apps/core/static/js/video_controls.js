@@ -648,6 +648,7 @@ $(function(){
        
        render: function(){
             this.model.set({date_time: new Date(this.model.get('time')) });
+            this.model.set({linked_text: twttr.txt.autoLink(this.model.get('text'))});
             $(this.el).html(this.template(this.model.toJSON()));
             return this;
        },
@@ -874,20 +875,26 @@ $(function(){
        
        initialize: function(){
             this.notes = this.options.notes;
+            this.autoStop = true;
        },
        
        events: {
             'click #new_note_submit': 'onNoteAdd',
-            'keyup #new_note_text': 'onNoteKeyUp'
+            'keyup #new_note_text': 'onNoteKeyUp',
+            'change #auto_stop_checkbox': 'onAutoStopCheck'
        },
        
        render: function(){
        },
        
+       onAutoStopCheck: function(){
+            this.autoStop = $("#new_note_private").is(":checked");
+       },
+       
        onNoteKeyUp: function(event){
-            if($("#new_note_text").val().length > 0){
+            if( ($("#new_note_text").val().length > 0) && this.autoStop){
                 app.videoView.pauseVideo();
-            }else{
+            }else if (this.autoStop){
                 app.videoView.playVideo();
             }
             if(event.keyCode == 13){ //the 'enter' key

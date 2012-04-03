@@ -755,11 +755,6 @@ article .teaser
     display:none;
 }
 
-.add_source_container{
-    overflow-y:auto;
-    overflow-x:hidden;
-}
-
 #add_note_display
 {
     height:300px;
@@ -966,11 +961,9 @@ article .teaser
 
 .add_source .source_url, .source_twitter_user, .source_twitter_start_id, .source_twitter_end_id, .source_twitter_hash, .source_name
 {
-    width:92%;
+    width:90%;
     padding:2px 0 2px 16px;
     border:2px solid #DFDFDF;
-    background:#FFFFFF;
-    color:#000000;
     font:14px Arial,'Liberation Sans',FreeSans,sans-serif;
     margin:0 0 5px 0;
 }
@@ -989,12 +982,19 @@ article .teaser
 {
     float:right;
     clear:both;
-    
+}
+
+#notes_container #add_source_container #sources{
+    width:97%;
+    height:375px;
+    border-bottom:2px solid black;
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 
 .source_csv_data
 {
-    width:92%;
+    width:90%;
     height:100px;
     clear:both;
     margin:5px 0 10px 0;
@@ -1005,7 +1005,14 @@ article .teaser
     font-size:14px;
 }
 
-
+#note_details_container .closeLink.x, #add_note_container .add_note_link.x, #add_source_container .close_link.x
+{
+    position:absolute;
+    top:-10px;
+    right:-10px;
+    z-index:1000;
+    cursor:pointer;
+}
 
 
 

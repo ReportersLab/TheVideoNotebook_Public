@@ -13,7 +13,7 @@ def get_tweets(source = None):
     
     
     statuses = api.GetUserTimeline(screen_name = source.twitter_user, count = 200,
-                                   since_id=source.twitter_start_id, max_id=source.twitter_end_id, include_entities = True, include_rts = True )
+                                   since_id=(int(source.twitter_start_id) - 1), max_id=source.twitter_end_id, include_entities = True, include_rts = True )
     
     
     for tweet in statuses:

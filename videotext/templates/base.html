@@ -51,6 +51,9 @@
         <script type="text/javascript" src="{{ STATIC_URL }}js/models.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/date.js"></script>
         
+        <!-- for parsing tweets to include working URLs... -->
+        <script type="text/javascript" src="{{ STATIC_URL }}js/twitter-text.js"></script>
+        
         <script type="text/javascript">
             //some generic page info we want available to javascript.
             NOTE_API = "{% url api_dispatch_list api_name="v1" resource_name="note" %}";

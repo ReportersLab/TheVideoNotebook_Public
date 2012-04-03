@@ -71,7 +71,7 @@
     <script type="text/html" id="noteTemplate">
         
         <div class="note_text">
-            <p><%= text %></p>
+            <p><% print(obj.linked_text.replace(/<a/g, '<a target="_blank"')) %></p>
         </div>
         <div class="user_info">
             <% if(obj.user_name){ %>
@@ -131,6 +131,7 @@
         <h2 id="note_detail_text" class="edit"><%= text %></h2>
         <div class="black_bar"></div>
         <div id="note_detail_details" class="margined">
+            <a class="closeLink x"><img src="{{ STATIC_URL }}img/close.png" /></a>
             <div>
                 <b>Source: </b>
                 <span id="note_detail_source"><%= source %></span>    
@@ -220,18 +221,22 @@
             <div id="notes_container">
                 <div id="note_details_container" class="box_shadow"></div>
                 <div id="add_source_container" class="box_shadow add_source_container" style="display:none;">
+                    <a class="close_link x"><img src="{{ STATIC_URL }}img/close.png" /></a>
                     <div id="sources"></div>
                     <span id="add_source_link">Add Another Source...</span>
                     <p class="close_link"><br />Finished adding sources? <span class="link">Click here to close the add source window.</span></p>
                 </div>
                 <div id="add_note_container" class="box_shadow">
+                    <a class="add_note_link x"><img src="{{ STATIC_URL }}img/close.png" /></a>
                     {% if user.is_authenticated %}
                         <div id="add_note_display"><!-- content from JS --></div>
                         <textarea id="new_note_text" name="new_note_text" placeholder="Type here to add a note. Hit enter or click 'add note' to save. Notes must be at least 10 characters."></textarea>
                         <input type="submit" value="Add Note" id="new_note_submit" />
                         <div style="margin:5px 0 5px 5px; font-size:10px;">
                             <label for="new_note_private">Make note private: </label>
-                            <input type="checkbox" id="new_note_private" name="new_note_private" />
+                            <input type="checkbox" id="new_note_private" name="new_note_private" /><br />
+                            <label for="auto_stop_checkbox">Auto-Stop on typing: </label>
+                            <input type="checkbox" id="auto_stop_checkbox" name="auto_stop_checkbox" checked="checked" />
                             <div id="add_note_status"></div>
                         </div>
                         <span class="add_note_link">View notes</span>

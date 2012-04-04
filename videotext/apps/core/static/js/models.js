@@ -7,8 +7,9 @@ $(function(){
                  var dt = new Date(this.get('time'));
                  var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
                  var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
+                 var seconds = dt.getSeconds() < 10 ? '0' + dt.getSeconds() : dt.getSeconds();
                  this.set({date_time: dt});
-                 this.set({time_component:dt.getHours() + ':' + minutes, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})   
+                 this.set({time_component:hours + ':' + minutes + ':' + seconds, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})   
              }
              if(this.get('end_time')){
                  this.set({end_date_time: new Date(this.get('end_time'))});

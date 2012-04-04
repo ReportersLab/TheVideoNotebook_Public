@@ -118,16 +118,17 @@ $(document).ready(function(){
                 
                 if(!alreadyExists){
                     this.updateStatus("Please fill out the details for your new video.", true);
+                    var dt = new Date();
+                    var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
+                    var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
+                    this.video.set({time: dt});
+                    this.video.set({date_time: dt});
+                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + (dt.getMonth() + 1) + '/' + dt.getDate()})
+                
                 }else{
                     this.updateStatus("Edit your video.");
                 }
                 
-                var dt = new Date();
-                var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
-                var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
-                this.video.set({time: dt});
-                this.video.set({date_time: dt});
-                this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + (dt.getMonth() + 1) + '/' + dt.getDate()})
                 
                 $('#add_video_details').html(template(this.video.toJSON()))
                 $('#add_video_details_container').slideDown('slow');
@@ -152,7 +153,8 @@ $(document).ready(function(){
                     }
                     
                     var dateComponent = dateparts[2] + '-' + dateparts[1] + '-' + dateparts[0];
-                    var time = dateComponent + 'T' + timeparts + '.000Z';
+                    var timeparts = timeparts.split(':');
+                    var time = new Date(dateparts[2], dateparts[1], dateparts[0], timeparts[0], timeparts[1], timeparts[2]);
                     
                     self.video.set({title: title, description: description, icon_link: icon_link, time_component: timeparts, date_component: dateComponent,
                                     private: private_note, lock_notes: lock_notes, time: time, type:self.type});
@@ -236,10 +238,10 @@ $(document).ready(function(){
 			var s = d.getSeconds();
 			
 			// override with current values if applicable
-			if(v.length == 8){
-				h = parseInt(v.substr(0,2));
-				m = parseInt(v.substr(3,2));
-				s = parseInt(v.substr(6,2));
+            if(v.length == 8){
+				h = parseInt(v.substr(0,2), 10);
+                m = parseInt(v.substr(3,2), 10);
+				s = parseInt(v.substr(6,2), 10);
 			}
 		    
 			// build the new DOM objects
@@ -247,7 +249,7 @@ $(document).ready(function(){
 			
 			output += '<select id="h_' + i + '" class="h timepicker">';				
 			for(hr in hrs){
-				output += '<option value="' + hrs[hr] + '"';
+            	output += '<option value="' + hrs[hr] + '"';
 				if(parseInt(hrs[hr], 10) == h) output += ' selected';
 				output += '>' + hrs[hr] + '</option>';
 			}

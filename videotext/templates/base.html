@@ -53,7 +53,10 @@
         
         <!-- for parsing tweets to include working URLs... -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/twitter-text.js"></script>
-        
+        <!-- ajax uploader -->
+        <script type="text/javascript" src="{{ STATIC_URL }}js/ajaxuploader/js/fileuploader.js"></script>
+        <link rel="stylesheet" href="{{ STATIC_URL }}js/ajaxuploader/css/fileuploader.css" type="text/css" charset="utf-8" />  
+                
         <script type="text/javascript">
             //some generic page info we want available to javascript.
             NOTE_API = "{% url api_dispatch_list api_name="v1" resource_name="note" %}";

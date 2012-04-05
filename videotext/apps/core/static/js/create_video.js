@@ -18,7 +18,12 @@ $(document).ready(function(){
                 success: function(model, response){
                     //once data is fetched, initialize dates.
                     this.app.type = this.app.video.get("type");
-                    $("input:radio[value=" + this.app.type + "]").attr('checked',true);
+                    if(this.app.type == 'youtube'){
+                        $('#youtube_ID').val(this.app.video.get('video_url'));
+                    }else{
+                        $('#upload_url').val(this.app.video.get('video_url'));
+                    }
+                    $("input:radio[value=" + this.app.type + "]").attr('checked',true).trigger('change');
                     this.app.video.initialize();
                     this.app.displayVideo(true, true);
                 },
@@ -46,12 +51,63 @@ $(document).ready(function(){
             this.type = $('input:radio[name=video_type]:checked').val();
             this.router = new MainRouter({app:this});
             Backbone.history.start();
+            this.genUploader($('#uploader'), $('#upload_url'), true, /^(mp4|mp3)$/i, ['mp4', 'mp3'], 'Upload some video or audio');
+        },
+        
+        genUploader: function(targetElement, resultTarget, submitAfter, extensionRegEx, allowedExtensions, buttonText){
+            var self = this;
+            var uploader = new qq.FileUploader({
+                action: "/video/upload/",
+                element: targetElement[0],
+                multiple: false,
+                allowedExtensions: allowedExtensions,
+                onSubmit : function(id , file){
+                    try{
+                        ext = file.split('.')[1]
+                        if (! (ext && extensionRegEx.test(ext))){
+                            // extension is not allowed
+                            console.log(ext);
+                            self.updateStatus('Error: invalid file extension', true);
+                            // cancel upload
+                            return false;
+                        }
+                        return true;
+                    }catch(e){
+                        self.updateStatus('Error: invalid file extension', true);
+                        return false;
+                    }
+                },
+                onComplete: function(id, fileName, responseJSON) {
+                    if(responseJSON.success) {
+                        resultTarget.val(responseJSON['path']);
+                        if(submitAfter){
+                            self.onVideoSubmit();
+                        }
+                    } else {
+                        self.updateStatus("There was an error uploading that file. Please try again or pick a different file.", true);
+                    }
+                },
+                onProgress: function(id, fileName, loaded, total) {
+                    var pct = Math.floor(loaded / total * 100);
+                    self.updateStatus("Uploading file... large files may take some time to complete.<br />" +
+                                      "<div class='progress_bar_container'><div class='progress_bar' style='width:"+ pct +"%;'>"+pct+"%</div></div>", true);
+                },
+                onAllComplete: function(uploads) {
+                },
+                params: {
+                    'csrf_token': CSRF_TOKEN,
+                    'csrf_name': 'csrfmiddlewaretoken',
+                    'csrf_xname': 'X-CSRFToken'
+                }
+            });
+            $(uploader._button._element).get(0).childNodes[0].nodeValue = buttonText;
         },
         
         onRadioChange: function(event){
             this.type = $(event.currentTarget).val();
             $('.add_box').slideUp('slow');
             $('#' + event.target.id + '_add').slideDown('slow');
+            
         },
         
         onVideoEntryKeyDown: function(event){
@@ -107,12 +163,6 @@ $(document).ready(function(){
                 return;
             }
             
-            var template =  _.template($("#videoFormTemplate").html());
-            $('#add_video_details').html(template(this.video.toJSON()));
-            var self = this;
-            
-            $('#add_video_details_container').slideDown('slow');
-            $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
             
             if(!alreadyExists || ( alreadyExists && (LOGGED_IN_USER.toString() == this.video.get("user").id.toString())) ){
                 
@@ -128,7 +178,16 @@ $(document).ready(function(){
                 }else{
                     this.updateStatus("Edit your video.");
                 }
+            
+            
+                var template =  _.template($("#videoFormTemplate").html());
+                $('#add_video_details').html(template(this.video.toJSON()));
+                var self = this;
                 
+                $('#add_video_details_container').slideDown('slow');
+                $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
+            
+                    
                 
                 $('#add_video_details').html(template(this.video.toJSON()))
                 $('#add_video_details_container').slideDown('slow');
@@ -136,6 +195,7 @@ $(document).ready(function(){
                 $("#add_edit_message").show();
                 $('#add_video_details .timepicker').timepicker();
                 $('#add_video_details .datepicker').datePicker({createButton:true, startDate: new Date(1980, 0, 1)})
+                this.genUploader($('#image_uploader'), $('#video-icon_link'), false, /^(jpg|png|jpeg|gif)$/i, ['jpg', 'png', 'jpeg', 'gif'], 'Upload an image');
                 
                 $("#video_save_button").click(function(){
                     var title = $("#video-title").val();

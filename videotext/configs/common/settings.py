@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'south',
     'tastypie',
+    'ajaxuploader',
     'videotext.apps.core',
 )
 

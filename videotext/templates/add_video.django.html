@@ -4,6 +4,9 @@
 
 
 {% block head %}
+    <script type="text/javascript">
+        CSRF_TOKEN = "{{ csrf_token }}"
+    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/shared_views.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.datePicker.js"></script>
@@ -36,6 +39,7 @@
                 <strong>Icon URL:</strong>
                 <textarea id="video-icon_link" class="edit"  placeholder="A URL to a video image. Should be approximately 550px wide by 350px tall"><% if (obj.icon_link && (obj.icon_link != '')){ %><%= icon_link %><%}%></textarea>
             </div>
+            <div id="image_uploader"></div>
             <% if (obj.type != 'youtube'){ %>
             <div>
                 <strong>Private:</strong>
@@ -111,6 +115,10 @@
              <div id="upload_type_add" class="add_box" style="display:none;">
                   <input id="upload_submit" type="image" src="{{ STATIC_URL }}img/search_arrow.png" name="searchButton"  value="" class="video_submit" />
                   <input type="text" id="upload_url" name="upload_url" placeholder="Full path to an MP4 Video or MP3 Audio" class="search_field video_entry" />
+                  <div>
+                        <h5>Or upload a file</h5>
+                        <div id="uploader"></div>
+                  </div>
              </div>
              
              <div id="thumb_container"><!-- img via js --></div>

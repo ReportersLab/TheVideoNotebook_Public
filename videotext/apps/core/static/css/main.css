@@ -1017,10 +1017,21 @@ article .teaser
 
 
 
+.progress_bar_container{
+    width:98%;
+    text-align:center;
+    border:2px solid black;
+}
 
+.progress_bar
+{
+    text-align:right;
+    background-color:#778E1E;
+}
 
-
-
+#uploader .qq-upload-button{
+    width:100%;
+}
 
 
 

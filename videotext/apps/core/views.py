@@ -1,21 +1,70 @@
 import datetime
+from ajaxuploader.views import AjaxFileUploader
+from core.api.resources import NoteResource, VideoResource
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from core.models import *
-from django.views.generic.date_based import *
-from django.utils import simplejson as json
 from django.conf import settings
-from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponseRedirect
+from django.middleware.csrf import get_token
+from django.utils import simplejson as json
+from django.views.generic.date_based import *
+
 from itertools import chain
 from operator import attrgetter
-from core.api.resources import NoteResource, VideoResource
-from tastypie.bundle import Bundle
 from parsers.tvncsv import export_tvn_csv
+from storages import TVNS3UploadBackend
+from tastypie.authorization import DjangoAuthorization
+from tastypie.bundle import Bundle
+from tastypie.serializers import Serializer
+
+
+
+
+
+
+
+#from panda.
+class JSONResponse(HttpResponse):
+    """
+A shortcut for an HTTPResponse containing data serialized as json.
+
+Note: Uses Tastypie's serializer to transparently support serializing bundles.
+"""
+    def __init__(self, contents, **kwargs):
+        serializer = Serializer()
+
+        super(JSONResponse, self).__init__(serializer.to_json(contents), content_type='application/json', **kwargs)
+
+
+
+class SecureAjaxFileUploader(AjaxFileUploader):
+    """
+A custom version of AjaxFileUploader that checks for authorization.
+"""
+    def __call__(self, request):
+
+        if request.user.is_authenticated() != True:
+            # Valum's FileUploader only parses the response if the status code is 200.
+            return JSONResponse({ 'success': False, 'forbidden': True }, status=200)
+        try:
+            return self._ajax_upload(request)
+        except Exception, e:
+            return JSONResponse({ 'error_message': unicode(e) })
+
+
+file_upload = SecureAjaxFileUploader(backend=TVNS3UploadBackend)
+
+
+
+
+
+
 
 
 def index_view(request):
@@ -29,7 +78,9 @@ def index_view(request):
 
 @login_required
 def add_video_view(request):
-    data = {}
+    data = {
+        'csrf_token': get_token(request)
+    }
     return get_response(template='add_video.django.html', data=data, request=request)
 
 
@@ -65,6 +116,10 @@ def user_view(request, username):
 def video_csv_view(request, slug):
     video = get_object_or_404(Video, slug = slug)
     return export_tvn_csv(video)
+
+
+
+
 
 
 

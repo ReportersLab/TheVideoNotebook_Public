@@ -66,7 +66,6 @@ $(document).ready(function(){
                         ext = file.substr(file.lastIndexOf('.') + 1);
                         if (! (ext && extensionRegEx.test(ext))){
                             // extension is not allowed
-                            console.log(ext);
                             self.updateStatus('Error: invalid file extension', true);
                             // cancel upload
                             return false;

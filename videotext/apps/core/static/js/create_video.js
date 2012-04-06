@@ -90,7 +90,7 @@ $(document).ready(function(){
                 onProgress: function(id, fileName, loaded, total) {
                     var pct = Math.floor(loaded / total * 100);
                     self.updateStatus("Uploading file... large files may take some time to complete.<br />" +
-                                      "<div class='progress_bar_container'><div class='progress_bar' style='width:"+ pct +"%;'>"+pct+"%</div></div>", true);
+                                      "<div class='progress_bar_container'><div class='progress_bar' style='width:"+ pct +"%;'>"+pct+"%</div></div>", true, true);
                 },
                 onAllComplete: function(uploads) {
                 },
@@ -173,7 +173,7 @@ $(document).ready(function(){
                     var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
                     this.video.set({time: dt});
                     this.video.set({date_time: dt});
-                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component:dt.getFullYear() + '/' + (dt.getMonth() + 1) + '/' + dt.getDate()})
+                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})
                 
                 }else{
                     this.updateStatus("Edit your video.");
@@ -233,17 +233,20 @@ $(document).ready(function(){
             }
         },
         
-        updateStatus: function(message, noLink)
+        updateStatus: function(message, noLink, noFade)
         {
             if(noLink){
                 message = '<h4 id="status_message">' + message + '</h4>';
             }else{
                 message = '<h4 id="status_message">' + message + ' <a href="/video/' + this.video.get('slug') + '">See the video now</a></h4>'
             }
-            
-            $("#add_status").html(message).slideDown('slow', function(){
+            if(noFade){
+                $("#add_status").html(message).show();
+            }else{
+                $("#add_status").html(message).slideDown('slow', function(){
                                     $('#status_message').effect("pulsate", {times:1, mode:"show"}, 500);
                                 });
+            }
         },
         
         submitVideo: function(){

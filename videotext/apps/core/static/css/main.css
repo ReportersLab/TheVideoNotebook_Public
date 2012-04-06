@@ -1029,12 +1029,27 @@ article .teaser
     background-color:#778E1E;
 }
 
-#uploader .qq-upload-button{
+body .qq-upload-button{
     width:100%;
+    background-color:#778E1E;
 }
 
+body .qq-upload-button-hover{
+    background-color:#809E20;
+}
 
+body .qq-upload-list{
+    font-family:Arial;
+    font-size:14px;
+}
 
+body .qq-upload-cancel{
+    color:#778E1E;
+}
+
+body .qq-upload-size, .qq-upload-cancel {
+    font-size: 14px;
+}
 
 
 

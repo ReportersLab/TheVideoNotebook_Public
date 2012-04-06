@@ -63,7 +63,7 @@ $(document).ready(function(){
                 allowedExtensions: allowedExtensions,
                 onSubmit : function(id , file){
                     try{
-                        ext = file.split('.')[1]
+                        ext = file.substr(file.lastIndexOf('.') + 1);
                         if (! (ext && extensionRegEx.test(ext))){
                             // extension is not allowed
                             console.log(ext);

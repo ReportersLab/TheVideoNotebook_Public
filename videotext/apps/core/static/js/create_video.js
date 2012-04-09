@@ -60,6 +60,7 @@ $(document).ready(function(){
                 action: "/video/upload/",
                 element: targetElement[0],
                 multiple: false,
+                debug: true,
                 allowedExtensions: allowedExtensions,
                 onSubmit : function(id , file){
                     try{

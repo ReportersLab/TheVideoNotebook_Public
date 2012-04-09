@@ -1,5 +1,6 @@
 import datetime
 from ajaxuploader.views import AjaxFileUploader
+from ajaxuploader.backends.s3 import S3UploadBackend
 from core.api.resources import NoteResource, VideoResource
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext

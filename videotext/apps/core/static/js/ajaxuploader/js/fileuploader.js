@@ -1260,7 +1260,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         }  
         params['qqfile'] = name;
         var queryString = qq.obj2url(params, this._options.action);
-
+        xhr.timeout = 1000 * 60 * 60; //60 minutes. Basically forever.
         xhr.open("POST", queryString, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));

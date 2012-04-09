@@ -19,6 +19,8 @@ Much borrowed from here: https://github.com/pandaproject/panda/blob/master/panda
 
 class TVNS3UploadBackend(AbstractUploadBackend):
     
+    BUFFER_SIZE = 1048576 #1 MB
+    
     def update_filename(self, request, filename):
         """
         Verify that the filename is unique, if it isn't append and iterate

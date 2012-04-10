@@ -62,6 +62,8 @@
             NOTE_API = "{% url api_dispatch_list api_name="v1" resource_name="note" %}";
             VIDEO_API = "{% url api_dispatch_list api_name="v1" resource_name="video" %}";
             SOURCE_API = "{% url api_dispatch_list api_name="v1" resource_name="source" %}";
+            MEDIA_URL = "{{ MEDIA_URL }}";
+            STATIC_URL = "{{ STATIC_URL }}";
             PATH = "{{ request.path }}";
             LOGGED_IN = {{ user.is_authenticated|lower }};
             {% if user.is_authenticated %}

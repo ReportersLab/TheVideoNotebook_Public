@@ -5,7 +5,10 @@
 
 {% block head %}
     <script type="text/javascript">
-        CSRF_TOKEN = "{{ csrf_token }}"
+        CSRF_TOKEN = "{{ csrf_token|escapejs }}";
+        S3_POLICY = "{{ s3_policy|escapejs }}";
+        S3_SIGNATURE = "{{ s3_signature|escapejs }}";
+        S3_ACCESS_KEY = "{{ s3_access_key|escapejs }}";
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/shared_views.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/create_video.js"></script>
@@ -16,6 +19,11 @@
             <strong>Date: </strong><h6 id="video_date_component" class="datepicker"><%= date_component %></h6><br />
             <strong>Time: </strong><h6 id="video_time_component" class="timepicker"><%= time_component %></h6>
     </script>
+    
+    <script type="text/javascript" src="{{ STATIC_URL }}js/uploadify-v2.1.4/jquery.uploadify.v2.1.4.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}js/uploadify-v2.1.4/uploadify.css" type="text/css" media="screen" />
+    
+    
     
     <script type="text/html" id="videoFormTemplate">
         <div id="add_video_form_container">

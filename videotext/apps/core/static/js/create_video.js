@@ -56,6 +56,55 @@ $(document).ready(function(){
         
         genUploader: function(targetElement, resultTarget, submitAfter, extensionRegEx, allowedExtensions, buttonText){
             var self = this;
+            /*
+            $(targetElement).uploadify({
+                   'fileDataName' : 'file',
+                   'multi': 'false',
+                   'uploader'  : STATIC_URL + 'js/uploadify-v2.1.4/uploadify.swf',
+                   'script'    : 'http://media.reporterslab.org.s3.amazonaws.com/',
+                   'cancelImg' : STATIC_URL + 'js/uploadify-v2.1.4/cancel.png',
+                   'auto'      : true,
+                   'fileExt'   : '*.jpg;*.gif;*.png;*.mp4;*.mp3;*.jpeg',
+                   'onError' : function(errorObj, q, f, err) {
+                        console.log(err);
+                        console.log(errorObj);
+                        console.log(q);
+                        console.log(f);
+                    },
+         
+                   'scriptData' : {
+                        AWSAccessKeyId: S3_ACCESS_KEY,
+                        key: "/tvn/contrib/uploads/" + LOGGED_IN_USER + "/${filename}",
+                        acl: "public-read",
+                        policy: S3_POLICY,
+                        signature: S3_SIGNATURE,
+                        success_action_status: '200'
+                    },
+                    
+                   onSelect: function(event, ID, fileObj){
+                        console.log("Select: ");
+                        console.log(fileObj);
+                   },
+                   
+                   onComplete: function(event, ID, fileObj, responseJSON, data) {
+                       console.log(ID);
+                       console.log(fileObj);
+                       console.log(responseJSON);
+                       console.log(data);
+                   },
+                   
+                   
+                   onProgress: function(event, ID, fileObj, data) {
+                       self.updateStatus("Uploading file... large files may take some time to complete.<br />" +
+                                         "<div class='progress_bar_container'><div class='progress_bar' style='width:"+ data.percentage +"%;'>"+data.percentage+"%</div></div>", true, true);
+                   }
+               
+               });
+                    
+               
+            */
+            
+            
             var uploader = new qq.FileUploader({
                 action: "/video/upload/",
                 element: targetElement[0],
@@ -100,6 +149,7 @@ $(document).ready(function(){
                 }
             });
             $(uploader._button._element).get(0).childNodes[0].nodeValue = buttonText;
+            
         },
         
         onRadioChange: function(event){

@@ -59,7 +59,7 @@ A custom version of AjaxFileUploader that checks for authorization.
             return JSONResponse({ 'error_message': unicode(e) })
 
 
-file_upload = SecureAjaxFileUploader(backend=TVNS3UploadBackend)
+file_upload = SecureAjaxFileUploader(backend=TVNS3UploadBackend, BUFFER_SIZE = 1048576)
 
 
 
@@ -79,8 +79,12 @@ def index_view(request):
 
 @login_required
 def add_video_view(request):
+    policy, signature = gen_s3_policy()
     data = {
-        'csrf_token': get_token(request)
+        'csrf_token': get_token(request),
+        's3_policy': policy,
+        's3_signature': signature,
+        's3_access_key': settings.AWS_ACCESS_KEY_ID, 
     }
     return get_response(template='add_video.django.html', data=data, request=request)
 
@@ -227,3 +231,40 @@ all start like your query string `q` (not case sensitive).
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
+
+
+
+import base64
+import hmac, sha
+
+
+def gen_s3_policy():
+    expiration_date = datetime.datetime.now() + datetime.timedelta(1,0) #one day in the future.
+    policy_string = '''{"expiration": "%s",
+        "conditions": [ 
+          {"bucket": "media.reporterslab.org"}, 
+          ["starts-with", "$key", "/tvn/contrib/uploads/"],
+          {"acl": "private"},
+          ["starts-with", "$Content-Type", ""],
+          ["starts-with","$folder",""],
+          ["starts-with","$fileext",""],
+          ["starts-with","$filename",""],
+        ]
+    }''' % (expiration_date.strftime('%Y-%m-%dT%H-%M-%S:00Z'))
+    print policy_string
+    
+    policy = base64.b64encode(policy_string)
+    print policy
+    signature = base64.b64encode(hmac.new(settings.AWS_SECRET_ACCESS_KEY, policy, sha).digest())
+    print signature
+    return policy, signature
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -59,7 +59,7 @@ A custom version of AjaxFileUploader that checks for authorization.
             return JSONResponse({ 'error_message': unicode(e) })
 
 
-file_upload = SecureAjaxFileUploader(backend=TVNS3UploadBackend, BUFFER_SIZE = 1048576)
+file_upload = SecureAjaxFileUploader(backend=TVNS3UploadBackend)
 
 
 
@@ -251,12 +251,9 @@ def gen_s3_policy():
           ["starts-with","$filename",""],
         ]
     }''' % (expiration_date.strftime('%Y-%m-%dT%H-%M-%S:00Z'))
-    print policy_string
     
     policy = base64.b64encode(policy_string)
-    print policy
     signature = base64.b64encode(hmac.new(settings.AWS_SECRET_ACCESS_KEY, policy, sha).digest())
-    print signature
     return policy, signature
     
     

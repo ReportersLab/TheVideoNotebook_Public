@@ -65,12 +65,12 @@ $(document).ready(function(){
                    'auto'      : true,
                    'fileExt'   : fileExtensions, //'*.jpg;*.gif;*.png;*.mp4;*.mp3;*.jpeg',
                    'onError' : function(errorObj, q, f, err) {
-                    console.log(errorObj); console.log(q); console.log(f); console.log(err);
+                        //console.log(errorObj); console.log(q); console.log(f); console.log(err);
                          self.updateStatus("There was an error uploading that file. Please try again or pick a different file.", true);
                     },
                    'scriptData' : S3_DATA,
                    onSelect: function(event, ID, fileObj){
-                        console.log(fileObj); console.log(event); console.log(ID);
+                        //console.log(fileObj); console.log(event); console.log(ID);
                         ext = fileObj.name.substr(fileObj.name.lastIndexOf('.') + 1).toLowerCase();
                         if(ext == 'jpg'){
                             type = 'image/jpeg';

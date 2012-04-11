@@ -69,7 +69,7 @@ $(document).ready(function(){
                     },
                    'scriptData' : S3_DATA,
                    onSelect: function(event, ID, fileObj){
-                        console.log(fileObj); console.log(event); console.log(id);
+                        console.log(fileObj); console.log(event); console.log(ID);
                         ext = fileObj.name.substr(fileObj.name.lastIndexOf('.') + 1).toLowerCase();
                         if(ext == 'jpg'){
                             type = 'image/jpeg';

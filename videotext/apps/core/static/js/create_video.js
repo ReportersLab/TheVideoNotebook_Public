@@ -57,6 +57,7 @@ $(document).ready(function(){
         genUploader: function(targetElement, resultTarget, submitAfter, buttonText, fileExtensions){
             var self = this;
             uploader = $(targetElement).uploadify({
+                   'scriptAccess': 'always',
                    'fileDataName' : 'file',
                    'uploader'  : STATIC_URL + 'js/uploadify-v2.1.4/uploadify.swf',
                    'script'    : 'http://media.reporterslab.org.s3.amazonaws.com/',

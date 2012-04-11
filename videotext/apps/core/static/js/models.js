@@ -4,13 +4,17 @@ $(function(){
          initialize: function(){
              //make a real JS date out of the date string we got in JSON.
              if(this.get('time')){
-                 var dt = new Date(this.get('time'));
-                 var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
-                 var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
-                 var seconds = dt.getSeconds() < 10 ? '0' + dt.getSeconds() : dt.getSeconds();
-                 this.set({date_time: dt});
-                 this.set({time_component:hours + ':' + minutes + ':' + seconds, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})   
+                var dt = new Date(this.get('time'));
+             }else{
+                var dt = new Date();
+                this.set({time: dt});
              }
+             var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
+             var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
+             var seconds = dt.getSeconds() < 10 ? '0' + dt.getSeconds() : dt.getSeconds();
+             this.set({date_time: dt});
+             this.set({time_component:hours + ':' + minutes + ':' + seconds, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})   
+        
              if(this.get('end_time')){
                  this.set({end_date_time: new Date(this.get('end_time'))});
              }

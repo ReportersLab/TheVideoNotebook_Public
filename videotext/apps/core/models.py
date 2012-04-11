@@ -92,7 +92,7 @@ class Video(CommonInfo):
         #if self.icon is not None:
         #    self.icon_link = 'http://{0}/{1}'.format(settings.AWS_STORAGE_BUCKET_NAME, self.icon)
         if not self.time:
-            self.time_time = datetime.now()
+            self.time = datetime.now()
         #getting an error: can't subtract offset-naive and offset-aware datetimes -- may not be worth it to solve.
         #if (self.time != None) and (self.end_time != None):
                 #self.video_length = (self.end_time - self.time).seconds     

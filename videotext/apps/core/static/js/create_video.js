@@ -51,48 +51,48 @@ $(document).ready(function(){
             this.type = $('input:radio[name=video_type]:checked').val();
             this.router = new MainRouter({app:this});
             Backbone.history.start();
-            this.genUploader($('#uploader'), $('#upload_url'), true, /^(mp4|mp3)$/i, ['mp4', 'mp3'], 'Upload some video or audio');
+            this.genUploader($('#uploader'), $('#upload_url'), true, 'Upload some video or audio', '*.mp4;*.mp3');
         },
         
-        genUploader: function(targetElement, resultTarget, submitAfter, extensionRegEx, allowedExtensions, buttonText){
+        genUploader: function(targetElement, resultTarget, submitAfter, buttonText, fileExtensions){
             var self = this;
-            /*
-            $(targetElement).uploadify({
+            uploader = $(targetElement).uploadify({
                    'fileDataName' : 'file',
-                   'multi': 'false',
                    'uploader'  : STATIC_URL + 'js/uploadify-v2.1.4/uploadify.swf',
                    'script'    : 'http://media.reporterslab.org.s3.amazonaws.com/',
                    'cancelImg' : STATIC_URL + 'js/uploadify-v2.1.4/cancel.png',
                    'auto'      : true,
-                   'fileExt'   : '*.jpg;*.gif;*.png;*.mp4;*.mp3;*.jpeg',
+                   'fileExt'   : fileExtensions, //'*.jpg;*.gif;*.png;*.mp4;*.mp3;*.jpeg',
                    'onError' : function(errorObj, q, f, err) {
-                        console.log(err);
-                        console.log(errorObj);
-                        console.log(q);
-                        console.log(f);
+                         self.updateStatus("There was an error uploading that file. Please try again or pick a different file.", true);
                     },
-         
-                   'scriptData' : {
-                        AWSAccessKeyId: S3_ACCESS_KEY,
-                        key: "/tvn/contrib/uploads/" + LOGGED_IN_USER + "/${filename}",
-                        acl: "public-read",
-                        policy: S3_POLICY,
-                        signature: S3_SIGNATURE,
-                        success_action_status: '200'
-                    },
-                    
+                   'scriptData' : S3_DATA,
                    onSelect: function(event, ID, fileObj){
-                        console.log("Select: ");
-                        console.log(fileObj);
+                        
+                        ext = fileObj.name.substr(fileObj.name.lastIndexOf('.') + 1).toLowerCase();
+                        if(ext == 'jpg'){
+                            type = 'image/jpeg';
+                        }else if( (ext == 'png') || (ext == 'gif') ){
+                            type = 'image/'+ext;
+                        }else if( ext == 'mp4'){
+                            type = 'video/mp4';
+                        }else if (ext == 'mp3'){
+                            type == 'audio/mpeg';
+                        }else{
+                            type == '';
+                        }
+                        //isn't working?
+                        //$(targetElement).uploadifySettings("scriptData", {'Content-Type': type });
+                        
                    },
-                   
                    onComplete: function(event, ID, fileObj, responseJSON, data) {
-                       console.log(ID);
-                       console.log(fileObj);
-                       console.log(responseJSON);
-                       console.log(data);
+                        url = UPLOAD_URL + USER_NAME + '/' + fileObj.name;
+                        self.updateStatus("Upload complete.", true);
+                        resultTarget.val(url);
+                        if(submitAfter){
+                            self.onVideoSubmit();
+                        }
                    },
-                   
                    
                    onProgress: function(event, ID, fileObj, data) {
                        self.updateStatus("Uploading file... large files may take some time to complete.<br />" +
@@ -100,55 +100,7 @@ $(document).ready(function(){
                    }
                
                });
-                    
-               
-            */
             
-            
-            var uploader = new qq.FileUploader({
-                action: "/video/upload/",
-                element: targetElement[0],
-                multiple: false,
-                allowedExtensions: allowedExtensions,
-                onSubmit : function(id , file){
-                    try{
-                        ext = file.substr(file.lastIndexOf('.') + 1);
-                        if (! (ext && extensionRegEx.test(ext))){
-                            // extension is not allowed
-                            self.updateStatus('Error: invalid file extension', true);
-                            // cancel upload
-                            return false;
-                        }
-                        return true;
-                    }catch(e){
-                        self.updateStatus('Error: invalid file extension', true);
-                        return false;
-                    }
-                },
-                onComplete: function(id, fileName, responseJSON) {
-                    if(responseJSON.success) {
-                        resultTarget.val(responseJSON['path']);
-                        if(submitAfter){
-                            self.onVideoSubmit();
-                        }
-                    } else {
-                        self.updateStatus("There was an error uploading that file. Please try again or pick a different file.", true);
-                    }
-                },
-                onProgress: function(id, fileName, loaded, total) {
-                    var pct = Math.floor(loaded / total * 100);
-                    self.updateStatus("Uploading file... large files may take some time to complete.<br />" +
-                                      "<div class='progress_bar_container'><div class='progress_bar' style='width:"+ pct +"%;'>"+pct+"%</div></div>", true, true);
-                },
-                onAllComplete: function(uploads) {
-                },
-                params: {
-                    'csrf_token': CSRF_TOKEN,
-                    'csrf_name': 'csrfmiddlewaretoken',
-                    'csrf_xname': 'X-CSRFToken'
-                }
-            });
-            $(uploader._button._element).get(0).childNodes[0].nodeValue = buttonText;
             
         },
         
@@ -244,7 +196,7 @@ $(document).ready(function(){
                 $("#add_edit_message").show();
                 $('#add_video_details .timepicker').timepicker();
                 $('#add_video_details .datepicker').datePicker({createButton:true, startDate: new Date(1980, 0, 1)})
-                this.genUploader($('#image_uploader'), $('#video-icon_link'), false, /^(jpg|png|jpeg|gif)$/i, ['jpg', 'png', 'jpeg', 'gif'], 'Upload an image');
+                this.genUploader($('#image_uploader'), $('#video-icon_link'), false, 'Upload an image', '*.jpg;*.gif;*.png;*.jpeg');
                 
                 $("#video_save_button").click(function(){
                     var title = $("#video-title").val();
@@ -271,7 +223,7 @@ $(document).ready(function(){
                     if(!self.addSourceView)
                         self.addSourceView = new AddSourceView();
                 });
-                if(!alreadyExists){
+                if(!alreadyExists && this.type == 'youtube'){
                     this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Add sources or view the video to sync and add notes.")}});
                 }
                 //and allow the adding of sources...

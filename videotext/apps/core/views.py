@@ -1,6 +1,4 @@
 import datetime
-from ajaxuploader.views import AjaxFileUploader
-from ajaxuploader.backends.s3 import S3UploadBackend
 from core.api.resources import NoteResource, VideoResource
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -19,51 +17,11 @@ from django.views.generic.date_based import *
 from itertools import chain
 from operator import attrgetter
 from parsers.tvncsv import export_tvn_csv
-from storages import TVNS3UploadBackend
 from tastypie.authorization import DjangoAuthorization
 from tastypie.bundle import Bundle
 from tastypie.serializers import Serializer
-
-
-
-
-
-
-
-#from panda.
-class JSONResponse(HttpResponse):
-    """
-A shortcut for an HTTPResponse containing data serialized as json.
-
-Note: Uses Tastypie's serializer to transparently support serializing bundles.
-"""
-    def __init__(self, contents, **kwargs):
-        serializer = Serializer()
-
-        super(JSONResponse, self).__init__(serializer.to_json(contents), content_type='application/json', **kwargs)
-
-
-
-class SecureAjaxFileUploader(AjaxFileUploader):
-    """
-A custom version of AjaxFileUploader that checks for authorization.
-"""
-    def __call__(self, request):
-
-        if request.user.is_authenticated() != True:
-            # Valum's FileUploader only parses the response if the status code is 200.
-            return JSONResponse({ 'success': False, 'forbidden': True }, status=200)
-        try:
-            return self._ajax_upload(request)
-        except Exception, e:
-            return JSONResponse({ 'error_message': unicode(e) })
-
-
-file_upload = SecureAjaxFileUploader(backend=TVNS3UploadBackend)
-
-
-
-
+from uploadify_s3 import uploadify_s3
+import json
 
 
 
@@ -79,11 +37,33 @@ def index_view(request):
 
 @login_required
 def add_video_view(request):
-    policy, signature = gen_s3_policy()
+    #policy, signature = gen_s3_policy()
+    options = {}
+    key_pattern = 'tvn/contrib/uploads/%s/${filename}' % request.user.username
+    post_data = {
+        'key': key_pattern,
+        'success_action_status': "201",
+    }
+    conditions = {
+        'key': {'op': 'starts-with', 'value': 'tvn/contrib/uploads'},
+        'folder': {'op': 'starts-with', 'value': ''},
+        'fileext': {'op': 'starts-with', 'value': ''},
+        #'Content-Type': {'op': 'starts-with', 'value': ''},
+    }
+    up = uploadify_s3.UploadifyS3(
+                            uploadify_options=options,
+                            post_data=post_data,
+                            conditions=conditions
+                            )
+    uploadify_options = up.get_options_json()
+    
+    print up.policy_string
     data = {
         'csrf_token': get_token(request),
-        's3_policy': policy,
-        's3_signature': signature,
+        'uploadify_options': uploadify_options,
+        's3_policy': up.post_data['policy'],
+        's3_signature': up.post_data['signature'],
+        's3_data': json.dumps(up.options['scriptData']),
         's3_access_key': settings.AWS_ACCESS_KEY_ID, 
     }
     return get_response(template='add_video.django.html', data=data, request=request)
@@ -244,10 +224,7 @@ def gen_s3_policy():
         "conditions": [ 
           {"bucket": "media.reporterslab.org"}, 
           ["starts-with", "$key", "/tvn/contrib/uploads/"],
-          {"acl": "private"},
-          ["starts-with", "$Content-Type", ""],
-          ["starts-with","$folder",""],
-          ["starts-with","$fileext",""],
+          {"acl": "public-read"},
           ["starts-with","$filename",""],
         ]
     }''' % (expiration_date.strftime('%Y-%m-%dT%H-%M-%S:00Z'))

@@ -116,7 +116,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'south',
     'tastypie',
-    'ajaxuploader',
+    'uploadify_s3',
     'videotext.apps.core',
 )
 
@@ -144,9 +144,8 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
 AWS_ACCESS_KEY_ID = '[[ YOUR ACCESS KEY ID ]]'
 AWS_SECRET_ACCESS_KEY = '[[ YOUR SECRET ACCESS KEY ]]'
 AWS_STORAGE_BUCKET_NAME = '[[ YOUR BUCKET ]]'
-AWS_STORAGE_ACL = 'public-read'
-
-
+AWS_STORAGE_ACL = AWS_DEFAULT_ACL = 'public-read'
+AWS_DEFAULT_FORM_LIFETIME = 3600
 #authorization profiles
 AUTH_PROFILE_MODULE = 'videotext.apps.core.models.UserProfile'
 

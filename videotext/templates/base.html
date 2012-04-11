@@ -20,12 +20,10 @@
         <!-- for embedding the YouTube video -->
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
         
-        <!-- videojs, used for displaying HTML 5 video either natively or in a Flash container. Best with MP4s. http://videojs.com/ -->
-        <!--<lin k href="{{ STATIC_URL }}js/video-js/video-js.css" rel="stylesheet">
-        <scr ipt src="{{ STATIC_URL }}js/video-js/video.js"></sc ript>-->
+        
         <!-- Media Element. May Replace VideoJS because it also plays audio. https://github.com/johndyer/mediaelement -->
         <script src="{{ STATIC_URL }}js/mediaelement/mediaelement-and-player.min.js"></script>
-        <link rel="stylesheet" href="{{ STATIC_URL }}js/mediaelement/mediaelementplayer.css" /></code>
+        <link rel="stylesheet" href="{{ STATIC_URL }}js/mediaelement/mediaelementplayer.css" />
         
         
         <link href='http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -53,9 +51,6 @@
         
         <!-- for parsing tweets to include working URLs... -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/twitter-text.js"></script>
-        <!-- ajax uploader -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/ajaxuploader/js/fileuploader.js"></script>
-        <link rel="stylesheet" href="{{ STATIC_URL }}js/ajaxuploader/css/fileuploader.css" type="text/css" charset="utf-8" />  
                 
         <script type="text/javascript">
             //some generic page info we want available to javascript.
@@ -64,12 +59,15 @@
             SOURCE_API = "{% url api_dispatch_list api_name="v1" resource_name="source" %}";
             MEDIA_URL = "{{ MEDIA_URL }}";
             STATIC_URL = "{{ STATIC_URL }}";
+            UPLOAD_URL = "http://media.reporterslab.org/tvn/contrib/uploads/"
             PATH = "{{ request.path }}";
             LOGGED_IN = {{ user.is_authenticated|lower }};
             {% if user.is_authenticated %}
                 LOGGED_IN_USER = {{ user.id }};
+                USER_NAME = "{{ user.username }}";
             {% else %}
                 LOGGED_IN_USER = -1;
+                USER_NAME = '';
             {% endif %}
         </script>
         

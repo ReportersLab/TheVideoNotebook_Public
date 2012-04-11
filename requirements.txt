@@ -36,4 +36,5 @@ wsgiref==0.1.2
 yolk==0.4.1
 pytz
 boto
-ajaxuploader
+-e git+https://github.com/sbc/django-uploadify-s3.git#egg=django-upladify-s3
+

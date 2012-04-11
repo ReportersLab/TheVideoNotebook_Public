@@ -23,5 +23,6 @@ urlpatterns = patterns('',
     url(r'^user/(?P<username>[-\w]+)/?$', views.user_view, name='user_view'),
     url(r'^video/(?P<slug>[-\w]+)/notes.csv$', views.video_csv_view, name='video_csv_view'),
     url(r'^taggit_autosuggest/list/$', views.list_tags, name='taggit_autosuggest-list'),
+    url(r'^crossdomain.xml$','flashpolicies.views.simple', {'domains': ['media.reporterslab.org']}),
     url(r'', views.index_view, name='index_view'),
 )

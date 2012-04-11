@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'south',
     'tastypie',
+    'flashpolicies',
     'uploadify_s3',
     'videotext.apps.core',
 )

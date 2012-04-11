@@ -59,7 +59,7 @@ $(document).ready(function(){
             uploader = $(targetElement).uploadify({
                    'scriptAccess': 'always',
                    'fileDataName' : 'file',
-                   'uploader'  : STATIC_URL + 'js/uploadify-v2.1.4/uploadify.swf',
+                   'uploader'  : '/site_media/static/js/uploadify-v2.1.4/uploadify.swf',
                    'script'    : 'http://media.reporterslab.org.s3.amazonaws.com/',
                    'cancelImg' : STATIC_URL + 'js/uploadify-v2.1.4/cancel.png',
                    'auto'      : true,

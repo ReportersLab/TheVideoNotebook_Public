@@ -51,18 +51,23 @@ $(document).ready(function(){
             this.type = $('input:radio[name=video_type]:checked').val();
             this.router = new MainRouter({app:this});
             Backbone.history.start();
-            this.genUploader($('#uploader'), $('#upload_url'), true, 'Upload some video or audio', '*.mp4;*.mp3');
+            //this.genUploader($('#uploader'), $('#upload_url'), true, 'Upload some video or audio', '*.mp4;*.mp3');
         },
         
-        genUploader: function(targetElement, resultTarget, submitAfter, buttonText, fileExtensions){
+        genUploader: function(targetElement, resultTarget, submitAfter, buttonText, fileExtensions, buttonLink){
             var self = this;
+            $(targetElement).next().remove();
             uploader = $(targetElement).uploadify({
                    'scriptAccess': 'always',
                    'fileDataName' : 'file',
                    'uploader'  : '/site_media/static/js/uploadify-v2.1.4/uploadify.swf',
                    'script'    : 'http://media.reporterslab.org.s3.amazonaws.com/',
                    'cancelImg' : STATIC_URL + 'js/uploadify-v2.1.4/cancel.png',
+                   'buttonImg' : STATIC_URL + 'img/' + buttonLink,
                    'auto'      : true,
+                   'width'     : 400,
+                   'height'    : 41,
+                   'wmode'     : 'transparent',
                    'fileExt'   : fileExtensions, //'*.jpg;*.gif;*.png;*.mp4;*.mp3;*.jpeg',
                    'onError' : function(errorObj, q, f, err) {
                         //console.log(errorObj); console.log(q); console.log(f); console.log(err);
@@ -79,9 +84,9 @@ $(document).ready(function(){
                         }else if( ext == 'mp4'){
                             type = 'video/mp4';
                         }else if (ext == 'mp3'){
-                            type == 'audio/mpeg';
+                            type = 'audio/mpeg';
                         }else{
-                            type == '';
+                            type = '';
                         }
                         //isn't working?
                         //$(targetElement).uploadifySettings("scriptData", {'Content-Type': type });
@@ -110,6 +115,13 @@ $(document).ready(function(){
             this.type = $(event.currentTarget).val();
             $('.add_box').slideUp('slow');
             $('#' + event.target.id + '_add').slideDown('slow');
+            
+            if(this.type == 'mp4'){
+                this.genUploader($('#uploader'), $('#upload_url'), true, 'Upload a video file', '*.mp4', 'upload_mp4.png');    
+            }
+            if(this.type == 'mp3'){
+                this.genUploader($('#uploader'), $('#upload_url'), true, 'Upload an audio file', '*.mp3', 'upload_mp3.png');
+            }
             
         },
         
@@ -198,7 +210,7 @@ $(document).ready(function(){
                 $("#add_edit_message").show();
                 $('#add_video_details .timepicker').timepicker();
                 $('#add_video_details .datepicker').datePicker({createButton:true, startDate: new Date(1980, 0, 1)})
-                this.genUploader($('#image_uploader'), $('#video-icon_link'), false, 'Upload an image', '*.jpg;*.gif;*.png;*.jpeg');
+                this.genUploader($('#image_uploader'), $('#video-icon_link'), false, 'Upload an image', '*.jpg;*.gif;*.png;*.jpeg', 'upload_image.png');
                 
                 $("#video_save_button").click(function(){
                     var title = $("#video-title").val();

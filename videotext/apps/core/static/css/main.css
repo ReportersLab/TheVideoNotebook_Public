@@ -254,19 +254,6 @@ fieldset legend
     z-index:11;
 }
 
-#q{
-    position:absolute;
-    top:0; left:13px;
-    z-index:10;
-    padding:2px 0 2px 16px;
-    width:150px;
-    border:2px solid white;
-    background:#000000;
-    color:#FFFFFF;
-    font:14px 'LeagueGothicRegular',Arial,'Liberation Sans',FreeSans,sans-serif;
-    text-transform:uppercase;
-    letter-spacing:1px;
-}
 
 
 #global_nav
@@ -535,39 +522,6 @@ article .teaser
 {
     margin:18px 0 0 0;
 }
-
-/**
- *PAGINATION
- **/
-
-.pagination
-{
-    float:left;
-    clear:both;
-    display:inline;
-    margin:10px 0 10px 0;
-    width:620px;
-    text-align:right;
-}
-
-.pagination .page.current
-{
-    font-weight:bold;
-    border:none;
-}
-
-.pagination .page
-{
-    padding:2px 5px 2px 5px;
-    margin:0 2px 0 2px;
-    border:1px solid #DDDDDD;
-}
-
-.pagination .prev, .pagination .next
-{
-    margin:0 5px 0 5px;
-}
-
 
 
 /**
@@ -899,7 +853,6 @@ article .teaser
     width:416px;
     border:2px solid #DFDFDF;
     background:#FFFFFF;
-    color:#000000;
     font:16px 'LeagueGothicRegular',Arial,'Liberation Sans',FreeSans,sans-serif;
     text-transform:uppercase;
     float:left;
@@ -908,7 +861,27 @@ article .teaser
     margin:10px 0 10px -10px;
 }
 
-#youtube_submit, .video_submit{
+#q.search_field{
+    margin:10px 0 10px 15px;
+}
+
+#search_header_box #q.search_field {
+    margin: 10px 0 10px 15px;
+    position: absolute;
+    right: 8px;
+    top: 80px;
+    width: 200px;
+}
+
+#search_header_box #search_button {
+    position: absolute;
+    right: 215px;
+    top: 81px;
+    left: auto;
+    z-index: 11;
+}
+
+#youtube_submit, .video_submit, .search_submit{
     z-index:11;
     float:left;
     position:relative;
@@ -1050,6 +1023,44 @@ body .qq-upload-cancel{
 body .qq-upload-size, .qq-upload-cancel {
     font-size: 14px;
 }
+
+
+
+
+
+/**
+ *PAGINATION
+ **/
+
+.pagination
+{
+    float:left;
+    clear:both;
+    display:inline;
+    margin:10px 0 10px 0;
+    width:620px;
+}
+
+.pagination .page.current
+{
+    font-weight:bold;
+    border:none;
+}
+
+.pagination .page
+{
+    padding:2px 5px 2px 5px;
+    margin:0 5px 0 5px;
+    border:1px solid #DDDDDD;
+}
+
+.pagination .prev, .pagination .next
+{
+    margin:0 5px 0 5px;
+}
+
+
+
 
 
 

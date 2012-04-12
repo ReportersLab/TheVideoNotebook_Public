@@ -93,6 +93,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'linaro_django_pagination.middleware.PaginationMiddleware',
 )
 
 ROOT_URLCONF = 'videotext.configs.common.urls'
@@ -118,6 +119,7 @@ INSTALLED_APPS = (
     'tastypie',
     'flashpolicies',
     'uploadify_s3',
+    'linaro_django_pagination',
     'videotext.apps.core',
 )
 

@@ -107,6 +107,66 @@ def video_csv_view(request, slug):
 
 
 
+def search_view(request):
+    #get the query text
+    q = request.GET.get('q', '')
+    date = request.GET.get('date', None)
+    type = request.GET.get('type', None)
+    
+    
+    if q == '':
+        q = request.POST.get('q', '')
+        request.GET.q = q
+    terms = q.split()
+    
+    #loop over the terms and build up a generic query of Q objects
+    query = Q()
+    if terms:
+        for term in terms:
+            query &= Q(text__icontains=term)
+        
+    
+    #If there's a date, lets add that range as well.
+    if date and (date != 'all'):
+        now = datetime.date.today()
+        difference = datetime.timedelta(weeks=-1)
+        if date == "fortnight":
+            difference = datetime.timedelta(weeks=-2)
+        if date == "month":
+            difference = datetime.timedelta(days=-31)
+        if date == "season":
+            difference = datetime.timedelta(weeks=-13)
+        if date == "year":
+            difference = datetime.timedelta(days=-365)
+        
+        now_diff = now + difference
+        query &= Q(time__range = (now_diff, now))
+        
+    #and if they want a specific note type, add that.
+    if type and (type != 'all'):
+        query &= Q(type = type)
+        
+    model_list = list()
+    
+    #lets see if a specific model is requested.
+    
+    #get the user visibile notes
+    notes = get_user_visible_objects(Note, request)
+    #and filter them for only the results we want.
+    results = notes.filter(query).order_by('time')
+
+    data = {
+        'results':results,
+        'results_count': results.count(),
+        'q': q,
+        'is_search': True,
+    }
+    
+    #And return the results
+    return get_response('search.django.html', data=data, request=request)
+   
+
+
 
 def login_main_view(request):
     return render_to_response('', RequestContext(request))

@@ -38,3 +38,4 @@ pytz
 boto
 -e git+https://github.com/sbc/django-uploadify-s3.git#egg=django-upladify-s3
 django-flashpolicies
+linaro-django-pagination

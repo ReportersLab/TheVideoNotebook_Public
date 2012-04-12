@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+
+{% load pagination_tags %}
+
+
+{% block main_content %}
+    {% autopaginate results 10 %}
+    
+    
+    
+    
+    <div id="search_box">
+        <form method="get" name="searchForm" onsubmit="return false;" action="/search">
+            <input id="search_button" type="image" src="{{ STATIC_URL }}img/search_arrow.png" name="search_button"  value="" class="search_submit" />
+            <input type="text" id="q" name="q" class="search_field" {% if q %}placeholder="Search For: {{ q }}" {% else %} placeholder="search" {% endif %} />
+        </form>
+    </div>
+
+    <script type="text/javascript" language="javascript">
+        $('#search_button').click(function(){
+            text = $('#q').val().replace(' ', '+');
+            window.location = "/search?q=" + text
+        });
+    </script>
+    <h5 style="clear:both;">{{ results_count }} total results</h5>
+    <div id="video_list">
+    {% for n in results %}
+        <article class="video_list_item">
+            {% if n.video.icon_link %}
+            <figure>
+                <img src="{{ n.video.icon_link}}" />
+            </figure>
+            {% endif %}
+           <header>
+                <h2><a href="{{ n.link }}">{{ n.video.title }}</a></h2>
+                <div class="entry_meta">
+                    <span>{{ n.user_name }}</span>
+                    <span class="slashes">//</span>
+                    <span class="timestamp">{{ n.time|date:"DATETIME_FORMAT" }}</span>
+                </div>
+           </header>
+           <div class="teaser">
+                {{ n.text|safe }}
+           </div>
+           <a class="more_link" href="{{ n.link }}">View Note</a>
+        </article>
+    {% endfor %}
+    {% paginate %}
+    </div>
+    
+    <div id="right_rail">
+        <aside>
+            <h3>Welcome to The Video Notebook</h3>
+            <p>The Video Notebook is an attempt to provide a way for journalists to sync notes to video. The hope is to create a way for reporters to easily import various data feeds from places like Storify or Twitter and sync them up with a recorded event.</p>
+            <p>In its alpha stage The Video Notebook provides a way to import videos from YouTube and notes from a few sources, as well as a way to add notes through our video interface.</p>
+            <p>In the future more ways to import data will be added. We also plan on adding more ways to add video and audio. We would also like to provide more ways of analyzing the notes' content -- things like entity extraction and visualizations.</p>
+            <p>You can request access to help us test the site and provide input how you would like to see it work at <b><a href="mailto:info@reporterslab.org">info@reporterslab.org</a></b></p>
+        </aside>
+    </div>
+    
+{% endblock %}

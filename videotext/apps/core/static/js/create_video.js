@@ -56,7 +56,8 @@ $(document).ready(function(){
         
         genUploader: function(targetElement, resultTarget, submitAfter, buttonText, fileExtensions, buttonLink){
             var self = this;
-            $(targetElement).next().remove();
+            this.removeUploader(targetElement);
+            //$(targetElement).next().remove();
             uploader = $(targetElement).uploadify({
                    'scriptAccess': 'always',
                    'fileDataName' : 'file',
@@ -93,7 +94,7 @@ $(document).ready(function(){
                         
                    },
                    onComplete: function(event, ID, fileObj, responseJSON, data) {
-                        url = UPLOAD_URL + USER_NAME + '/' + fileObj.name;
+                        url = UPLOAD_URL + USER_NAME + '/' + TIMESTAMP + '-' + fileObj.name;
                         self.updateStatus("Upload complete.", true);
                         resultTarget.val(url);
                         if(submitAfter){
@@ -109,6 +110,12 @@ $(document).ready(function(){
                });
             
             
+        },
+        
+        removeUploader: function(element){
+            $(element).next().remove();
+            $(element).unbind("uploadifySelect");
+            $(element).next().remove();
         },
         
         onRadioChange: function(event){

@@ -39,13 +39,14 @@ def index_view(request):
 def add_video_view(request):
     #policy, signature = gen_s3_policy()
     options = {}
-    key_pattern = 'tvn/contrib/uploads/%s/${filename}' % request.user.username
+    timestamp = datetime.datetime.now().strftime('%m-%d-%Y-%H-%M-%S')
+    key_pattern = 'tvn/contrib/uploads/%s/%s-${filename}' % (request.user.username, timestamp)
     post_data = {
         'key': key_pattern,
         'success_action_status': "201",
     }
     conditions = {
-        'key': {'op': 'starts-with', 'value': 'tvn/contrib/uploads'},
+        'key': {'op': 'starts-with', 'value': 'tvn/contrib/uploads/{0}'.format(request.user.username,)},
         'folder': {'op': 'starts-with', 'value': ''},
         'fileext': {'op': 'starts-with', 'value': ''},
         #'Content-Type': {'op': 'starts-with', 'value': ''},
@@ -64,7 +65,8 @@ def add_video_view(request):
         's3_policy': up.post_data['policy'],
         's3_signature': up.post_data['signature'],
         's3_data': json.dumps(up.options['scriptData']),
-        's3_access_key': settings.AWS_ACCESS_KEY_ID, 
+        's3_access_key': settings.AWS_ACCESS_KEY_ID,
+        'timestamp': timestamp,
     }
     return get_response(template='add_video.django.html', data=data, request=request)
 

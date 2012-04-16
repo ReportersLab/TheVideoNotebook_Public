@@ -173,12 +173,19 @@ class NoteResource(ModelResource):
     def obj_create(self, bundle, request=None, **kwargs):
         if bundle.data is not None:
             self.strip_bundle_data(bundle)
+            
+            video = Video.objects.get(id = bundle.data['video'])
+            user = request.user
+            #if the video is private, a user should not be able to create the source if they don't own the video.
+            if (video.private == True) and (video.user != user):
+                raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+            
             saved_object = super(NoteResource, self).obj_create(bundle, request, **kwargs)
             #do this here because the user property is readonly.    
-            saved_object.obj.user = request.user
+            saved_object.obj.user = user
             saved_object.obj.user_name = request.user.username
             saved_object.obj.source = 'TheVideoNotebook'
-            saved_object.obj.video = Video.objects.get(id = bundle.data['video'])
+            saved_object.obj.video = video
             saved_object.obj.save()
             return saved_object
         return bundle
@@ -314,6 +321,12 @@ class SourceResource(ModelResource):
     '''
     def obj_create(self, bundle, request=None, **kwargs):
         if bundle.data is not None:
+            video = Video.objects.get(id = bundle.data['video_id'])
+            user  =  request.user
+            #if the video is private, a user should not be able to create the source if they don't own the video.
+            if (video.private == True) and (video.user != user):
+                raise ImmediateHttpResponse(response=http.HttpUnauthorized())
+            
             bundle.data['url'] = strip(bundle.data.get('url', ''))
             bundle.data['type'] = strip(bundle.data.get('type', ''))
             bundle.data['twitter_user'] = strip(bundle.data.get('twitter_user', ''))
@@ -321,8 +334,8 @@ class SourceResource(ModelResource):
             bundle.data['twitter_end_id'] = strip(bundle.data.get('twitter_end_id', ''))
             bundle.data['twitter_search'] = strip(bundle.data.get('twitter_search', ''))
             bundle.data['twitter_hash'] = strip(bundle.data.get('twitter_hash', ''))
-            kwargs['video'] = Video.objects.get(id = bundle.data['video_id'])
-            kwargs['user'] = request.user
+            kwargs['video'] = video
+            kwargs['user'] = user
             kwargs['user_name'] = request.user.username
             
         return super(SourceResource, self).obj_create(bundle, request, **kwargs)

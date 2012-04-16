@@ -45,21 +45,24 @@
                 <strong>Start Time:</strong>
                 <input id="video_time_component" class="timepicker" value="<%= time_component %>" />
             </div>
+            <% if (obj.type != 'youtube'){ %>
+                <div>
+                    <strong>Private:</strong>
+                    <input id="video-private" type="checkbox" <% if (obj.private){ %> checked='checked' <% } %> />
+                </div>
+                <% if(false){ %>
+                    <div>
+                        <strong>Lock Noting:</strong>
+                        <input id="video-lock_notes" type="checkbox" <% if (obj.lock_notes){ %> checked='checked' <% } %> />
+                    </div>
+                <% } %>
+            <% } %>
             <div>
                 <strong>Icon URL:</strong>
                 <textarea id="video-icon_link" class="edit"  placeholder="A URL to a video image. Should be approximately 550px wide by 350px tall"><% if (obj.icon_link && (obj.icon_link != '')){ %><%= icon_link %><%}%></textarea>
             </div>
-            <div id="image_uploader"></div>
-            <% if (obj.type != 'youtube'){ %>
-            <div>
-                <strong>Private:</strong>
-                <input id="video-private" type="checkbox" <% if (obj.private){ %> checked='checked' <% } %> />
-            </div>
-            <div>
-                <strong>Lock Noting:</strong>
-                <input id="video-lock_notes" type="checkbox" <% if (obj.lock_notes){ %> checked='checked' <% } %> />
-            </div>
-            <% } %>
+            <div><div id="image_uploader"></div></div>
+            
             <input type="button" value="Save Video" style="float:right; clear:both;" id="video_save_button" />
         </div>
     </script>

@@ -196,7 +196,7 @@ $(document).ready(function(){
                     this.video.set({time: dt});
                     this.video.set({date_time: dt});
                     this.video.set({time_component:dt.getHours() + ':' + minutes, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})
-                
+                    this.video.set({type: this.type});
                 }else{
                     this.updateStatus("Edit your video.");
                 }

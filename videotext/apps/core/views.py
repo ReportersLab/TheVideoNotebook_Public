@@ -101,8 +101,10 @@ def user_view(request, username):
 
 
 def video_csv_view(request, slug):
-    video = get_object_or_404(Video, slug = slug)
-    return export_tvn_csv(video)
+    video = get_user_visible_object(Video, request, slug = slug)
+    notes = get_user_visible_objects(Note, request)
+    notes = notes.filter(video = video)
+    return export_tvn_csv(notes)
 
 
 

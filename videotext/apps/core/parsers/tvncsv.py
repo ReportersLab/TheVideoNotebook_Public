@@ -38,7 +38,7 @@ def import_tvn_csv(source):
         )
         
 
-def export_tvn_csv(video):
+def export_tvn_csv(notes):
     response = HttpResponse(mimetype = 'text/csv')
     response['Content-Disposition'] = 'attachment; filename=notes.csv'
     writer = csv.writer(response)
@@ -48,7 +48,9 @@ def export_tvn_csv(video):
         'creation_time', 'update_time',
     ])
     
-    for note in video.note_set.all():
+    
+    
+    for note in notes:
         writer.writerow([
             note.text.encode('utf8'),
             note.time.strftime('%Y-%m-%dT%H:%M:%S.000Z') if note.time else '',

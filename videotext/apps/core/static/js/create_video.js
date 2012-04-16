@@ -246,10 +246,10 @@ $(document).ready(function(){
                 });
                 if(!alreadyExists && this.type == 'youtube'){
                     this.video.save(null, {wait:true, success:function(model, response){self.updateStatus("Video Added! Add sources or view the video to sync and add notes.")}});
+                    if(!this.addSourceView)
+                        this.addSourceView = new AddSourceView();
                 }
-                //and allow the adding of sources...
-                if(!this.addSourceView)
-                    this.addSourceView = new AddSourceView();
+                
             }else{
                 this.updateStatus("This video already exists and you do not have permission to edit it.");
             }

@@ -193,9 +193,11 @@ $(document).ready(function(){
                     var dt = new Date();
                     var hours = dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours();
                     var minutes =  dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes();
+                    var day = dt.getDate() < 10 ? '0' + dt.getDate() : dt.getDate();
+                    var month = (dt.getMonth() + 1) < 10 ? '0' + (dt.getMonth() + 1) : (dt.getMonth() + 1);
                     this.video.set({time: dt});
                     this.video.set({date_time: dt});
-                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component: dt.getDate() + '/' + (dt.getMonth() + 1) + '/' + dt.getFullYear()})
+                    this.video.set({time_component:dt.getHours() + ':' + minutes, date_component: day + '/' + month + '/' + dt.getFullYear()})
                     this.video.set({type: this.type});
                 }else{
                     this.updateStatus("Edit your video.");

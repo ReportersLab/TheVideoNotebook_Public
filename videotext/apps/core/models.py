@@ -229,6 +229,7 @@ class Note(CommonInfo):
     original_source         = models.CharField(max_length = 256, blank = True, null = True) #if the source pulls content from elsewhere -- see Storify
     original_source_link    = models.URLField(max_length = 512, blank = True, verify_exists = False, null = True)
     offset                  = models.IntegerField(null = True, blank = True) # position within video in seconds.
+    end_offset              = models.IntegerField(null = True, blank = True) # end position of video in seconds (for captions?)
     private                 = models.BooleanField(default = False) 
     original_data           = models.TextField(blank = True, null = True) #would like to store the original HTML or JSON block here.
     import_source           = models.ForeignKey(to = Source, blank = True, null = True, verbose_name = 'Import Data Source')

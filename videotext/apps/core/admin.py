@@ -90,7 +90,8 @@ class NoteAdmin(CommonAdmin):
     list_display = ('text', 'video', 'offset', 'published',)
     list_editable= ('published',)
     list_display_links = ('text',)
-    list_filter = ('published', 'private', 'video', 'user', 'import_source',)
+    list_filter = ('published', 'private', 'video', 'user', 'import_source', 'type',)
+    search_fields = ('text',)
 
 
 

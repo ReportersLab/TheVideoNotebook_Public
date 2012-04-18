@@ -57,6 +57,7 @@ SOURCE_TYPE_CHOICES = (
 #    ('coveritlive','Cover It Live'),
     ('scribblelive','ScribbleLive'),
     ('csv', 'CSV'),
+    ('granicus', 'Granicus'),
 #    ('fark','Fark.com'),
 )
 
@@ -177,6 +178,7 @@ class Source(CommonInfo):
         from parsers.fark import parse_fark
         from parsers.tvncsv import import_tvn_csv
         from parsers.twitterparser import get_tweets
+        from parsers.granicus import get_granicus_data
         #save first so we at least have an id?
         if not self.id:
             super(Source, self).save(*args, **kwargs)
@@ -201,6 +203,8 @@ class Source(CommonInfo):
                     import_tvn_csv(self)
                 elif self.type == "fark":
                     parse_fark(self.url, self.video, import_source = self)
+                elif self.type == 'granicus':
+                    get_granicus_data(self)
                 self.scraped = True
                 self.error_message = ''
             except Exception as e:
@@ -288,7 +292,11 @@ class Note(CommonInfo):
 
 
 
-
+'''
+None of this is actually implemented yet. The idea would be to create some sort of user creation system in the future.
+The users would need some metadata in addition to the standard Djagno info, and we would put it here (this is how the
+Django docs recommend doing it.) 
+'''
 
 #hold extra metadata for user
 class UserProfile(models.Model):

@@ -12,11 +12,10 @@ def parse_scribbling(url, video, import_source = None):
     soup = BeautifulSoup(html)
     
     
-    
+    #we're done if the 'newest' navigation item has the class 'Current.' Return.
     current_nav = soup.find('ul', 'Pagination').findAll('a', 'Current')
     newest = current_nav[-1]
     if newest.text.find('Newest') != -1:
-        print 'done'
         return
     
     comments = soup.find('ul', id = 'Posts')
@@ -63,6 +62,11 @@ def parse_scribbling(url, video, import_source = None):
     
     #Go to the next page
     page_number = re.search('\?Page=(\d+)', url).group(1)
+    
+    #something probably went haywire and we're just pulling in page after page. 100 is way too many pages. This should probably go to 50 maybe.
+    if (int(page_number) + 1) >= 100:
+        return
+    
     page_number = '?Page={0}'.format((int(page_number) + 1))
     new_url = re.sub('\?Page=(\d+)', page_number, url)
     

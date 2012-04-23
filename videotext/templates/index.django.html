@@ -3,30 +3,40 @@
 
 
 {% block main_content %}
-    <div id="video_list">
-    {% for v in video_list %}
-        <article class="video_list_item">
-            {% if v.icon_link %}
-            <figure>
-                <img src="{{ v.icon_link}}" />
-            </figure>
-            {% endif %}
-           <header>
-                <h2><a href="{{ v.get_absolute_url }}">{{ v.title }}</a></h2>
-                <div class="entry_meta">
-                    <span>{{ v.user.first_name }} {{ v.user.last_name }}</span>
-                    <span class="slashes">//</span>
-                    <span class="timestamp">{{ v.update_time|date:"DATETIME_FORMAT" }}</span>
-                </div>
-           </header>
-           <div class="teaser">
-                {{ v.description|safe }}
-           </div>
-           <a class="more_link" href="{{ v.get_absolute_url }}">View Video</a>
-        </article>
-    {% endfor %}
-    </div>
-    
+    {% if user.is_authenticated %}
+        <div id="video_list">
+        {% for v in video_list %}
+            <article class="video_list_item">
+                {% if v.icon_link %}
+                <figure>
+                    <img src="{{ v.icon_link}}" />
+                </figure>
+                {% endif %}
+               <header>
+                    <h2><a href="{{ v.get_absolute_url }}">{{ v.title }}</a></h2>
+                    <div class="entry_meta">
+                        <span>{{ v.user.first_name }} {{ v.user.last_name }}</span>
+                        <span class="slashes">//</span>
+                        <span class="timestamp">{{ v.update_time|date:"DATETIME_FORMAT" }}</span>
+                    </div>
+               </header>
+               <div class="teaser">
+                    {{ v.description|safe }}
+               </div>
+               <a class="more_link" href="{{ v.get_absolute_url }}">View Video</a>
+            </article>
+        {% endfor %}
+        </div>
+    {% else %}
+        <div class="box_shadow margined padded login_home" style="float:left; width:500px;">
+            <form method="post" action="{{ request.path }}">
+                {% csrf_token %}
+                <p><label for="id_username">Username:</label>{{ auth_form.username }}</p>
+                <p><label for="id_password">Password:</label>{{ auth_form.password }}</p>
+                <input type="submit" value="Log in" />
+            </form>
+        </div>
+    {% endif %}
     <div id="right_rail">
         <aside>
             <h3>Welcome to The Video Notebook</h3>

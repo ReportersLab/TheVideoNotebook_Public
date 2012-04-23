@@ -70,7 +70,7 @@ def add_video_view(request):
     }
     return get_response(template='add_video.django.html', data=data, request=request)
 
-
+@login_required
 def video_view(request, slug):
     note_resource = NoteResource()
     video_resource = VideoResource()
@@ -87,7 +87,7 @@ def video_view(request, slug):
     return get_response(template='video.django.html', data=data, request=request)
 
 
-
+@login_required
 def user_view(request, username):
     user_info = get_object_or_404(User, username = username)
     videos = get_user_visible_objects(Video, request)
@@ -99,7 +99,7 @@ def user_view(request, username):
     
     return get_response(template='user.django.html', data=data, request=request)
 
-
+@login_required
 def video_csv_view(request, slug):
     video = get_user_visible_object(Video, request, slug = slug)
     notes = get_user_visible_objects(Note, request)
@@ -110,7 +110,7 @@ def video_csv_view(request, slug):
 
 
 
-
+@login_required
 def search_view(request):
     #get the query text
     q = request.GET.get('q', '')

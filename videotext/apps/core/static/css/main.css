@@ -548,6 +548,28 @@ article .teaser
     padding:0;
 }
 
+.login_home
+{
+    text-align:center;
+}
+
+.login_home p
+{
+    clear:both;
+    margin:15px 0 15px 0;
+}
+
+
+.login_home p label
+{
+    font-weight:bold;
+    margin-right:5px;
+}
+
+.login_home p input
+{
+    
+}
 
 /**
  *VIDEO STYLE

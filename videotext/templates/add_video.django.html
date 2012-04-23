@@ -59,7 +59,8 @@
             <% } %>
             <div>
                 <strong>Icon URL:</strong>
-                <textarea id="video-icon_link" class="edit"  placeholder="A URL to a video image. Should be approximately 550px wide by 350px tall"><% if (obj.icon_link && (obj.icon_link != '')){ %><%= icon_link %><%}%></textarea>
+                <textarea id="video-icon_link" class="edit"  placeholder=""><% if (obj.icon_link && (obj.icon_link != '')){ %><%= icon_link %><% }else{ %>{{ STATIC_URL }}img/tvn_default_icon.jpg<%}%></textarea>
+                <p style="clear:both; font-size:10px; color:#333333;">A URL to a video image. Should be approximately 550px wide by 350px tall</p>
             </div>
             <div><div id="image_uploader"></div></div>
             

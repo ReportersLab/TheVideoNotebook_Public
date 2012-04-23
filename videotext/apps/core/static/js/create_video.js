@@ -209,7 +209,9 @@ $(document).ready(function(){
                 var self = this;
                 
                 $('#add_video_details_container').slideDown('slow');
-                $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
+                if(this.video.get('icon_link') != null){
+                    $('#thumb_container').html('<img src="' + this.video.get('icon_link') + '" />').slideDown('slow');;
+                }
             
                     
                 
@@ -231,14 +233,15 @@ $(document).ready(function(){
                     var dateparts = $('#video_date_component').val().split('/');
                     var timeparts = $('#video_time_component').val();
                     
-                    if( (title == '') || (description == '') || (icon_link == '') || (dateparts.length < 3) || (timeparts == '')){
+                    
+                    if( (title == '') || (description == '') || (dateparts.length < 3) || (timeparts == '')){
                         self.updateStatus("Please fill out all video fields.", true);
                         return;
                     }
                     
                     var dateComponent = dateparts[2] + '-' + dateparts[1] + '-' + dateparts[0];
                     var timeparts = timeparts.split(':');
-                    var time = new Date(dateparts[2], dateparts[1], dateparts[0], timeparts[0], timeparts[1], timeparts[2]);
+                    var time = new Date(dateparts[2], dateparts[1] - 1, dateparts[0], timeparts[0], timeparts[1], timeparts[2]);
                     
                     self.video.set({title: title, description: description, icon_link: icon_link, time_component: timeparts, date_component: dateComponent,
                                     private: private_note, lock_notes: lock_notes, time: time, type:self.type});

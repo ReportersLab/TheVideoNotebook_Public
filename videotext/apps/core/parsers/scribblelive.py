@@ -11,12 +11,16 @@ def parse_scribbling(url, video, import_source = None):
     
     soup = BeautifulSoup(html)
     
-    comments = soup.find('ul', id = 'Posts')
     
-    #if no comments, we're done.
-    if len(comments.findAll('li')) == 0:
+    
+    current_nav = soup.find('ul', 'Pagination').findAll('a', 'Current')
+    newest = current_nav[-1]
+    if newest.text.find('Newest') != -1:
         print 'done'
         return
+    
+    comments = soup.find('ul', id = 'Posts')
+    
     
     for comment in comments.findAll('li'):
         message_text = user_name = link = server_time = icon_link = None
@@ -62,7 +66,7 @@ def parse_scribbling(url, video, import_source = None):
     page_number = '?Page={0}'.format((int(page_number) + 1))
     new_url = re.sub('\?Page=(\d+)', page_number, url)
     
-    parse_scribbling(new_url, video)
+    parse_scribbling(new_url, video, import_source)
     
     
     

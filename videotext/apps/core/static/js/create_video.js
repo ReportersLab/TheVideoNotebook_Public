@@ -181,7 +181,7 @@ $(document).ready(function(){
         displayVideo: function(alreadyExists, canEmbed){
             if(!alreadyExists && !canEmbed){
                 //$("#video_title").html("That Video was either not found or not embedable, please try another.");
-                this.updateStatus("That video was either not found, or not embedable. Please try another.", true);
+                this.updateStatus("That video was either not found, not embedable, or not listed. Please try another.", true);
                 return;
             }
             

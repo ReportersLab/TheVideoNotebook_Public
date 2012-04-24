@@ -20,46 +20,47 @@ def parse_scribbling(url, video, import_source = None):
     
     comments = soup.find('ul', id = 'Posts')
     
-    
     for comment in comments.findAll('li'):
-        message_text = user_name = link = server_time = icon_link = None
-        
-        if comment.has_key('style'):
-            icon_link = ''
-            if re.search('image:url\((.*)\)', comment['style']) is not None:
-                icon_link = re.search('image:url\((.*)\)', comment['style']).group(1)        
-        if comment.find('div', 'Content') != None:
-            message_text = comment.find('div', 'Content').text
-        
-        if comment.find('em') != None:
-            user_name = comment.find('em').text
-        
-        if comment.find('span', 'Source') and comment.find('span', 'Source').find('a'):
-            link = comment.find('span', 'Source').find('a')['href']
-        
-        #whatever their server time is, not the same as the post time -- offest by 4 hours
-        #can't trust it. But we have no choice. This may break during daylight savings...
-        full_date = datetime.now()
-        if comment.find('span', 'ServerTime') != None:
-            server_time = comment.find('span', 'ServerTime').text
-            #format: 9/23/2011 1:01:13 AM
-            full_date = datetime.strptime(server_time, '%m/%d/%Y %I:%M:%S %p')
-            full_date = full_date - timedelta(hours = 4)
-        
-        
-        user = video.user
-        if import_source is not None:
-            user = import_source.user
-        
-        
-        #since this is rendered in JS, can't get at it. Argh.
-        #if comment.find('span', 'Posted') != None:
-        #    message_time = comment.find('span', 'Posted').text #there's a script tag in here, hopefully doesn't get pulled in.
-        note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = link, import_source = import_source, user = user,
-                               icon_link = icon_link, video = video, time = full_date, source_link = url, source = 'ScribbleLive')
-        #print note
-        #print created
-        
+        try:
+            message_text = user_name = link = server_time = icon_link = None
+            
+            if comment.has_key('style'):
+                if re.search('image:url\((.*)\)', comment['style']) is not None:
+                    icon_link = re.search('image:url\((.*)\)', comment['style']).group(1)        
+            if comment.find('div', 'Content') != None:
+                message_text = comment.find('div', 'Content').text
+            
+            if comment.find('em') != None:
+                user_name = comment.find('em').text
+            
+            if comment.find('span', 'Source') and comment.find('span', 'Source').find('a'):
+                link = comment.find('span', 'Source').find('a')['href']
+            
+            #whatever their server time is, not the same as the post time -- offest by 4 hours
+            #can't trust it. But we have no choice. This may break during daylight savings...
+            full_date = datetime.now()
+            if comment.find('span', 'ServerTime') != None:
+                server_time = comment.find('span', 'ServerTime').text
+                #format: 9/23/2011 1:01:13 AM
+                full_date = datetime.strptime(server_time, '%m/%d/%Y %I:%M:%S %p')
+                full_date = full_date - timedelta(hours = 4)
+            
+            
+            user = video.user
+            if import_source is not None:
+                user = import_source.user
+            
+            
+            #since this is rendered in JS, can't get at it. Argh.
+            #if comment.find('span', 'Posted') != None:
+            #    message_time = comment.find('span', 'Posted').text #there's a script tag in here, hopefully doesn't get pulled in.
+            note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = link, import_source = import_source, user = user,
+                                   icon_link = icon_link, video = video, time = full_date, source_link = url, source = 'ScribbleLive')
+            #print note
+            #print created
+        except:
+            #there was an error with this note, go to the next.
+            pass
     
     #Go to the next page
     page_number = re.search('\?Page=(\d+)', url).group(1)

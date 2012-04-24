@@ -25,8 +25,9 @@ def parse_scribbling(url, video, import_source = None):
         message_text = user_name = link = server_time = icon_link = None
         
         if comment.has_key('style'):
-            icon_link = re.search('image:url\((.*)\)', comment['style']).group(1)
-        
+            icon_link = ''
+            if re.search('image:url\((.*)\)', comment['style']) is not None:
+                icon_link = re.search('image:url\((.*)\)', comment['style']).group(1)        
         if comment.find('div', 'Content') != None:
             message_text = comment.find('div', 'Content').text
         

@@ -255,6 +255,11 @@ $(document).ready(function(){
                         this.addSourceView = new AddSourceView();
                 }
                 
+                if(alreadyExists){
+                    if(!self.addSourceView)
+                        self.addSourceView = new AddSourceView();
+                }
+                
             }else{
                 this.updateStatus("This video already exists and you do not have permission to edit it.");
             }

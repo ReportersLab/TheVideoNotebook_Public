@@ -267,6 +267,9 @@ $(function(){
        seekToNote: function(note, exact){
             if(this.syncingNotes)
                 return;
+            if(!note){
+                return;
+            }
             var seconds = note.get('offset');
             this.lastNote = note;
             //subtract some time so that we're slightly before the note
@@ -362,10 +365,18 @@ $(function(){
         initialize: function(){
             this.app = this.options.app;
             this.notes = this.options.notes;
+            this.visibleNotes = new Notes();
+            this.filteredNotes = this.notes;
+            this.currentFilter = function(){return true};
+            this.notesElement = $("#notes");
+            this.scrollerElement = $("#notes_scroller");
             this.autoScroll = true;
             this.addingNotes = false;
             this.autoHighlight = true;
             this.syncNotes = false;
+            this.isSearch = false;
+            this.noteHeight = 101;
+            this.renderContainer();
             //then load the notes
             this.notes.bind('add', this.addNote, this);
             this.notes.bind('reset', this.refreshNotes, this);
@@ -375,28 +386,128 @@ $(function(){
             
             this.searchView = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
             this.addNoteView = new AddNoteView({el: $('#add_note_container'), notesView: this, notes: this.notes });
-            this.noteDetailsView = new NoteDetailsView({el:$('#note_details_container'), notesView: this});  
+            this.noteDetailsView = new NoteDetailsView({el:$('#note_details_container'), notesView: this});
+            
+            //this doesn't work in the normal 'events' hash for some reason. WHYYYYYY???
+            //http://stackoverflow.com/questions/7634529/backbone-js-detecting-scroll-event
+            _.bindAll(this, 'onNotesScroll');
+            $('#notes_scroller').scroll(this.onNotesScroll);
+ 
         },
        
         events: {
             'click #auto_scroll': 'toggleAutoScroll',
             'click .add_note_link': 'toggleAddNotes',
-            'click #add_new_source_link': 'onAddSourceClick'
+            'click #add_new_source_link': 'onAddSourceClick',
+            'scroll #notes_scroller': 'onNotesScroll'
         },
        
-        render: function(){
+        render: function(args){
             return this;
         },
-       
+        
+        renderContainer: function(){
+            this.notesElement.css({
+                'height': ((this.filteredNotes.length * this.noteHeight) + 100) + 'px'
+            });
+        },
+        
         addNote: function(note){
+            //this.filterNotes(this.currentFilter, this.isSearch);
+            this.renderContainer();
+            this.layoutNotes();
+        },
+       
+        createNoteView: function(note){
             var view = new NoteView({model:note, id:'note_'+ note.id, container:this});
-            $("#notes").append(view.render().el);
             note.view = view;
+            note.view.render();
         },
         
         refreshNotes: function(){
-            $("#notes").html('');
-            this.notes.each(this.addNote, this);
+            this.filteredNotes = this.notes;
+            this.clearVisibleNotes();
+            this.layoutNotes();
+            //so at least there's something here.
+            this.filteredNotes.each(function(n){
+                this.createNoteView(n);
+            }, this);
+        },
+        
+        /**
+         * Called any time the view is scrolled or changed.
+         * Should try to find the current scroll position and then determine what note is at the top.
+         * From there it'll ensure that the previous handful of notes are added to the DOM, as well as the next 15 or so.
+         *
+         * This should keep thousands of DOM elements from freezing up the UI, and instead only add what the user can see.
+         **/
+        layoutNotes: function(){
+            //console.log("layout notes.");
+            if(this.notesElement.height() == 0){
+                //this.clearVisibleNotes();
+                this.renderContainer();
+            }
+            
+            //So many problems trying to do this sanely. Events not attaching. Classes disappearing. Weird stuff happening.
+            //SOOOOOOO. For now, let's just blast out all of the notes entirely. Doesn't seem to be THAT big of a performance hit.
+            this.clearVisibleNotes();
+                
+            var top = this.scrollerElement.scrollTop();
+            //so let's figure out what element is closest to the top of the scroll window... assuming 120px size.
+            var index = Math.floor(top / this.noteHeight); //notes are 78px high with 10px of padding on top and bottom, and 3px border.
+            
+            topIndex = Math.max(index - 6 , 0); // top as in highest on the page. Urgh.
+            bottomIndex = Math.min(index + 6, this.filteredNotes.length);
+            //console.log("Top Index: " + topIndex);
+            //console.log("Bottom Index: " + bottomIndex);
+            //console.log("Filtered Notes Count: " + this.filteredNotes.length);
+            //console.log(this.filteredNotes);
+            //remove out of range notes.
+            //this.visibleNotes.each(function(n){
+            //    var nIndex = this.filteredNotes.indexOf(n);
+                //console.log("Filtered Notes Index of Visible Note: " + nIndex);
+            //    if( (nIndex == -1) || (nIndex < topIndex) || (nIndex > bottomIndex) ){
+                    //console.log("Removing Note...");
+            //        $(n.view).remove();
+            //        this.visibleNotes.remove(n);
+            //    }
+            //}, this);
+            
+            //add notes
+            for( var i = topIndex; i < bottomIndex; i++ ){
+                var n = this.filteredNotes.at(i);
+                if(!n){
+                    //console.log('index out of range? ' + i);
+                    continue;
+                }
+                //if this note is already visible, skip it.
+                //if(this.visibleNotes.indexOf(n) != -1){
+                //    continue;
+                //}
+                this.createNoteView(n);
+                
+                $("#notes").append(n.view.el);
+                $(n.view.el).css({
+                    'position': 'absolute',
+                    'top': i * this.noteHeight + 'px'
+                });
+                
+                if(this.selectedNote && (this.selectedNote.id == n.id)){
+                    n.view.highlightNote();
+                }
+                
+                this.visibleNotes.add(n);
+            }
+            
+        },
+        
+        clearVisibleNotes: function(){
+            this.visibleNotes.each(function(n){    
+                $(n.view).remove();
+                this.visibleNotes.remove(n);
+            }, this);
+            this.visibleNotes = new Notes();
+            this.notesElement.html(''); //blast it all away.
         },
        
        
@@ -437,53 +548,67 @@ $(function(){
             this.noteDetailsView.note = note;
             this.noteDetailsView.render();
         },
+        
+        
+        onNotesScroll: function(event){
+            this.layoutNotes();
+        },
+        
        
         scrollToTop: function(){
-            $("#notes").scrollTo("0", 100);
+            this.scrollerElement.scrollTo("0", 100);
+            this.layoutNotes();
         },
         
         scrollToNote: function(note){
-            if(note == undefined)
+            if(!note)
                 return;
-            if((this.autoScroll == false) || (!$(note.view.el).is(":visible")))
+            var i = this.filteredNotes.indexOf(note);
+            if((this.autoScroll == false) || ( i == -1))
                 return;
-            $("#notes").scrollTo($(note.view.el), 200, {offset:{top:-70}});
+            this.scrollerElement.scrollTo((i * this.noteHeight), 200, {offset:{top:-70}});
         },
         
         showNote: function(note){
             this.selectNote(note);
             this.scrollToNote(note);
-            this.autoHighlight = false;
             this.app.videoView.seekToNote(note, false);
         },
         
         
         showNoteById: function(noteId){
-            note = this.notes.get(noteId);
+            note = this.filteredNotes.get(noteId);
             this.showNote(note);
         },
         
         selectNote: function(new_note){
             //if we're in the "note sync" mode, just tell the app to do the syncing.
+            
+            if(!new_note){
+                return;
+            }
             if(this.syncNotes){
                 this.app.syncNotes(new_note);
                 return;
             }
-            
             //not sure if in a search situation we should change highlighting if new-note is invisible?
-            if((this.autoHighlight == false) || (!$(new_note.view.el).is(":visible")))
+            if((this.autoHighlight == false))
                 return;
             
-             if(this.selectedNote)
+             if(this.selectedNote && this.selectedNote.view){
                 this.selectedNote.view.removeNoteHighlight();
+             }
              this.selectedNote = new_note;
-             this.selectedNote.view.highlightNote();
+             if(this.selectedNote.view){
+                 this.selectedNote.view.highlightNote();
+             }
+             this.layoutNotes(); //make sure changes happen.
         },
        
         
         showNoteAtTime: function(time){
             //first, find the note we're looking for
-            new_note = this.notes.find(function(note){
+            new_note = this.filteredNotes.find(function(note){
                 return note.get('offset') > time;
             }, this);
             
@@ -539,31 +664,29 @@ $(function(){
         },
         
         filterNotes: function(filterFunction, isSearch){
-            
+            this.isSearch = isSearch;
+            this.currentFilter = filterFunction;
             var results = 0;
-            this.notes.each(function(note){
-                if(filterFunction(note)){
-                    $(note.view.el).removeClass('hidden');
-                    results++;
-                }else{
-                    $(note.view.el).addClass('hidden');
-                }
-            })
             
+            this.filteredNotes = new Notes();
+            this.filteredNotes = this.filteredNotes.add(this.notes.filter(filterFunction));
+            
+            results = this.filteredNotes.length;
             if(!isSearch){
                 this.searchView.resetSearch();
             }
             
+            this.clearVisibleNotes();
             this.searchView.resultCount = results;
             this.searchView.render();
+            this.renderContainer();
+            this.scrollToTop();
         },
         
         resetNotes: function(){
-            this.notes.each(function(note){
-                //if(!note.view.visible)
-                    $(note.view.el).removeClass("hidden");
-               //_.defer(function(){$(note.view.el).show()}); 
-            });
+            this.clearVisibleNotes();
+            this.filteredNotes = this.notes;
+            this.renderContainer();
             this.searchView.resultCount = this.notes.length;
             this.searchView.resetSearch();
             this.searchView.render();
@@ -664,15 +787,25 @@ $(function(){
        
        render: function(){
             this.model.set({date_time: new Date(this.model.get('time')) });
-            this.model.set({linked_text: twttr.txt.autoLink(this.model.get('text'))});
+            this.originalText = this.model.get('text');
+            //text too long, let's trucnate with some nice ...'s and let the user click 'details' for the rest.
+            //this is needed because for virtual scrolling we need a hardcoded height. Sadly.
+            if(this.originalText.length > 140){
+                this.originalText = this.originalText.substring(0,139) + '...';
+            }
+            this.model.set({linked_text: twttr.txt.autoLink(this.originalText)});
             $(this.el).html(this.template(this.model.toJSON()));
             return this;
        },
        
        onNoteEnter: function(event){
             var details = $(this.el).find('.details');
+            $(this.el).css({
+                'z-index':200,
+                '':''           
+            });
             $(this.el).animate({
-                height: '+=' + details.height() + 'px'
+                height: '+=' + (details.height() + 10) + 'px'
             }, 100, function() {
                 details.fadeIn(100);
             });
@@ -681,10 +814,12 @@ $(function(){
        onNoteLeave: function(event){
             var details = $(this.el).find('.details');
             var el = this.el;
+            var self = this;
             details.fadeOut(100, function(){
                 $(el).animate({
-                    height: '-=' + details.height() + 'px'
-                }, 100)    
+                    height: '-=' + (details.height() + 10) + 'px'
+                }, 100)
+                $(self.el).css({'z-index':'0'});    
             });
        },
        
@@ -702,6 +837,8 @@ $(function(){
        
        onDetailsLinkClicked: function(event){
             this.container.showNoteDetails(this.model);
+            $(this.el).css({'z-index':'0'}); 
+            this.onNoteLeave();
        },
        
        onSourceLinkClicked: function(event){
@@ -810,6 +947,7 @@ $(function(){
                 success: function(){
                     app.showMessage("<h4>Note Synced</h4>");
                     self.notesView.notes.sort();
+                    self.render();
                 },
                 failure: function(){
                     app.showMessage("<h4>There was an error saving</h4>");
@@ -818,20 +956,22 @@ $(function(){
         },
         
         onSyncSourceClick: function(event){
-            var diff = app.videoView.getCurrentOffset() - this.note.get('offset');
-            this.note.set({offset: app.videoView.getCurrentOffset(), time:null, sync_source:true});
+            var vidOffset = app.videoView.getCurrentOffset();
+            var diff = this.note.get('offset') - vidOffset;
+            this.note.set({offset: vidOffset, time:null, sync_source:true});
             app.showMessage("<h4>Syncing Notes From " + this.note.get("source_title")  + "</h4>");
             var self = this;
             this.note.save(null, {
                 success: function(){
                     app.showMessage("<h4>Notes Synced</h4>");
-                    
+                    self.render();
                     var sourceNotes = self.notesView.notes.filter(function(n){
+                        if(n == self.note) return false; //we already synced this note!
                         return n.get('import_source') == self.note.get('import_source');
                     })
                     
                     _.each(sourceNotes, function(n){
-                        newOffset = Math.round(n.get('offset') + diff);
+                        newOffset = Math.round(n.get('offset') - diff);
                         n.set({offset: newOffset});
                         if(n.view){
                             n.view.render();
@@ -1098,6 +1238,10 @@ $(function(){
                 $('#message').html(message).effect("pulsate", {times:1, mode:"show"}, 500);
             })
             
+        },
+        
+        onAutoStopCheck: function(){
+            this.autoStop = $("#auto_stop_checkbox").is(":checked");
         }
         
     })

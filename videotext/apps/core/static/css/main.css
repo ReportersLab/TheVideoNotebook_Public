@@ -654,13 +654,20 @@ article .teaser
     margin: 5px 0 0 0;
 }
 
-#notes
+#notes_scroller
 {
-    height:390px;
+    height:392px;
     margin: 0 0 10px 0;
-    overflow:auto;
+    overflow-y:scroll;
     overflow-x:hidden;
     clear:both;
+    width:100%;
+    position:relative;
+}
+
+#notes
+{
+    position:absolute;
     width:100%;
 }
 
@@ -668,10 +675,11 @@ article .teaser
 {
     border-bottom: 3px solid #FFFFFF;
     margin:0;
-    float:left; clear:both;
     padding:10px 5px 10px 5px;
     width:95%;
     overflow:hidden;
+    height:78px;
+    z-index:10;
 }
 
 .note.highlighted
@@ -729,6 +737,7 @@ article .teaser
     padding:10px;
     background:#FFFFFF;
     display:none;
+    z-index:30;
 }
 
 #add_note_display
@@ -770,6 +779,8 @@ article .teaser
 #note_details_container h2
 {
     padding:10px;
+    height: 150px;
+    overflow:auto;
 }
 
 

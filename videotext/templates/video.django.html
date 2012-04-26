@@ -85,7 +85,7 @@
                 <% if(obj.link) print('<a href="'+ link + '">'); %>
                     <% if(isValidDate(date_time)){ %>    
                         <%= date_time.format('mm/dd/yy h:MM:ss TT') %> 
-                    <% } %> (<%= offset %>)
+                    <% } %> (<% print(Math.floor(offset)) %>)
                 <% if(obj.link) print('</a>'); %>
             </span>
         </div>
@@ -261,13 +261,14 @@
                         {% endif %}
                     </div>
                 </div>
-                <div id="notes"></div>
-                        
-                <div id="message_container">
-                    <div class="black_bar"></div>
-                    <div id="message" class="box_shadow margined padded">
-                        <h4>{% if user.is_authenticated %}{% else %}Log in to add notes!{% endif %}</h4>
-                    </div>
+                <div id="notes_scroller">
+                    <div id="notes"></div>
+                </div>
+            </div>
+            <div id="message_container">
+                <div class="black_bar"></div>
+                <div id="message" class="box_shadow margined padded">
+                    <h4>{% if user.is_authenticated %}{% else %}Log in to add notes!{% endif %}</h4>
                 </div>
             </div>
         </div>

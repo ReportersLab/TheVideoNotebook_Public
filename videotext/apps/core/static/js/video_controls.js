@@ -376,13 +376,13 @@ $(function(){
             this.syncNotes = false;
             this.isSearch = false;
             this.noteHeight = 101;
-            this.renderContainer();
             //then load the notes
             this.notes.bind('add', this.addNote, this);
             this.notes.bind('reset', this.refreshNotes, this);
             this.notes.bind('all', this.render, this);
             //bootstrap the notes
             this.notes.reset(NOTES_DATA);
+            this.renderContainer();
             
             this.searchView = new NoteSearchView({el: $('#note_search'), app:this.app, notesView:this, notes:this.notes });
             this.addNoteView = new AddNoteView({el: $('#add_note_container'), notesView: this, notes: this.notes });

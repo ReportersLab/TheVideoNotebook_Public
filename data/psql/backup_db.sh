@@ -1,2 +1,2 @@
-pg_dump review_lab > "tvn.dump.out.$(date +%w)"
+pg_dump videotext > "tvn.dump.out.$(date +%w)"
 s3cmd put "tvn.dump.out.$(date +%w)" s3://media.reporterslab.org/beta/tvn/backup/

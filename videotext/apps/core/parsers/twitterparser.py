@@ -11,9 +11,18 @@ def get_tweets(source = None):
     api = twitter.Api(consumer_key=settings.TWITTER_CONSUMER_KEY, consumer_secret=settings.TWITTER_CONSUMER_SECRET,
                       access_token_key=settings.TWITTER_ACCESS_TOKEN, access_token_secret=settings.TWITTER_TOKEN_SECRET)
     
+    oldest_id = (int(source.twitter_start_id) - 1)
+    newest_id = int(source.twitter_end_id)
+    
+    #if the oldest is greatest than the newest, they probably pasted them in backwards.
+    if oldest_id > newest_id:
+        temp = newest_id
+        newest_id = oldest_id + 1
+        oldest_id = temp - 1
+    
     
     statuses = api.GetUserTimeline(screen_name = source.twitter_user, count = 200,
-                                   since_id=(int(source.twitter_start_id) - 1), max_id=source.twitter_end_id, include_entities = True, include_rts = True )
+                                   since_id = oldest_id, max_id = newest_id, include_entities = True, include_rts = True )
     
     
     for tweet in statuses:

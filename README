@@ -1,0 +1,7 @@
+The Video Notebook
+
+The Video Notebook is an attempt to provide a way for journalists to sync notes to video. The hope is to create a way for reporters to easily import various data feeds from places like Storify or Twitter and sync them up with a recorded event.
+
+It is a Django (https://www.djangoproject.com/) project based on the Chicago Tribune's Django Project Templates (https://github.com/ReportersLab/django-project-templates). It also uses TastyPie (https://github.com/toastdriven/django-tastypie) to provide an API for adding videos, sources, and notes via Ajax. Finally, it uses Backbone (http://documentcloud.github.com/backbone/) and Underscore (http://documentcloud.github.com/underscore/) to provide a front-end JavaScript framework.
+
+Run in a virtual environment, install requirements via the requirements.txt file, and deploy via Fabric (https://github.com/fabric/fabric).

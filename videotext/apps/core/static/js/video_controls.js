@@ -721,6 +721,7 @@ $(function(){
         
         onResetFilters: function(){
             this.notesView.resetNotes();
+            this.app.router.navigate("showallnotes");
         },
         
         onSearchPress: function(){

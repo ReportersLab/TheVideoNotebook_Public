@@ -5,7 +5,7 @@
 
 {% block head %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/shared_views.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/video_controls.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/video_controls.js?v=05152012"></script>
     {% autoescape off %}
     <script type="text/javascript">
         VIDEO_ID = "{{ video.id }}";
@@ -209,6 +209,14 @@
             <input type="button" class="source_save" value="Save" />
         </div>
     </script>
+    
+    
+    <script type="text/html" id="captionTemplate">
+        <p id="captionText"></p>
+        <span class="toggle link">close captions</span>
+    </script>
+    
+    
     
 {% endblock %}
 

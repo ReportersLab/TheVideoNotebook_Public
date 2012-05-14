@@ -1059,6 +1059,30 @@ body .qq-upload-size, .qq-upload-cancel {
 
 
 
+/*
+ * CAPTIONS
+ *
+ */
+
+#captionContainer
+{
+    float:left;
+    clear:both;
+    background:#333333;
+    width:100%;
+}
+
+#captionContainer p
+{
+    float:left;
+    width:300px;
+    color:#FFFFFF;
+}
+
+#captionContainer .toggle
+{
+    float:right;    
+}
 
 
 /**

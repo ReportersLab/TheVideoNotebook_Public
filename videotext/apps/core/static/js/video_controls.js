@@ -1127,6 +1127,69 @@ $(function(){
     
     
     
+    window.CaptionView = Backbone.View.extend({
+        
+        tagName: 'div',
+        className: 'captionContainer',
+        id:'captionContainer',
+        template: _.template($("#captionTemplate").html()),
+       
+        initialize: function(){
+            this.captions = this.options.captions;
+            this.app = this.options.app;
+            $.later(250, this, 'onTimeUpdate', [], true);
+            this.render();
+        },
+       
+        events: {
+            'click .toggle': 'onCaptionToggle'
+        }, // not much interaction here.
+       
+        render: function(){
+              $(this.el).html(this.template());
+        },
+        
+        renderCaption: function(){
+            if(!this.caption){
+                return;
+            }
+            $(this.el).find('p').html(this.caption.get('text'));            
+        },
+        
+        onCaptionToggle: function(event){
+            $('#captionContainer p').toggle();
+            if($('#captionContainer p').is(":visible")){
+                $('#captionContainer .toggle').html('close captions');
+            }else{
+                $('#captionContainer .toggle').html("open captions");   
+            }
+        },
+        
+        onTimeUpdate: function(){
+            var currentTime = this.app.videoView.getCurrentOffset(); //seconds into video.
+            var oldCaption = this.caption;
+            this.caption = this.captions.find(function(note){
+                return note.get('offset') > currentTime; // May need some tweaking.
+            }, this);
+            
+            if( (this.caption === undefined) || (oldCaption == this.caption)){
+                return;
+            }else{
+                this.renderCaption();
+            }
+            
+        }
+        
+        
+        
+    });
+    
+    
+    
+    
+    
+    
+    
     
     window.MainRouter = Backbone.Router.extend({
         
@@ -1201,14 +1264,23 @@ $(function(){
             
             this.notes = new Notes();
             
-            //Add search view
+            //Add notes view. Notes created. May want to move up here?
             this.notesView = new NotesView({el: $('#notes_container'), app:this, notes:this.notes });
             
             this.router = new MainRouter({app:this});
             if(!Backbone.history.start()){
                 this.router.navigate("showallnotes");
             }
-            //
+            //create captions.
+            this.captions = this.notes.filter(function(note){
+                return note.get('type') == 'caption';
+            });
+            
+            if(this.captions.length > 0){
+                this.captions = new Notes(this.captions);
+                this.captionView = new CaptionView({app:this, captions:this.captions});
+                $("#extraVideoControls").prepend(this.captionView.el);
+            }
         },
         
         startSyncNotes: function(){

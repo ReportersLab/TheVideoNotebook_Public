@@ -1070,12 +1070,14 @@ body .qq-upload-size, .qq-upload-cancel {
     clear:both;
     background:#333333;
     width:100%;
+    padding:5px 0 5px 0;
+    margin:0 0 5px 0;
 }
 
 #captionContainer p
 {
     float:left;
-    width:300px;
+    width:400px;
     color:#FFFFFF;
 }
 

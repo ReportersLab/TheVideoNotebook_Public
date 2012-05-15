@@ -58,6 +58,11 @@ class SourceAdmin(CommonAdmin):
                 'fields': ('csv_data',)
             }
         ),
+        ('SRT Specific',
+            {
+                'fields': ('srt_data',)
+            }
+        ),
         ('Oops',
             {
                 'fields': ('error_message',)
@@ -67,7 +72,7 @@ class SourceAdmin(CommonAdmin):
     
     list_display = ('name', 'url', 'video', 'creation_time', 'type')
     list_display_links = ('name', 'url', 'video', 'creation_time', 'type',)
-    readonly_fields = ('csv_data',)
+    readonly_fields = ('csv_data', 'srt_data',)
 
 
 

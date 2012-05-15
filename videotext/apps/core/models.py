@@ -59,6 +59,7 @@ SOURCE_TYPE_CHOICES = (
     ('csv', 'CSV'),
     ('granicus', 'Granicus'),
 #    ('fark','Fark.com'),
+    ('srt', 'SRT Captions (YouTube)'),
 )
 
 
@@ -151,6 +152,8 @@ class Source(CommonInfo):
     twitter_search       = models.CharField(max_length = 256, blank = True, null = True) #possibly a search string to attack Twitter with
     #silly attempt to get around no file-upload support in TastyPie. Just paste the CSV!
     csv_data             = models.TextField(blank = True, null = True)
+    #same silly attempt for SRT data.
+    srt_data             = models.TextField(blank = True, null = True, help_text = "Caption Data in the SRT Format, YouTube uses this.")
     
     # Either we save scraped content here as a zip file or text file or whatever
     # OR we let people upload a CSV in a specific format to parse for notes.
@@ -179,6 +182,7 @@ class Source(CommonInfo):
         from parsers.tvncsv import import_tvn_csv
         from parsers.twitterparser import get_tweets
         from parsers.granicus import get_granicus_data
+        from parsers.srt import get_srt_data
         #save first so we at least have an id?
         if not self.id:
             super(Source, self).save(*args, **kwargs)
@@ -189,7 +193,7 @@ class Source(CommonInfo):
         self.twitter_hash = self.twitter_hash.replace('#', '')
         self.twitter_user = self.twitter_user.replace('@', '')
         
-        if self.video and (self.url or self.content or (self.type == 'twitter') or self.csv_data) and not self.scraped:
+        if self.video and (self.url or self.content or (self.type == 'twitter') or self.csv_data or self.srt_data) and not self.scraped:
             try:
                 if self.type == "twitter":
                     get_tweets(self)
@@ -205,6 +209,9 @@ class Source(CommonInfo):
                     parse_fark(self.url, self.video, import_source = self)
                 elif self.type == 'granicus':
                     get_granicus_data(self)
+                elif self.type == 'srt':
+                    get_srt_data(self)
+                    
                 self.scraped = True
                 self.error_message = ''
             except Exception as e:

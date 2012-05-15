@@ -905,7 +905,14 @@ $(function(){
                     data[this.id.split('_')[2]] = value;
                     self.note.set(data);
                     app.showMessage("<h4>Updating Note Details</h4>");
-                    self.note.save(null, {wait:true, success:function(model, response){app.showMessage("<h4>Note Details Updated!</h4>")}});
+                    self.note.save(null, {
+                                            wait:true,
+                                            success:function(model, response){
+                                                app.showMessage("<h4>Note Details Updated!</h4>")
+                                                self.notesView.layoutNotes();
+                                                $('#add_note_' + self.note.get('id')).html(self.note.get('text'));
+                                            }
+                                        });
                     return value;
                 },
                 {
@@ -922,6 +929,7 @@ $(function(){
         
         onCheckboxChange: function(event){
             var data = {};
+            var self = this;
             var el = $(event.target);
             var value = el.is(":checked");
             //pattern is note_detail_VAR
@@ -929,7 +937,7 @@ $(function(){
             this.note.set(data);
             app.showMessage("<h4>Updating Note Details</h4>");
             this.note.save(null, {wait:true,
-                                  success:function(model, response){app.showMessage("<h4>Note Details Updated!</h4>")},
+                                  success:function(model, response){app.showMessage("<h4>Note Details Updated!</h4>");},
                                   error: function(model, response){app.showMessage("<h4>You don't have permission to edit this note.</h4>")}
                                   });
             return value;  

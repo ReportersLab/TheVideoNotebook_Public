@@ -64,12 +64,17 @@ $(document).ready(function(){
        
         onSourceTypeChange: function(event){
             var type = $(this.el).find('.source_type').val();
+            
+            if( (type == "twitter") || (type == "csv") || (type == "srt") ){
+                $(this.el).find('.source_url_container').slideUp('slow');                
+            }else{
+                $(this.el).find('.source_url_container').slideDown('slow');                
+            }
+            
             if(type == 'twitter'){
                 $(this.el).find('.source_twitter').slideDown('slow');
-                $(this.el).find('.source_url_container').slideUp('slow');
             }else{
                 $(this.el).find('.source_twitter').slideUp('slow');
-                $(this.el).find('.source_url_container').slideDown('slow');
             }
             
             if(type == "csv"){
@@ -81,7 +86,13 @@ $(document).ready(function(){
             if(type == "srt"){
                 $(this.el).find('.source_srt').slideDown('slow');
             }else{
-                $(this.el).find('.source_srt').slideDown('slow');
+                $(this.el).find('.source_srt').slideUp('slow');
+            }
+            
+            if(type =="granicus"){
+                $(this.el).find('.source_granicus').slideDown('slow');
+            }else{
+                $(this.el).find('.source_granicus').slideUp('slow');
             }
             
         },

@@ -984,6 +984,11 @@ article .teaser
     
 }
 
+.add_source textarea{
+    width:95%;
+    height:150px;
+}
+
 #add_source_container .close_link
 {
     float:right;

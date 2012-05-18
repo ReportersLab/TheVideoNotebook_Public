@@ -221,6 +221,31 @@
     </script>
     
     
+    <script type="text/html" id="statsTemplate">
+        <div class="statsColumn">
+            <h3>Common Words</h3>
+            <ul>
+                <% for (var i = 0; i < Math.min(50, words.length); i++){
+                        var data = words[i];
+                        print('<li class="link" data="search/'+ data.word +'">' + data.word + ' (' + data.count + ')</li>')
+                }%>
+            </ul>
+        </div>
+        <div class="statsColumn">
+            <h3>Types</h3>
+            <ul><% for (t in types){ print('<li class="link" data="type/'+ t +'">' + t + ' (' + types[t] + ')</li>') }%></ul>
+        </div>
+        <div class="statsColumn">
+            <h3>Sources</h3>
+            <ul><% for (s in sources){
+                    var data = sources[s];
+                    print('<li class="link" data="source/'+ data.url.split('/')[4] +'">' + data.title + ' (' + data.count + ')</li>')
+                }%>
+            </ul>
+        </div>
+    </script>
+    
+    
     
 {% endblock %}
 
@@ -284,6 +309,9 @@
                 </div>
             </div>
         </div>
+        
+        
+        
    </div>
    
    <div>

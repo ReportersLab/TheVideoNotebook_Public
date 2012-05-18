@@ -8,16 +8,10 @@ from core.models import Note, Video, Source
 def get_srt_data(source):
     captions = SubRipFile.from_string(source.srt_data)
     for c in captions:
-        print c.text
-        print c.start.to_time()
-        print c.end.to_time()
         start = c.start.to_time()
         end = c.end.to_time()
         offset = start.second + (start.minute * 60) + (start.hour * 60 * 60) + (start.microsecond / 1000000) #it can't possibly be more than hours.
         end_offset = end.second + (end.minute * 60) + (end.hour * 60 * 60) + (end.microsecond / 1000000)
-        
-        print offset
-        print end_offset
         
         
         note, created = Note.objects.get_or_create(
@@ -34,7 +28,5 @@ def get_srt_data(source):
             source_link = source.url, #they're probably not going to have one of these...
             type = "caption"
         )
-        print created
-        print '============'
         
         

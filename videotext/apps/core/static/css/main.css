@@ -1086,6 +1086,23 @@ body .qq-upload-size, .qq-upload-cancel {
     float:right;    
 }
 
+/**
+ *STATS
+ **/
+
+#statsContainer{
+    float:left;
+    clear:both;
+    width:100%;
+}
+
+.statsColumn{
+    float:left;
+    width:30%;
+    padding:10px;
+    margin:5px;
+}
+
 
 /**
  *PAGINATION

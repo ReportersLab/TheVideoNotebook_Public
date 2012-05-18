@@ -743,8 +743,8 @@ $(function(){
         },
         
         makeSearch: function(searchText){
-          $("#note_search_text").val(searchText);
-          this.search();
+            $("#note_search_text").val(searchText);
+            this.search();
         },
         
         search: function(){
@@ -1196,6 +1196,106 @@ $(function(){
     
     
     
+    window.StatsView = Backbone.View.extend({
+        
+        tagName: 'div',
+        className: 'captionContainer',
+        id:'statsContainer',
+        template: _.template($("#statsTemplate").html()),
+       
+        initialize: function(){
+            this.notes = this.options.notes;
+            this.app = this.options.app;
+            this.allText = "";
+            this.frequencies = this.generateFrequencies();
+            this.types = this.generateTypes();
+            this.sources = this.generateSources();
+            this.render();
+        },
+       
+        events: {
+            'click li': 'onItemClick'
+        }, // not much interaction here.
+       
+        render: function(){
+            var data = {
+                words : this.frequencies,
+                types : this.types,
+                sources : this.sources
+            }
+            $(this.el).html(this.template(data));
+        },
+        
+        onItemClick: function(event){
+            var url = $(event.target).attr('data');
+            this.app.router.navigate(url, {trigger: true});
+        },
+        
+        generateFrequencies: function(){
+            var allText = "";
+            var hist = {}
+            this.notes.each(function(note){
+                allText += " " + note.get('text');
+            });
+            //remove the stop words. https://gist.github.com/1221325
+            this.allText = allText.removeStopWords();
+            var words = this.allText.split(/[\s*\.*\,\;\+?\#\|:\-\/\\\[\]\(\)\{\}$%&0-9*]/);
+            for(var i in words){
+                if(words[i].length > 1 ){
+                    hist[words[i]] ? hist[words[i]] += 1 : hist[words[i]] = 1;
+                }
+            }
+            
+            //convert to array so we can sort.
+            var wordArray = []
+            for(var h in hist){
+                wordArray.push({word: h, count:hist[h]});
+            }
+            
+            wordArray.sort(function(a,b){
+                if(a.count > b.count)
+                    return -1;
+                if(b.count > a.count)
+                    return 1;
+                return 0;
+            });
+            
+            return wordArray;
+        },
+        
+        generateTypes: function(){
+            var types = this.notes.pluck('type');
+            var frequencies = {};
+            for( var t in types){
+                if(types[t] == null)
+                    continue;
+                frequencies[types[t]] ? frequencies[types[t]] += 1 : frequencies[types[t]] = 1;
+            }
+            return frequencies;
+        },
+        
+        generateSources: function(){
+            var sources = {};
+            this.notes.each(function(note){
+                title = note.get('source_title');
+                url = note.get('import_source');
+                if(!url)
+                    return;
+                if(sources[title]){
+                    sources[title].count++;
+                }else{
+                    sources[title] = {title:title, url:url, count:1};    
+                }
+            });
+            
+            
+            return sources;
+        }
+        
+        
+        
+    });
+    
     
     
     
@@ -1289,6 +1389,10 @@ $(function(){
                 this.captionView = new CaptionView({app:this, captions:this.captions});
                 $("#extraVideoControls").prepend(this.captionView.el);
             }
+            
+            this.statsView = new StatsView({app:this, notes:this.notes});
+            $(this.el).append(this.statsView.el);
+            
         },
         
         startSyncNotes: function(){

@@ -486,7 +486,9 @@ String.prototype.removeStopWords = function() {
 
 	// Split out all the individual words in the phrase
 	words = cleansed_string.match(/[^\s]+|\s+[^\s+]$/g)
-
+    //some sort of bug here. QUick fix.
+    if(!words)
+        return;
 	// Review all the words
 	for(x=0; x < words.length; x++) {
 		// For each word, check all the stop words

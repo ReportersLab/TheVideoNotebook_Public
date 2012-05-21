@@ -1234,9 +1234,14 @@ $(function(){
         generateFrequencies: function(){
             var allText = "";
             var hist = {}
+            if((!this.notes) || (this.notes.length == 0)){
+                return [];
+            }
+            
             this.notes.each(function(note){
                 allText += " " + note.get('text');
             });
+            
             //remove the stop words. https://gist.github.com/1221325
             this.allText = allText.removeStopWords();
             var words = this.allText.split(/[\s*\.*\,\;\+?\#\|:\-\/\\\[\]\(\)\{\}$%&0-9*]/);
@@ -1266,6 +1271,9 @@ $(function(){
         generateTypes: function(){
             var types = this.notes.pluck('type');
             var frequencies = {};
+            if(!this.notes || (this.notes.length == 0)){
+                return {};
+            }
             for( var t in types){
                 if(types[t] == null)
                     continue;
@@ -1276,6 +1284,11 @@ $(function(){
         
         generateSources: function(){
             var sources = {};
+            
+            if(!this.notes || (this.notes.length == 0)){
+                return {};
+            }
+            
             this.notes.each(function(note){
                 title = note.get('source_title');
                 url = note.get('import_source');

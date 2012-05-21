@@ -66,7 +66,8 @@ def parse_storify(url, video, import_source):
                                                    original_source_link = original_source_link,
                                                    private = False,
                                                    original_data = element,
-                                                   import_source = import_source)
+                                                   import_source = import_source,
+                                                   import_source_name = import_source.name)
         #print note
         
 

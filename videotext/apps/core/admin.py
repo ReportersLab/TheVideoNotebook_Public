@@ -87,7 +87,7 @@ class NoteAdmin(CommonAdmin):
         ('The Details',
             {
                 'fields': ('time', 'end_time', 'offset', 'end_offset', 'user_name', 'user_link', 'link', 'icon_link', 'icon', 'type',
-                           'source', 'source_link', 'original_source', 'original_source_link', 'import_source',)
+                           'source', 'source_link', 'original_source', 'original_source_link', 'import_source', 'import_source_name',)
             }
         ),
     )
@@ -97,6 +97,7 @@ class NoteAdmin(CommonAdmin):
     list_display_links = ('text',)
     list_filter = ('published', 'private', 'video', 'user', 'import_source', 'type',)
     search_fields = ('text',)
+    readonly_fields = ('import_source_name',)
 
 
 

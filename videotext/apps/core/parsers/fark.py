@@ -35,7 +35,8 @@ def parse_fark(url, video, import_source = None):
         
         
         note, created = Note.objects.get_or_create(text = text, user_name = user_name, user_link = user_link, link = message_link,
-                               video = video, time = time, source_link = url, source = source, import_source = import_source, user = user)
+                               video = video, time = time, source_link = url, source = source, import_source = import_source, import_source_name = import_source.name,
+                               user = user)
         print note
         print created
     

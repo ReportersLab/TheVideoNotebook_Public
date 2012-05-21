@@ -149,9 +149,9 @@ class NoteResource(ModelResource):
     
     #video = fields.ForeignKey(VideoResource, 'video')
     
-    user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True, readonly = True)
-    import_source = fields.ToOneField('core.api.resources.SourceResource', 'import_source', full = False, null = True, blank = True, readonly = True)
-    video = fields.ToOneField('core.api.resources.VideoResource', 'video', full = False, null = True, blank = True, readonly = True)
+    #user = fields.ToOneField('core.api.resources.UserResource', 'user', full = True, null = True, blank = True, readonly = True)
+    #import_source = fields.ToOneField('core.api.resources.SourceResource', 'import_source', full = False, null = True, blank = True, readonly = True)
+    #video = fields.ToOneField('core.api.resources.VideoResource', 'video', full = False, null = True, blank = True, readonly = True)
     
     creation_time = fields.DateField(attribute = 'creation_time', readonly = True)
     update_time  = fields.DateField(attribute = 'update_time', readonly = True)
@@ -236,10 +236,31 @@ class NoteResource(ModelResource):
                 raise ImmediateHttpResponse(response=http.HttpUnauthorized())
     
     
+    '''
+    Generating a lot of things here.
+    
+    First, the various related models just have their links generated here without going through the standard Related model that TastyPie uses.
+    This is done because TastyPie makes a query to the DB for every related model. In this case, we'd have 3 DB queries for every note (4
+    in the past because the import_source_name was generated here). When there can be as many as 2000 notes on a page, that leads to a LOT
+    of queries and makes everything slow. So, I'm using the _build_reverse_url method like in the examples here:
+    https://github.com/toastdriven/django-tastypie/issues/371 -- This stops the DB from being hit a monstrous number of times.
+    
+    import_source_name is also saved on the Note now so we avoid that extra query. For now if a Source exists but no name exists on the note
+    we'll add it here and save the note so it's in sync. This should be removed later, I'm just avoiding going through and updating all existing notes.
+    '''
     def dehydrate(self, bundle):
-        bundle.data['source_title'] = ''
-        if bundle.obj.import_source is not None:
-            bundle.data['source_title'] = bundle.obj.import_source.description
+        bundle.data['video'] = VideoResource()._build_reverse_url("api_dispatch_detail", kwargs={'api_name':'v1', 'resource_name':VideoResource.Meta.resource_name, 'pk':bundle.obj.video_id})
+        bundle.data['user'] = UserResource()._build_reverse_url("api_dispatch_detail", kwargs={'api_name':'v1', 'resource_name':UserResource.Meta.resource_name, 'pk':bundle.obj.user_id})
+        bundle.data['video_id'] = bundle.obj.video_id
+        bundle.data['user_id'] = bundle.obj.user_id
+        bundle.data['import_source'] = None
+        if bundle.obj.import_source_id is not None:
+            bundle.data['import_source'] = SourceResource()._build_reverse_url("api_dispatch_detail", kwargs={'api_name':'v1', 'resource_name':SourceResource.Meta.resource_name, 'pk':bundle.obj.import_source_id})
+            if bundle.obj.import_source_name == None:
+                bundle.data['import_source_name'] = bundle.obj.import_source_name = bundle.obj.import_source.name
+                bundle.obj.save() #horrible place to do this, but whatever.
+            
+            bundle.data['import_source_id'] = bundle.obj.import_source_id
         return bundle
     
     
@@ -429,6 +450,7 @@ class UserResource(ModelResource):
         include_resource_uri = False
         #important. Let's just whitelist what we need.
         fields = ['id', 'username', 'first_name', 'last_name',]
+        resource_name = "user"
         
  
  

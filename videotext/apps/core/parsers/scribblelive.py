@@ -54,8 +54,17 @@ def parse_scribbling(url, video, import_source = None):
             #since this is rendered in JS, can't get at it. Argh.
             #if comment.find('span', 'Posted') != None:
             #    message_time = comment.find('span', 'Posted').text #there's a script tag in here, hopefully doesn't get pulled in.
-            note, created = Note.objects.get_or_create(text = message_text, user_name = user_name, link = link, import_source = import_source, user = user,
-                                   icon_link = icon_link, video = video, time = full_date, source_link = url, source = 'ScribbleLive')
+            note, created = Note.objects.get_or_create(text = message_text,
+                                                       user_name = user_name,
+                                                       link = link,
+                                                       import_source = import_source,
+                                                       import_source_name = import_source.name,
+                                                       user = user,
+                                                       icon_link = icon_link,
+                                                       video = video,
+                                                       time = full_date,
+                                                       source_link = url,
+                                                       source = 'ScribbleLive')
             #print note
             #print created
         except:

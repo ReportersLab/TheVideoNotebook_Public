@@ -77,9 +77,6 @@
             <% if(obj.user_name){ %>
                 <a href="<% if(obj.user_link != null) print(user_link); else print(link); %>"><%= user_name %></a>
                 <span class="slashes">//</span>
-            <% } else if (obj.user != null){ %>
-                <a href="<% if(obj.user_link != null) print(user_link); else print(link); %>"><%= user.first_name %> <%= user.last_name %></a>
-                <span class="slashes">//</span>
             <% } %>
             <span>
                 <% if(obj.link) print('<a href="'+ link + '">'); %>
@@ -136,8 +133,8 @@
                 <b>Source: </b>
                 <span id="note_detail_source"><%= source %></span>    
             </div>
-            <% if(    (obj.user && (obj.user.id == LOGGED_IN_USER.toString()) )  ||
-                   ( !obj.user && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
+            <% if(    (obj.user_id == LOGGED_IN_USER)  ||
+                   ( !obj.user_id && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
                  ){
             %>
                 <div>
@@ -161,16 +158,16 @@
         </div>
         <div class="black_bar"></div>
         <div class="margin_top">
-            <% if(    (obj.user && (obj.user.id == LOGGED_IN_USER.toString()) )  ||
-                   ( !obj.user && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
+            <% if(    (obj.user_id == LOGGED_IN_USER )  ||
+                   ( !obj.user_id && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
               ){ %>
-                <span class="sync_note_link link"><b>Click to sync this note to the current video time.</b></span><br /><br />
+                <span class="sync_note_link link"><b>Click to sync this note to the current video time.</b></span><br />
                 <% if(obj.import_source != null){ %>            
-                    <span class="sync_source_link link"><b>Click to sync ALL notes from "<%= source_title %>" to current video time.</b></span><br /><br />
+                    <span class="sync_source_link link"><b>Click to sync ALL notes from "<%= import_source_name %>" to current video time.</b></span><br />
                 <% } %>
                 <span class="delete_note_link link" style="color:#FF3333 !important;"><b>Delete this note</b></span><br />
                 <% if(obj.import_source != null){ %>   
-                    <span class="delete_source_notes_link link" style="color:#FF3333 !important;"><b>Delete ALL notes from "<%= source_title%>."</b></span>
+                    <span class="delete_source_notes_link link" style="color:#FF3333 !important;"><b>Delete ALL notes from "<%= import_source_name %>."</b></span>
                 <% } %>
             <% } %>
         </div>

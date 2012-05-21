@@ -50,6 +50,7 @@ def get_tweets(source = None):
                                     original_data = tweet.AsJsonString(),
                                     video = source.video,
                                     import_source = source,
+                                    import_source_name = source.name
                             )
         
 

@@ -244,6 +244,15 @@ class Note(CommonInfo):
     private                 = models.BooleanField(default = False) 
     original_data           = models.TextField(blank = True, null = True) #would like to store the original HTML or JSON block here.
     import_source           = models.ForeignKey(to = Source, blank = True, null = True, verbose_name = 'Import Data Source')
+    '''
+    This is sort of ugly. I'm saving the source name into the note to avoid having to do either an ajax load of the name every time we want to display it,
+    and to avoid the X number of SQL queries (where X is the number of notes on a video) just to pull in the name. Since it's really only for display
+    we don't have to really be sure of its integrity.
+    '''
+    import_source_name      = models.CharField(max_length = 128, blank = True, null = True)
+    
+    
+    
     
     def save(self, *args, **kwargs):
         #if we don't have an id, save to get one.

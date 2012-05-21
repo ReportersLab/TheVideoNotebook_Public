@@ -55,7 +55,8 @@ def get_granicus_data(source):
                                                    original_source_link = json_url,
                                                    private = False,
                                                    original_data = e,
-                                                   import_source = source)
+                                                   import_source = source,
+                                                   import_source_name = source.name)
             
     except:
         print 'error'

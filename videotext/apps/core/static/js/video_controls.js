@@ -894,8 +894,8 @@ $(function(){
             
             //if the logged in user is the owner of this note, let them edit the content.
             //if there is no user for this note (as in, it was imported), the video owner can edit.
-            if(    (this.note.get("user") && (this.note.get("user").id == LOGGED_IN_USER.toString()) )  ||
-                   ( !this.note.get("user") && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
+            if(    (this.note.get("user_id") == LOGGED_IN_USER )  ||
+                   ( !this.note.get("user_id") && app.video.get('user') && (app.video.get('user').id == LOGGED_IN_USER.toString()) )
               ){
                 
                 var self = this;
@@ -968,7 +968,7 @@ $(function(){
             var vidOffset = app.videoView.getCurrentOffset();
             var diff = this.note.get('offset') - vidOffset;
             this.note.set({offset: vidOffset, time:null, sync_source:true});
-            app.showMessage("<h4>Syncing Notes From " + this.note.get("source_title")  + "</h4>");
+            app.showMessage("<h4>Syncing Notes From " + this.note.get("import_source_name")  + "</h4>");
             var self = this;
             this.note.save(null, {
                 success: function(){
@@ -1290,7 +1290,7 @@ $(function(){
             }
             
             this.notes.each(function(note){
-                title = note.get('source_title');
+                title = note.get('import_source_name');
                 url = note.get('import_source');
                 if(!url)
                     return;

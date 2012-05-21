@@ -23,6 +23,7 @@ def get_srt_data(source):
             video = source.video,
             private = False,
             import_source = source,
+            import_source_name = source.name,
             source = 'SRT File',
             original_source = 'SRT File',
             source_link = source.url, #they're probably not going to have one of these...

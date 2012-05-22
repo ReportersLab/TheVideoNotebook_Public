@@ -280,6 +280,13 @@ class NoteResource(ModelResource):
 
         if "q" in filters:
             pass
+        
+        if "import_source" in filters:
+            orm_filters['import_source'] = filters['import_source']
+            
+        if "video" in filters:
+            orm_filters['video'] = filters['video']
+            
 
         return orm_filters
     

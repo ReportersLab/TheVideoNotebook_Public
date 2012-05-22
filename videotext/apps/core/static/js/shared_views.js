@@ -154,6 +154,11 @@ $(document).ready(function(){
                 success: function(collection, response){
                     self.notes = self.notes.add(collection.models);
                     self.notes.sort();
+                    try{
+                        window.app.notesView.resetNotes();
+                    }catch(e){
+                        //do nothing.
+                    }
                 },
                 error: function(collection, response){
                     //do nothing?

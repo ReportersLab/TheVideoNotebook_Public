@@ -683,6 +683,10 @@ $(function(){
             this.scrollToTop();
         },
         
+        refreshNotesDisplay: function(){
+            this.filterNotes(this.currentFilter, this.isSearch);  
+        },
+        
         resetNotes: function(){
             this.clearVisibleNotes();
             this.filteredNotes = this.notes;
@@ -1000,6 +1004,7 @@ $(function(){
                 this.notesView.notes.remove(this.note);
                 this.note.destroy();
                 this.notesView.notes.sort();
+                this.notesView.refreshNotesDisplay();
                 this.onCloseClick();
                 app.showMessage("<h4> Note Deleted </h4>");
             }
@@ -1024,6 +1029,7 @@ $(function(){
                     self.notesView.notes.sort();
                 });
                 
+                this.notesView.refreshNotesDisplay();
                 this.onCloseClick();
                 app.showMessage("<h4> Source Deleted </h4>");
                 

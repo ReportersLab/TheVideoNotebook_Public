@@ -376,6 +376,7 @@ $(function(){
             this.syncNotes = false;
             this.isSearch = false;
             this.noteHeight = 101;
+            this.searchDisplayText = "Showing all notes.";
             //then load the notes
             this.notes.bind('add', this.addNote, this);
             this.notes.bind('reset', this.refreshNotes, this);
@@ -638,6 +639,7 @@ $(function(){
                 if(note.get('user_name') == null) return false;
                 return (note.get('user_name').toLowerCase() == user.toLowerCase());
             }
+            this.searchDisplayText = "Notes from user " + user;
             this.app.router.navigate("user/" + user);
             this.filterNotes(filter);
         },
@@ -645,10 +647,17 @@ $(function(){
         //show all notes from a specific source.
         showSourceNotes: function(source){
             var filter = function(note){
-                if(note.get('import_source') == null) return false;
+                if(note.get('import_source_id') == null) return false;
                 // /api/v1/source/ID/
-                return (note.get('import_source').split('/')[4] == source);
+                return (note.get('import_source_id') == source);
             }
+            var sourceTitle = "";
+            var n = this.notes.find(function(note){
+                return note.get('import_source_id') == source;
+            });
+            if(n)
+                sourceTitle = n.get('import_source_name');
+            this.searchDisplayText = "Notes from source: " + sourceTitle;
             this.app.router.navigate("source/" + source);
             this.filterNotes(filter);
         },
@@ -659,6 +668,7 @@ $(function(){
                 if(note.get('type') == null) return false;
                 return note.get('type') == type;
             }
+            this.searchDisplayText = "Notes of type '" + type + ".'";
             this.app.router.navigate("type/" + type);
             this.filterNotes(filter);
         },
@@ -681,21 +691,29 @@ $(function(){
             this.searchView.render();
             this.renderContainer();
             this.scrollToTop();
+            this.updateSearchDisplay();
         },
         
         refreshNotesDisplay: function(){
-            this.filterNotes(this.currentFilter, this.isSearch);  
+            this.filterNotes(this.currentFilter, this.isSearch);
         },
         
         resetNotes: function(){
             this.clearVisibleNotes();
             this.filteredNotes = this.notes;
+            this.searchDisplayText = "Showing all notes.";
             this.renderContainer();
             this.searchView.resultCount = this.notes.length;
             this.searchView.resetSearch();
             this.searchView.render();
             this.scrollToTop();
+            this.updateSearchDisplay();
+        },
+        
+        updateSearchDisplay: function(){
+            $("#search_display").html(this.searchDisplayText);
         }
+        
     });
     
     
@@ -758,7 +776,7 @@ $(function(){
             var filter = function(note){
                 return note.get('text').toLowerCase().indexOf(searchText.toLowerCase()) != -1
             }
-            
+            this.notesView.searchDisplayText = "Search for: " + this.searchText;
             this.notesView.filterNotes(filter, true);
             
         },
@@ -847,9 +865,8 @@ $(function(){
        },
        
        onSourceLinkClicked: function(event){
-            var source = this.model.get('import_source');
+            var source = this.model.get('import_source_id');
             if(source == null) return;
-            source = source.split('/')[4]; // id is the 4th component.
             this.container.showSourceNotes(source);
             
        },

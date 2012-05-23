@@ -654,6 +654,13 @@ article .teaser
     margin: 5px 0 0 0;
 }
 
+#search_display
+{
+    font-size:10px;
+    margin:0; padding:0;
+    clear:left;
+}
+
 #notes_scroller
 {
     height:392px;

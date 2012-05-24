@@ -1,12 +1,13 @@
 import csv, urllib2, StringIO
 from django.http import HttpResponse
 from django.conf import settings
+from django.utils.encoding import smart_str, smart_unicode
 from core.models import Note, Video
 from datetime import datetime
 
 def import_tvn_csv(source):
     
-    data = source.csv_data.decode('utf-8')
+    data = smart_str(source.csv_data)
     if not source.csv_data or source.csv_data == '':
         url = source.url
         if source.content is not None and source.content != '':
@@ -20,20 +21,20 @@ def import_tvn_csv(source):
     if not video:
         return
     for row in reader:
+        
         note, created = Note.objects.get_or_create(
-                                   text = row['text'].decode('utf8'),
+                                   text = row.get('text', ''),
                                    time =  datetime.strptime(row['time'], '%Y-%m-%dT%H:%M:%S.000Z') if row['time'] else None,
                                    user_name = source.user.username, #Let's not allow importers to just assign notes to users.
                                    user = source.user, #let's not allow importers to just assign notes to other users.
                                    video = video,
-                                   link = row['link'],
-                                   icon = row['icon'],
-                                   icon_link = row['icon_link'],
-                                   type = row['type'],
-                                   source_link = row['source_link'],
-                                   source = row['source'],
-                                   offset = row['offset'],
-                                   private = row['private'],
+                                   icon = row.get('icon', ''),
+                                   icon_link = row.get('icon_link', ''),
+                                   type = row.get('type', 'note'),
+                                   source_link = row.get('source_link', ''),
+                                   source = row.get('source', 'CSV'),
+                                   offset = int(row.get('offset', 0)),
+                                   private = row.get('private', False),
                                    import_source = source,
                                    import_source_name = source.name
         )

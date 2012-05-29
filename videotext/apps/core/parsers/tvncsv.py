@@ -22,9 +22,17 @@ def import_tvn_csv(source):
         return
     for row in reader:
         
+        time = None
+        
+        try:
+            if row['time']:
+                time =  datetime.strptime(row['time'], '%Y-%m-%dT%H:%M:%S.000Z')
+        except:
+            pass
+        
         note, created = Note.objects.get_or_create(
                                    text = row.get('text', ''),
-                                   time =  datetime.strptime(row['time'], '%Y-%m-%dT%H:%M:%S.000Z') if row['time'] else None,
+                                   time = time,
                                    user_name = source.user.username, #Let's not allow importers to just assign notes to users.
                                    user = source.user, #let's not allow importers to just assign notes to other users.
                                    video = video,

@@ -161,9 +161,7 @@ class Source(CommonInfo):
     error_message = models.CharField(max_length = 256, null = True, blank = True)
     
     def __unicode__(self):
-        if self.type == 'twitter':
-            return 'Source: @%s, %s to %s (scraped: %s)' % (self.twitter_user, self.twitter_start_id, self.twitter_end_id, self.scraped)
-        return 'Source: %s -- %s (scraped: %s)' % (self.url, self.type, self.scraped)
+        return self.description
     
     @property
     def description(self):

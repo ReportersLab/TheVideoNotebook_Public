@@ -149,8 +149,13 @@
             </div>
             
             <div id="global_nav">
-                <div class="main_content">
+                <div class="main_content">                    
                     <div id="login_box">
+                        <div style="float:right;">
+                            <a href="https://docs.google.com/a/charlieszymanski.com/spreadsheet/viewform?formkey=dDdUS1VtWlR4MzVGQV9uakQyZGpoQXc6MQ#gid=0" target="_blank">Report a bug</a>
+                            <span class="slashes">//</span>
+                            <a href="https://docs.google.com/a/charlieszymanski.com/spreadsheet/viewform?formkey=dFFPZl85NGJHSjBwaU1OT2VycGhIVVE6MQ#gid=0" target="_blank">Request a feature</a>
+                        </div>
                         {% if user.is_authenticated %}
                             Welcome <a href="/user/{{ user }}">{{ user }}</a> <span class="slashes">//</span> <a href="/l/logout/">log out</a>
                             <span class="slashes">//</span>

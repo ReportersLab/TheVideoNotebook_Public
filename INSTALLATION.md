@@ -22,8 +22,8 @@ $ easy_install mercurial
 $ sudo ln -s /usr/bin/gcc /usr/bin/gcc-4.2
 $ sudo ln -s /usr/bin/g++ /usr/bin/g++-4.2 
 ```
-
 )
+
 ---
 
 from here you will either want to create a Fork in github of the Video Notebook repository. The URL to clone from is located on the github page towards the top next to "SSH." To copy straight from the Reporters' Lab account you would do something like this (note that if you want to deploy to a server and not just run locally, you should make a fork first):

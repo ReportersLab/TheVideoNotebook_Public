@@ -156,6 +156,17 @@ AUTH_PROFILE_MODULE = 'videotext.apps.core.models.UserProfile'
 TASTYPIE_FULL_DEBUG = True
 
 
+#twitter
+TWITTER_CONSUMER_KEY = '[[Your Twitter Consumer Key, provided by Twitter on Application Creation.]]'
+TWITTER_CONSUMER_SECRET = '[[Your Twitter Consumer Secret, provided by Twitter on Application Creation.]]'
+TWITTER_ACCESS_TOKEN = '[[Your Twitter access token. Manually created from your application page.]]'
+TWITTER_TOKEN_SECRET = '[[Your TWitter access secret. Manually created from your application page.]]'
+TWITTER_REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'  #not necessary for this application
+TWITTER_AUTHORIZE_URL = 'https://api.twitter.com/oauth/authorize'          #not necessary for this application
+TWITTER_ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'    #not necessary for this application
+TWITTER_CALLBACK_URL = '[[Callback URL for your Twitter Application.]]'    #not necessary for this application
+
+
 # Logging
 #logging.basicConfig(
 #    level=logging.DEBUG,

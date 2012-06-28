@@ -145,7 +145,7 @@ $ fab staging master setup deploy
 This will use Fabric to deploy to the 'staging' server using the 'master' branch of the github repository. In the future you won't have to run setup, so you can go:
 
 ```bash
-$fab staging master deploy
+$ fab staging master deploy
 ```
 
 and if there's a problem you can clear out the staging enviornment by going:

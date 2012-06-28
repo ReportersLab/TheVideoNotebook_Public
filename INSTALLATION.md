@@ -139,10 +139,20 @@ $ git push
 and finally
 
 ```bash
-$ fab staging master deploy
+$ fab staging master setup deploy
 ```
 
-This will use Fabric to deploy to the 'staging' server using the 'master' branch of the github repository.
+This will use Fabric to deploy to the 'staging' server using the 'master' branch of the github repository. In the future you won't have to run setup, so you can go:
+
+```bash
+$fab staging master deploy
+```
+
+and if there's a problem you can clear out the staging enviornment by going:
+
+```bash
+$ fab staging shiva_the_destroyer
+```
 
 At this point you should be able to go to http://your-ec2-instance-dns-name.amazonaws.com and see the video notebook running on the server.
 

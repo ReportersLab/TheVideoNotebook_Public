@@ -9,7 +9,7 @@ Base configuration
 """
 env.project_name = 'videotext'
 env.apps = ['core',]
-env.database_password = '9MeuHqkNt0'
+env.database_password = '[[PASSWORD]]'
 env.site_media_prefix = "site_media"
 env.admin_media_prefix = "admin_media"
 env.path = '/home/newsapps/sites/%(project_name)s' % env
@@ -18,7 +18,7 @@ env.env_path = '%(path)s/env' % env
 env.repo_path = '%(path)s/repository' % env
 env.apache_config_path = '/home/newsapps/sites/apache/%(project_name)s' % env
 env.python = 'python2.6'
-env.repository_url = "https://MrMetlHed@github.com/ReportersLab/VideoNotebook.git"
+env.repository_url = "https://github.com/ReportersLab/TheVideoNotebook_Public.git"
 env.multi_server = False
 env.memcached_server_address = "cache.example.com"
 
